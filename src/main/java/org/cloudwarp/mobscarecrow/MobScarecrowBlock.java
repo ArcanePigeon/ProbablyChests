@@ -1,0 +1,186 @@
+package org.cloudwarp.mobscarecrow;
+
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.block.*;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.enums.DoorHinge;
+import net.minecraft.block.enums.DoubleBlockHalf;
+import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.state.StateManager;
+import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.EnumProperty;
+import net.minecraft.state.property.Properties;
+import net.minecraft.util.*;
+import net.minecraft.util.function.BooleanBiFunction;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldEvents;
+import net.minecraft.world.WorldView;
+import net.minecraft.world.event.GameEvent;
+import org.cloudwarp.mobscarecrow.registry.ModBlocks;
+import org.jetbrains.annotations.Nullable;
+
+import javax.swing.text.html.BlockView;
+import java.util.stream.Stream;
+
+public class MobScarecrowBlock extends HorizontalFacingBlock implements BlockEntityProvider{
+    public static final DirectionProperty FACING;
+    public static final EnumProperty<DoubleBlockHalf> HALF;
+    protected static final VoxelShape NORTH_SHAPE_UPPER;
+    protected static final VoxelShape EAST_SHAPE_UPPER;
+    protected static final VoxelShape NORTH_SHAPE_LOWER;
+    protected static final VoxelShape EAST_SHAPE_LOWER;
+    public MobScarecrowBlock(Settings settings){
+        super(settings);
+        this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(HALF, DoubleBlockHalf.LOWER));
+    }
+
+    @Override
+    public VoxelShape getOutlineShape(BlockState state, net.minecraft.world.BlockView world, BlockPos pos, ShapeContext context) {
+        Direction direction = (Direction)state.get(FACING);
+        boolean lower = state.get(HALF) == DoubleBlockHalf.LOWER;
+        if(direction == Direction.NORTH || direction == Direction.SOUTH){
+            return lower ? NORTH_SHAPE_LOWER : NORTH_SHAPE_UPPER;
+        }else{
+            return lower ? EAST_SHAPE_LOWER : EAST_SHAPE_UPPER;
+        }
+    }
+
+    public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
+        //world.setBlockState(pos.up(), (BlockState)state.with(HALF, DoubleBlockHalf.UPPER), Block.NOTIFY_ALL);
+        if (state.get(HALF) == DoubleBlockHalf.UPPER) {
+            super.onPlaced(world, pos, state, placer, itemStack);
+            return;
+        }
+        world.setBlockState(pos.up(), state.with(HALF, DoubleBlockHalf.UPPER));
+        BlockEntity entity = world.getBlockEntity(pos);
+    }
+
+    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+        BlockPos topPos;
+        BlockPos botPos;
+        if (state.get(HALF) == DoubleBlockHalf.UPPER) {
+            topPos = pos;
+            botPos = pos.down();
+        } else {
+            topPos = pos.up();
+            botPos = pos;
+        }
+
+        if (world.getBlockEntity(botPos) instanceof MobScarecrowBlockEntity scarecrow) {
+            if (!player.isCreative() && player.canHarvest(world.getBlockState(botPos)) && world instanceof ServerWorld) {
+                if (!world.isClient) {
+                    ItemStack itemStack = new ItemStack(state.getBlock().asItem());
+                    ItemScatterer.spawn(world, (double) topPos.getX() + 0.5D, (double) topPos.getY() + 0.5D, (double) topPos.getZ() + 0.5D, itemStack);
+                } else {
+                }
+            }
+            world.removeBlockEntity(botPos);
+        }
+
+        if (world.getBlockEntity(topPos) instanceof MobScarecrowBlockEntity scarecrow) {
+            world.removeBlockEntity(topPos);
+        }
+        world.removeBlock(topPos, false);
+        world.removeBlock(botPos, false);
+        world.updateNeighbors(topPos, Blocks.AIR);
+
+        super.onBreak(world, pos, state, player);
+    }
+
+    @Override
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        BlockPos newPos;
+        DoubleBlockHalf verticalPosition;
+
+        if (state.getBlock() != this) {
+            super.onStateReplaced(state, world, pos, newState, moved);
+            return;
+        }
+
+        if (state.get(MobScarecrowBlock.HALF) == DoubleBlockHalf.UPPER) {
+            newPos = pos.down();
+            verticalPosition = DoubleBlockHalf.LOWER;
+        } else {
+            newPos = pos.up();
+            verticalPosition = DoubleBlockHalf.UPPER;
+        }
+
+        if (!(newState.getBlock() instanceof MobScarecrowBlock)) {
+            BlockPos testPos = pos;
+            if (state.get(MobScarecrowBlock.HALF) == DoubleBlockHalf.UPPER) {
+                testPos = pos.down();
+            }
+            BlockEntity entity = world.getBlockEntity(testPos);
+            world.removeBlockEntity(newPos);
+            world.setBlockState(newPos, newState);
+        }
+        super.onStateReplaced(state, world, pos, newState, moved);
+    }
+
+    @Override
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        //world.syncWorldEvent(player, (Boolean)state.get(OPEN) ? this.getCloseSoundEventId() : this.getOpenSoundEventId(), pos, 0);
+        // TODO: PLAY SOUND
+        return ActionResult.success(world.isClient);
+    }
+
+    @Override
+    public PistonBehavior getPistonBehavior(BlockState state) {
+        return PistonBehavior.DESTROY;
+    }
+
+    @Override
+    public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+        BlockPos blockPos = pos.down();
+        BlockState blockState = world.getBlockState(blockPos);
+        return state.get(HALF) == DoubleBlockHalf.LOWER ? blockState.isSideSolidFullSquare(world, blockPos, Direction.UP) : blockState.isOf(this);
+    }
+
+    @Override
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
+        return (BlockState)this.getDefaultState().with(Properties.HORIZONTAL_FACING, ctx.getPlayerFacing().getOpposite());
+    }
+
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+        builder.add(HALF, FACING);
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+        return state.get(HALF) == DoubleBlockHalf.UPPER ? null : new MobScarecrowBlockEntity(pos, state);
+    }
+    static {
+        FACING = HorizontalFacingBlock.FACING;
+        HALF = Properties.DOUBLE_BLOCK_HALF;
+        NORTH_SHAPE_LOWER = Stream.of(
+                Block.createCuboidShape(4, 8, 6, 12, 16, 10),
+                Block.createCuboidShape(7, 0, 7, 9, 8, 9)
+        ).reduce((v1, v2) -> VoxelShapes.combineAndSimplify(v1, v2, BooleanBiFunction.OR)).get();
+        EAST_SHAPE_LOWER =Stream.of(
+                Block.createCuboidShape(6, 8, 4, 10, 16, 12),
+                Block.createCuboidShape(7, 0, 7, 9, 8, 9)
+        ).reduce((v1, v2) -> VoxelShapes.combineAndSimplify(v1, v2, BooleanBiFunction.OR)).get();
+        NORTH_SHAPE_UPPER = Stream.of(
+                Block.createCuboidShape(3, 4, 3, 13, 13, 13),
+                Block.createCuboidShape(4, 0, 6, 12, 4, 10)
+        ).reduce((v1, v2) -> VoxelShapes.combineAndSimplify(v1, v2, BooleanBiFunction.OR)).get();
+        EAST_SHAPE_UPPER = Stream.of(
+                Block.createCuboidShape(3, 4, 3, 13, 13, 13),
+                Block.createCuboidShape(6, 0, 4, 10, 4, 12)
+        ).reduce((v1, v2) -> VoxelShapes.combineAndSimplify(v1, v2, BooleanBiFunction.OR)).get();
+    }
+}

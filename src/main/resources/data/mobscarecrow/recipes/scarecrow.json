@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " P ",
+    "SHS",
+    " F "
+  ],
+  "key": {
+    "P": {
+      "item": "minecraft:carved_pumpkin"
+    },
+    "S": {
+      "item": "minecraft:stick"
+    },
+    "H": {
+      "item": "minecraft:hay_block"
+    },
+    "F": {
+      "tag": "minecraft:fences"
+    }
+  },
+  "result": {
+    "item": "mobscarecrow:scarecrow",
+    "count": 1
+  }
+}
