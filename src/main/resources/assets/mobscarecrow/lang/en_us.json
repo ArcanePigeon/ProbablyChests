@@ -1,5 +1,7 @@
 {
   "itemGroup.mobscarecrow.general": "Mob Scarecrow",
   "block.mobscarecrow.scarecrow": "Mob Scarecrow",
-  "block.mobscarecrow.creeperscarecrow": "Creeper Plushie"
+  "block.mobscarecrow.creeper_scarecrow": "Cat Plushie",
+  "block.mobscarecrow.spider_scarecrow": "Pigeon Plushie",
+  "block.mobscarecrow.zombie_scarecrow": "Iron Golem Plushie"
 }

@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "mobscarecrow:creeperscarecrow"
+          "name": "mobscarecrow:skeleton_scarecrow"
         }
       ],
       "conditions": [

@@ -1,21 +1,15 @@
-package org.cloudwarp.mobscarecrow;
+package org.cloudwarp.mobscarecrow.blocks;
 
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
-import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -23,16 +17,16 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldView;
+import org.cloudwarp.mobscarecrow.blockentities.MobScarecrowBlockEntity;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.stream.Stream;
 
-public class CreeperScarecrowBlock extends HorizontalFacingBlock implements BlockEntityProvider {
+public class SpiderScarecrowBlock extends HorizontalFacingBlock implements BlockEntityProvider {
     public static final DirectionProperty FACING;
     protected static final VoxelShape NORTH_SHAPE;
     protected static final VoxelShape EAST_SHAPE;
-    public CreeperScarecrowBlock(Settings settings){
+    public SpiderScarecrowBlock(Settings settings){
         super(settings);
         this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH));
     }

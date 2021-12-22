@@ -1,9 +1,9 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "GWF",
+    "SWB",
     "WPW",
-    "FWG"
+    "BWS"
   ],
   "key": {
     "P": {
@@ -12,15 +12,15 @@
     "W": {
       "tag": "minecraft:wool"
     },
-    "F": {
-      "tag": "minecraft:fishes"
+    "B": {
+      "item": "minecraft:bone"
     },
-    "G": {
-      "item": "minecraft:gunpowder"
+    "S": {
+      "item": "minecraft:beef"
     }
   },
   "result": {
-    "item": "mobscarecrow:creeperscarecrow",
+    "item": "mobscarecrow:skeleton_scarecrow",
     "count": 1
   }
 }

@@ -1,24 +1,19 @@
-package org.cloudwarp.mobscarecrow;
+package org.cloudwarp.mobscarecrow.goals;
 
-import net.minecraft.entity.Entity;
+import net.minecraft.block.Block;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.FuzzyPositions;
 import net.minecraft.entity.ai.NavigationConditions;
 import net.minecraft.entity.ai.NoPenaltyTargeting;
-import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.Path;
-import net.minecraft.entity.ai.pathing.MobNavigation;
-import net.minecraft.entity.mob.HoglinEntity;
+import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.BlockTags;
+import net.minecraft.tag.Tag;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -35,9 +30,11 @@ public class AvoidScarecrowGoal extends Goal {
     private boolean pathable = false;
     private Optional<BlockPos> pos;
     private int pathTimeLimiter;
+    private Tag.Identified<Block> tag;
 
-    public AvoidScarecrowGoal(LivingEntity e){
+    public AvoidScarecrowGoal(LivingEntity e, Tag.Identified<Block> scarecrowTag){
         entity = e;
+        tag = scarecrowTag;
         //speed = e.getMovementSpeed();
         if (entity instanceof PathAwareEntity) {
             pathable = true;
@@ -46,7 +43,6 @@ public class AvoidScarecrowGoal extends Goal {
         }
     }
 
-
     @Override
     public boolean shouldContinue(){
         return !path.isFinished() && pathTimeLimiter > 0;
@@ -54,7 +50,7 @@ public class AvoidScarecrowGoal extends Goal {
 
     @Override
     public boolean canStart() {
-        pos = EntityUtils.findNearestScarecrow(entity.getEntityWorld(),entity);
+        pos = EntityUtils.findNearestScarecrow(entity.getEntityWorld(),entity,tag);
         if(pathable && EntityUtils.isScarecrowAround(entity,pos)){
             return generatePath();
         }

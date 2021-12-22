@@ -1,4 +1,4 @@
-package org.cloudwarp.mobscarecrow;
+package org.cloudwarp.mobscarecrow.blockentities;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;

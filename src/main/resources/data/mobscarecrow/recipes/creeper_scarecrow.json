@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "GWF",
+    "WPW",
+    "FWG"
+  ],
+  "key": {
+    "P": {
+      "item": "minecraft:carved_pumpkin"
+    },
+    "W": {
+      "tag": "minecraft:wool"
+    },
+    "F": {
+      "tag": "minecraft:fishes"
+    },
+    "G": {
+      "item": "minecraft:gunpowder"
+    }
+  },
+  "result": {
+    "item": "mobscarecrow:creeper_scarecrow",
+    "count": 1
+  }
+}

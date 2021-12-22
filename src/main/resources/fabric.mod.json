@@ -4,7 +4,7 @@
   "version": "${version}",
 
   "name": "Mob Scarecrow",
-  "description": "A scary scarecrow that keeps mobs away from your home.",
+  "description": "Scary scarecrows / plushies that keeps mobs away from your home.",
   "authors": [
     "ProbabilityPigeon"
   ],
@@ -22,7 +22,7 @@
       "org.cloudwarp.mobscarecrow.MobScarecrow"
     ],
     "client": [
-      "org.cloudwarp.mobscarecrow.MobScarecrowClient"
+      "org.cloudwarp.mobscarecrow.client.MobScarecrowClient"
     ]
   },
   "mixins": [

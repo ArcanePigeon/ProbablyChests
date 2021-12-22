@@ -1,9 +1,10 @@
-package org.cloudwarp.mobscarecrow;
+package org.cloudwarp.mobscarecrow.client;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
 import net.minecraft.client.render.RenderLayer;
+import org.cloudwarp.mobscarecrow.models.MobScarecrowModelProvider;
 import org.cloudwarp.mobscarecrow.registry.ModBlocks;
 
 public class MobScarecrowClient implements ClientModInitializer {

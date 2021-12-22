@@ -4,7 +4,10 @@
   "package": "org.cloudwarp.mobscarecrow.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
-    "ZombieEntityMixin"
+    "ZombieEntityMixin",
+    "CreeperEntityMixin",
+    "SkeletonEntityMixin",
+    "SpiderEntityMixin"
   ],
   "client": [
   ],

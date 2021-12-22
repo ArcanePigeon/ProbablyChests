@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "mobscarecrow:block/skeleton_scarecrow" },
+    "facing=east":  { "model": "mobscarecrow:block/skeleton_scarecrow" ,"y": 90},
+    "facing=south": { "model": "mobscarecrow:block/skeleton_scarecrow" ,"y": 180},
+    "facing=west":  { "model": "mobscarecrow:block/skeleton_scarecrow" ,"y": 270}
+  }
+}

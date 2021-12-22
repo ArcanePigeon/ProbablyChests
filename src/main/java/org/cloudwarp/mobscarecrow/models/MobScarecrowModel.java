@@ -1,4 +1,4 @@
-package org.cloudwarp.mobscarecrow;
+package org.cloudwarp.mobscarecrow.models;
 
 import com.mojang.datafixers.util.Pair;
 import net.fabricmc.fabric.api.renderer.v1.Renderer;
