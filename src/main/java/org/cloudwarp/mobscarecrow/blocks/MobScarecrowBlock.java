@@ -123,13 +123,6 @@ public class MobScarecrowBlock extends HorizontalFacingBlock implements BlockEnt
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        //world.syncWorldEvent(player, (Boolean)state.get(OPEN) ? this.getCloseSoundEventId() : this.getOpenSoundEventId(), pos, 0);
-        // TODO: PLAY SOUND
-        return ActionResult.success(world.isClient);
-    }
-
-    @Override
     public PistonBehavior getPistonBehavior(BlockState state) {
         return PistonBehavior.DESTROY;
     }

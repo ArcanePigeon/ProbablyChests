@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.tool.attribute.v1.FabricToolTags;
 import net.minecraft.block.Block;
 import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.registry.Registry;
 import org.cloudwarp.mobscarecrow.blockentities.*;
 import org.cloudwarp.mobscarecrow.blocks.*;
@@ -13,11 +14,11 @@ import org.cloudwarp.mobscarecrow.models.MobScarecrowModelProvider;
 
 public class ModBlocks {
     // BLOCKS
-    public static final Block MOB_SCARECROW = new MobScarecrowBlock(FabricBlockSettings.of(Material.NETHER_WOOD).requiresTool().breakByTool(FabricToolTags.AXES,1).strength(2.0f,3f));
-    public static final Block CREEPER_SCARECROW = new CreeperScarecrowBlock(FabricBlockSettings.of(Material.NETHER_WOOD).requiresTool().breakByTool(FabricToolTags.AXES,1).strength(2.0f,3f));
-    public static final Block SKELETON_SCARECROW = new SkeletonScarecrowBlock(FabricBlockSettings.of(Material.NETHER_WOOD).requiresTool().breakByTool(FabricToolTags.AXES,1).strength(2.0f,3f));
-    public static final Block SPIDER_SCARECROW = new SpiderScarecrowBlock(FabricBlockSettings.of(Material.NETHER_WOOD).requiresTool().breakByTool(FabricToolTags.AXES,1).strength(2.0f,3f));
-    public static final Block ZOMBIE_SCARECROW = new ZombieScarecrowBlock(FabricBlockSettings.of(Material.NETHER_WOOD).requiresTool().breakByTool(FabricToolTags.AXES,1).strength(2.0f,3f));
+    public static final Block MOB_SCARECROW = new MobScarecrowBlock(FabricBlockSettings.of(Material.NETHER_WOOD).requiresTool().breakByTool(FabricToolTags.AXES,1).strength(2.0f,3f).sounds(BlockSoundGroup.WOOD));
+    public static final Block CREEPER_SCARECROW = new CreeperScarecrowBlock(FabricBlockSettings.of(Material.WOOL).breakByHand(true).strength(1.0f,1f).sounds(BlockSoundGroup.WOOL));
+    public static final Block SKELETON_SCARECROW = new SkeletonScarecrowBlock(FabricBlockSettings.of(Material.WOOL).breakByHand(true).strength(1.0f,1f).sounds(BlockSoundGroup.WOOL));
+    public static final Block SPIDER_SCARECROW = new SpiderScarecrowBlock(FabricBlockSettings.of(Material.WOOL).breakByHand(true).strength(1.0f,1f).sounds(BlockSoundGroup.WOOL));
+    public static final Block ZOMBIE_SCARECROW = new ZombieScarecrowBlock(FabricBlockSettings.of(Material.WOOL).breakByHand(true).strength(1.0f,1f).sounds(BlockSoundGroup.WOOL));
     // BLOCK ENTITIES
     public static final BlockEntityType<MobScarecrowBlockEntity> SCARECROW_BLOCK_ENTITY = FabricBlockEntityTypeBuilder.create(
             MobScarecrowBlockEntity::new,MOB_SCARECROW

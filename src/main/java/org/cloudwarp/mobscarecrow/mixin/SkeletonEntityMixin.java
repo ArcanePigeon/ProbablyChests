@@ -3,8 +3,6 @@ package org.cloudwarp.mobscarecrow.mixin;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.AbstractSkeletonEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.SkeletonEntity;
-import net.minecraft.entity.mob.SpiderEntity;
 import net.minecraft.world.World;
 import org.cloudwarp.mobscarecrow.blockdetails.MobScarecrowBlockTags;
 import org.cloudwarp.mobscarecrow.goals.AvoidScarecrowGoal;

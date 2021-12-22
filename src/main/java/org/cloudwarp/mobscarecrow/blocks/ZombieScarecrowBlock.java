@@ -26,6 +26,8 @@ public class ZombieScarecrowBlock extends HorizontalFacingBlock implements Block
     public static final DirectionProperty FACING;
     protected static final VoxelShape NORTH_SHAPE;
     protected static final VoxelShape EAST_SHAPE;
+    protected static final VoxelShape SOUTH_SHAPE;
+    protected static final VoxelShape WEST_SHAPE;
     public ZombieScarecrowBlock(Settings settings){
         super(settings);
         this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH));
@@ -34,10 +36,14 @@ public class ZombieScarecrowBlock extends HorizontalFacingBlock implements Block
     @Override
     public VoxelShape getOutlineShape(BlockState state, net.minecraft.world.BlockView world, BlockPos pos, ShapeContext context) {
         Direction direction = (Direction)state.get(FACING);
-        if(direction == Direction.NORTH || direction == Direction.SOUTH){
+        if(direction == Direction.NORTH ){
             return NORTH_SHAPE;
-        }else{
+        }else if(direction == Direction.EAST){
             return EAST_SHAPE;
+        }else if(direction == Direction.SOUTH){
+            return SOUTH_SHAPE;
+        }else{
+            return WEST_SHAPE;
         }
     }
 
@@ -71,12 +77,24 @@ public class ZombieScarecrowBlock extends HorizontalFacingBlock implements Block
     static {
         FACING = HorizontalFacingBlock.FACING;
         NORTH_SHAPE = Stream.of(
-                Block.createCuboidShape(4, 8, 6, 12, 16, 10),
-                Block.createCuboidShape(7, 0, 7, 9, 8, 9)
+                Block.createCuboidShape(2, 0, 6, 14, 10, 9),
+                Block.createCuboidShape(6, 10, 4.5, 10, 15, 8.5),
+                Block.createCuboidShape(4, 6, 5, 12, 10, 10)
         ).reduce((v1, v2) -> VoxelShapes.combineAndSimplify(v1, v2, BooleanBiFunction.OR)).get();
         EAST_SHAPE =Stream.of(
-                Block.createCuboidShape(6, 8, 4, 10, 16, 12),
-                Block.createCuboidShape(7, 0, 7, 9, 8, 9)
+                Block.createCuboidShape(7, 0, 2, 10, 10, 14),
+                Block.createCuboidShape(7.5, 10, 6, 11.5, 15, 10),
+                Block.createCuboidShape(6, 6, 4, 11, 10, 12)
+        ).reduce((v1, v2) -> VoxelShapes.combineAndSimplify(v1, v2, BooleanBiFunction.OR)).get();
+        SOUTH_SHAPE =Stream.of(
+                Block.createCuboidShape(2, 0, 7, 14, 10, 10),
+                Block.createCuboidShape(6, 10, 7.5, 10, 15, 11.5),
+                Block.createCuboidShape(4, 6, 6, 12, 10, 11)
+        ).reduce((v1, v2) -> VoxelShapes.combineAndSimplify(v1, v2, BooleanBiFunction.OR)).get();
+        WEST_SHAPE =Stream.of(
+                Block.createCuboidShape(6, 0, 2, 9, 10, 14),
+                Block.createCuboidShape(4.5, 10, 6, 8.5, 15, 10),
+                Block.createCuboidShape(5, 6, 4, 10, 10, 12)
         ).reduce((v1, v2) -> VoxelShapes.combineAndSimplify(v1, v2, BooleanBiFunction.OR)).get();
     }
 }
