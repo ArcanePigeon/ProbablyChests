@@ -10,15 +10,14 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.registry.Registry;
 import org.cloudwarp.mobscarecrow.blockentities.*;
 import org.cloudwarp.mobscarecrow.blocks.*;
-import org.cloudwarp.mobscarecrow.models.MobScarecrowModelProvider;
 
 public class ModBlocks {
     // BLOCKS
     public static final Block MOB_SCARECROW = new MobScarecrowBlock(FabricBlockSettings.of(Material.NETHER_WOOD).requiresTool().breakByTool(FabricToolTags.AXES,1).strength(2.0f,3f).sounds(BlockSoundGroup.WOOD));
-    public static final Block CREEPER_SCARECROW = new CreeperScarecrowBlock(FabricBlockSettings.of(Material.WOOL).breakByHand(true).strength(1.0f,1f).sounds(BlockSoundGroup.WOOL));
-    public static final Block SKELETON_SCARECROW = new SkeletonScarecrowBlock(FabricBlockSettings.of(Material.WOOL).breakByHand(true).strength(1.0f,1f).sounds(BlockSoundGroup.WOOL));
-    public static final Block SPIDER_SCARECROW = new SpiderScarecrowBlock(FabricBlockSettings.of(Material.WOOL).breakByHand(true).strength(1.0f,1f).sounds(BlockSoundGroup.WOOL));
-    public static final Block ZOMBIE_SCARECROW = new ZombieScarecrowBlock(FabricBlockSettings.of(Material.WOOL).breakByHand(true).strength(1.0f,1f).sounds(BlockSoundGroup.WOOL));
+    public static final Block CREEPER_SCARECROW = new CreeperScarecrowBlock(FabricBlockSettings.of(Material.WOOL).breakByHand(true).strength(1.0f,1f).sounds(ModSounds.PLUSHIE));
+    public static final Block SKELETON_SCARECROW = new SkeletonScarecrowBlock(FabricBlockSettings.of(Material.WOOL).breakByHand(true).strength(1.0f,1f).sounds(ModSounds.PLUSHIE));
+    public static final Block SPIDER_SCARECROW = new SpiderScarecrowBlock(FabricBlockSettings.of(Material.WOOL).breakByHand(true).strength(1.0f,1f).sounds(ModSounds.PLUSHIE));
+    public static final Block ZOMBIE_SCARECROW = new ZombieScarecrowBlock(FabricBlockSettings.of(Material.WOOL).breakByHand(true).strength(1.0f,1f).sounds(ModSounds.PLUSHIE));
     // BLOCK ENTITIES
     public static final BlockEntityType<MobScarecrowBlockEntity> SCARECROW_BLOCK_ENTITY = FabricBlockEntityTypeBuilder.create(
             MobScarecrowBlockEntity::new,MOB_SCARECROW
@@ -41,11 +40,11 @@ public class ModBlocks {
     ).build(null);
 
     public static void registerBlocks(){
-        Registry.register(Registry.BLOCK, MobScarecrowModelProvider.SCARECROW_MODEL, MOB_SCARECROW);
-        Registry.register(Registry.BLOCK, MobScarecrowModelProvider.CREEPER_SCARECROW_MODEL, CREEPER_SCARECROW);
-        Registry.register(Registry.BLOCK, MobScarecrowModelProvider.SKELETON_SCARECROW_MODEL, SKELETON_SCARECROW);
-        Registry.register(Registry.BLOCK, MobScarecrowModelProvider.SPIDER_SCARECROW_MODEL, SPIDER_SCARECROW);
-        Registry.register(Registry.BLOCK, MobScarecrowModelProvider.ZOMBIE_SCARECROW_MODEL, ZOMBIE_SCARECROW);
+        Registry.register(Registry.BLOCK, "mobscarecrow:scarecrow", MOB_SCARECROW);
+        Registry.register(Registry.BLOCK, "mobscarecrow:creeper_scarecrow", CREEPER_SCARECROW);
+        Registry.register(Registry.BLOCK, "mobscarecrow:skeleton_scarecrow", SKELETON_SCARECROW);
+        Registry.register(Registry.BLOCK, "mobscarecrow:spider_scarecrow", SPIDER_SCARECROW);
+        Registry.register(Registry.BLOCK, "mobscarecrow:zombie_scarecrow", ZOMBIE_SCARECROW);
     }
     public static void RegisterBlockEntities(){
         Registry.register(Registry.BLOCK_ENTITY_TYPE, "mobscarecrow:scarecrow_block_entity", SCARECROW_BLOCK_ENTITY);

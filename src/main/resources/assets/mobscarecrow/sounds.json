@@ -1,0 +1,14 @@
+{
+  "plushie_squeak": {
+    "subtitle": "subtitles.mobscarecrow.plushie_squeak",
+    "sounds": [
+      "mobscarecrow:plushie_squeak"
+    ]
+  },
+  "plushie_break": {
+    "subtitle": "subtitles.mobscarecrow.plushie_break",
+    "sounds": [
+      "mobscarecrow:plushie_break"
+    ]
+  }
+}

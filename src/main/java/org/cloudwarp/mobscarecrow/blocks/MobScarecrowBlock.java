@@ -34,6 +34,7 @@ public class MobScarecrowBlock extends HorizontalFacingBlock implements BlockEnt
     protected static final VoxelShape EAST_SHAPE_UPPER;
     protected static final VoxelShape NORTH_SHAPE_LOWER;
     protected static final VoxelShape EAST_SHAPE_LOWER;
+
     public MobScarecrowBlock(Settings settings){
         super(settings);
         this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(HALF, DoubleBlockHalf.LOWER));
@@ -41,8 +42,9 @@ public class MobScarecrowBlock extends HorizontalFacingBlock implements BlockEnt
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, net.minecraft.world.BlockView world, BlockPos pos, ShapeContext context) {
-        Direction direction = (Direction)state.get(FACING);
+        Direction direction = state.get(FACING);
         boolean lower = state.get(HALF) == DoubleBlockHalf.LOWER;
+        // Set voxel shape of scarecrow half based on place direction.
         if(direction == Direction.NORTH || direction == Direction.SOUTH){
             return lower ? NORTH_SHAPE_LOWER : NORTH_SHAPE_UPPER;
         }else{
@@ -56,13 +58,14 @@ public class MobScarecrowBlock extends HorizontalFacingBlock implements BlockEnt
             super.onPlaced(world, pos, state, placer, itemStack);
             return;
         }
+        // If placing bottom half, place top half above block pos.
         world.setBlockState(pos.up(), state.with(HALF, DoubleBlockHalf.UPPER));
-        BlockEntity entity = world.getBlockEntity(pos);
     }
 
     public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         BlockPos topPos;
         BlockPos botPos;
+        // Get block position of both halves.
         if (state.get(HALF) == DoubleBlockHalf.UPPER) {
             topPos = pos;
             botPos = pos.down();
@@ -70,8 +73,8 @@ public class MobScarecrowBlock extends HorizontalFacingBlock implements BlockEnt
             topPos = pos.up();
             botPos = pos;
         }
-
-        if (world.getBlockEntity(botPos) instanceof MobScarecrowBlockEntity scarecrow) {
+        // If block entity is of type mobscarecrow then spawn items at break position.
+        if (world.getBlockEntity(botPos) instanceof MobScarecrowBlockEntity) {
             if (!player.isCreative() && player.canHarvest(world.getBlockState(botPos)) && world instanceof ServerWorld) {
                 if (!world.isClient) {
                     ItemStack itemStack = new ItemStack(state.getBlock().asItem());
@@ -81,10 +84,11 @@ public class MobScarecrowBlock extends HorizontalFacingBlock implements BlockEnt
             }
             world.removeBlockEntity(botPos);
         }
-
-        if (world.getBlockEntity(topPos) instanceof MobScarecrowBlockEntity scarecrow) {
+        // If block entity is of type mobscarecrow then remove top half.
+        if (world.getBlockEntity(topPos) instanceof MobScarecrowBlockEntity) {
             world.removeBlockEntity(topPos);
         }
+        // Remove blocks halves.
         world.removeBlock(topPos, false);
         world.removeBlock(botPos, false);
         world.updateNeighbors(topPos, Blocks.AIR);
@@ -95,27 +99,19 @@ public class MobScarecrowBlock extends HorizontalFacingBlock implements BlockEnt
     @Override
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         BlockPos newPos;
-        DoubleBlockHalf verticalPosition;
 
         if (state.getBlock() != this) {
             super.onStateReplaced(state, world, pos, newState, moved);
             return;
         }
-
+        // Find block entity position.
         if (state.get(MobScarecrowBlock.HALF) == DoubleBlockHalf.UPPER) {
             newPos = pos.down();
-            verticalPosition = DoubleBlockHalf.LOWER;
         } else {
             newPos = pos.up();
-            verticalPosition = DoubleBlockHalf.UPPER;
         }
-
+        // Remove entity and set new block state.
         if (!(newState.getBlock() instanceof MobScarecrowBlock)) {
-            BlockPos testPos = pos;
-            if (state.get(MobScarecrowBlock.HALF) == DoubleBlockHalf.UPPER) {
-                testPos = pos.down();
-            }
-            BlockEntity entity = world.getBlockEntity(testPos);
             world.removeBlockEntity(newPos);
             world.setBlockState(newPos, newState);
         }
@@ -136,7 +132,7 @@ public class MobScarecrowBlock extends HorizontalFacingBlock implements BlockEnt
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return (BlockState)this.getDefaultState().with(Properties.HORIZONTAL_FACING, ctx.getPlayerFacing().getOpposite());
+        return this.getDefaultState().with(Properties.HORIZONTAL_FACING, ctx.getPlayerFacing().getOpposite());
     }
 
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {

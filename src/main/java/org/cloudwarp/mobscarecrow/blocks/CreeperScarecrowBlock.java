@@ -5,6 +5,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
@@ -18,6 +19,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
 import org.cloudwarp.mobscarecrow.blockentities.MobScarecrowBlockEntity;
+import org.cloudwarp.mobscarecrow.registry.ModSounds;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.stream.Stream;
@@ -35,7 +37,7 @@ public class CreeperScarecrowBlock extends HorizontalFacingBlock implements Bloc
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, net.minecraft.world.BlockView world, BlockPos pos, ShapeContext context) {
-        Direction direction = (Direction)state.get(FACING);
+        Direction direction = state.get(FACING);
         if(direction == Direction.NORTH ){
             return NORTH_SHAPE;
         }else if(direction == Direction.EAST){
@@ -49,8 +51,9 @@ public class CreeperScarecrowBlock extends HorizontalFacingBlock implements Bloc
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        //world.syncWorldEvent(player, (Boolean)state.get(OPEN) ? this.getCloseSoundEventId() : this.getOpenSoundEventId(), pos, 0);
-        // TODO: PLAY SOUND
+        if(!world.isClient){
+            world.playSound(null, pos, ModSounds.PLUSHIE_SQUEAK_EVENT, SoundCategory.BLOCKS, 1.0F, 1.0F);
+        }
         return ActionResult.success(world.isClient);
     }
 
@@ -62,7 +65,7 @@ public class CreeperScarecrowBlock extends HorizontalFacingBlock implements Bloc
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return (BlockState)this.getDefaultState().with(Properties.HORIZONTAL_FACING, ctx.getPlayerFacing().getOpposite());
+        return this.getDefaultState().with(Properties.HORIZONTAL_FACING, ctx.getPlayerFacing().getOpposite());
     }
 
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
