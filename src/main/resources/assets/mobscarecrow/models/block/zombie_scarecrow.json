@@ -3,7 +3,7 @@
 	"texture_size": [32, 32],
 	"textures": {
 		"0": "mobscarecrow:block/zombie_scarecrow",
-		"particle": "mobscarecrow:block/zombie_scarecrow"
+		"particle": "mobscarecrow:particle/zombie_scarecrow_particle"
 	},
 	"elements": [
 		{
