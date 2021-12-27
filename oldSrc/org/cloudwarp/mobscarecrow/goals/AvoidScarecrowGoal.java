@@ -51,7 +51,7 @@ public class AvoidScarecrowGoal extends Goal {
 
     private boolean generatePath(){
         Vec3d scarecrowPos = new Vec3d(pos.get().getX(),pos.get().getY(),pos.get().getZ());
-        Vec3d newPos = NoPenaltyTargeting.findFrom(pathEntity,9,7,scarecrowPos);
+        Vec3d newPos = NoPenaltyTargeting.find(pathEntity,9,7,scarecrowPos);
         if(newPos != null){
             path = navigation.findPathTo(new BlockPos(newPos),0);
             if(path != null){
