@@ -1,6 +1,7 @@
 plugins {
 	id 'fabric-loom' version '0.10-SNAPSHOT'
 	id 'maven-publish'
+	id "com.matthewprenger.cursegradle" version "1.4.0"
 }
 
 sourceCompatibility = JavaVersion.VERSION_17
@@ -83,5 +84,31 @@ publishing {
 		// Notice: This block does NOT have the same function as the block in the top level.
 		// The repositories here will be used for publishing your artifact, not for
 		// retrieving dependencies.
+	}
+}
+
+curseforge {
+	apiKey = "98a5754b-c7f9-4e74-9daa-49ce6ad36471"
+	project {
+		id = "560657"
+		releaseType = "release"
+		addGameVersion "1.18.1"
+		addGameVersion "Java 17"
+		addGameVersion "Fabric"
+		changelogType = "markdown"
+		changelog = file("changelog.md")
+		relations {
+			requiredDependency "fabric-api"
+		}
+		mainArtifact(jar) {
+			displayName = "Mob Scarecrows - ${project.mod_version} - Fabric"
+		}
+		afterEvaluate {
+			uploadTask.dependsOn("build")
+		}
+	}
+	options {
+		forgeGradleIntegration = false
+		javaVersionAutoDetect = true
 	}
 }

@@ -13,7 +13,7 @@ import org.cloudwarp.mobscarecrow.blocks.*;
 
 public class ModBlocks {
     // BLOCKS
-    public static final Block MOB_SCARECROW = new MobScarecrowBlock(FabricBlockSettings.of(Material.NETHER_WOOD).requiresTool().breakByTool(FabricToolTags.AXES,1).strength(2.0f,3f).sounds(BlockSoundGroup.WOOD));
+    public static final Block MOB_SCARECROW = new MobScarecrowBlock(FabricBlockSettings.of(Material.NETHER_WOOD).requiresTool().strength(2.0f,3f).sounds(BlockSoundGroup.WOOD));
     public static final Block CREEPER_SCARECROW = new CreeperScarecrowBlock(FabricBlockSettings.of(Material.WOOL).breakByHand(true).strength(1.0f,1f).sounds(ModSounds.PLUSHIE));
     public static final Block SKELETON_SCARECROW = new SkeletonScarecrowBlock(FabricBlockSettings.of(Material.WOOL).breakByHand(true).strength(1.0f,1f).sounds(ModSounds.PLUSHIE));
     public static final Block SPIDER_SCARECROW = new SpiderScarecrowBlock(FabricBlockSettings.of(Material.WOOL).breakByHand(true).strength(1.0f,1f).sounds(ModSounds.PLUSHIE));
