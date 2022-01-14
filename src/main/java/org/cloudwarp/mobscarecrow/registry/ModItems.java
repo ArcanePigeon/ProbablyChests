@@ -26,6 +26,14 @@ public class ModItems {
         registerItem("skeleton_scarecrow",new MobScarecrowItem(ModBlocks.SKELETON_SCARECROW, new Item.Settings().group(MOB_SCARECROW_GROUP)));
         registerItem("spider_scarecrow",new MobScarecrowItem(ModBlocks.SPIDER_SCARECROW, new Item.Settings().group(MOB_SCARECROW_GROUP)));
         registerItem("zombie_scarecrow",new MobScarecrowItem(ModBlocks.ZOMBIE_SCARECROW, new Item.Settings().group(MOB_SCARECROW_GROUP)));
+        registerItem("turtle_scarecrow",new MobScarecrowItem(ModBlocks.TURTLE_SCARECROW, new Item.Settings().group(MOB_SCARECROW_GROUP)));
+        registerItem("endermite_scarecrow",new MobScarecrowItem(ModBlocks.ENDERMITE_SCARECROW, new Item.Settings().group(MOB_SCARECROW_GROUP)));
+        registerItem("creeper_scarecrow_statue",new MobScarecrowItem(ModBlocks.CREEPER_SCARECROW_STATUE, new Item.Settings().group(MOB_SCARECROW_GROUP)));
+        registerItem("skeleton_scarecrow_statue",new MobScarecrowItem(ModBlocks.SKELETON_SCARECROW_STATUE, new Item.Settings().group(MOB_SCARECROW_GROUP)));
+        registerItem("spider_scarecrow_statue",new MobScarecrowItem(ModBlocks.SPIDER_SCARECROW_STATUE, new Item.Settings().group(MOB_SCARECROW_GROUP)));
+        registerItem("zombie_scarecrow_statue",new MobScarecrowItem(ModBlocks.ZOMBIE_SCARECROW_STATUE, new Item.Settings().group(MOB_SCARECROW_GROUP)));
+        registerItem("turtle_scarecrow_statue",new MobScarecrowItem(ModBlocks.TURTLE_SCARECROW_STATUE, new Item.Settings().group(MOB_SCARECROW_GROUP)));
+        registerItem("endermite_scarecrow_statue",new MobScarecrowItem(ModBlocks.ENDERMITE_SCARECROW_STATUE, new Item.Settings().group(MOB_SCARECROW_GROUP)));
     }
     public static Item get(String id) {
         return ITEMS.getOrDefault(id, Items.AIR);

@@ -11,7 +11,7 @@ import java.util.Optional;
 public class EntityUtils {
 
     public static Optional<BlockPos> findNearestScarecrow(World world, LivingEntity entity, Tag.Identified<Block> tag) {
-        return BlockPos.findClosest(entity.getBlockPos(), 20, 10, (blockPos) -> world.getBlockState(blockPos).isIn(tag));
+        return BlockPos.findClosest(entity.getBlockPos(), 15, 10, (blockPos) -> world.getBlockState(blockPos).isIn(tag));
     }
 
     public static boolean isScarecrowAround(LivingEntity entity, BlockPos pos) {

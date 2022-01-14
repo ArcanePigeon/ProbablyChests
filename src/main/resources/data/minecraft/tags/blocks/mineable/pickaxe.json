@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "mobscarecrow:creeper_scarecrow_statue",
+    "mobscarecrow:skeleton_scarecrow_statue",
+    "mobscarecrow:spider_scarecrow_statue",
+    "mobscarecrow:zombie_scarecrow_statue",
+    "mobscarecrow:turtle_scarecrow_statue",
+    "mobscarecrow:endermite_scarecrow_statue"
+  ]
+}

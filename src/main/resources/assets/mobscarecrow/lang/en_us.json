@@ -5,6 +5,14 @@
   "block.mobscarecrow.spider_scarecrow": "Pigeon Plushie",
   "block.mobscarecrow.zombie_scarecrow": "Iron Golem Plushie",
   "block.mobscarecrow.skeleton_scarecrow": "Wolf Plushie",
+  "block.mobscarecrow.turtle_scarecrow": "Turtle Plushie",
+  "block.mobscarecrow.endermite_scarecrow": "Endermite Plushie",
+  "block.mobscarecrow.creeper_scarecrow_statue": "Cat Statue",
+  "block.mobscarecrow.skeleton_scarecrow_statue": "Wolf Statue",
+  "block.mobscarecrow.spider_scarecrow_statue": "Pigeon Statue",
+  "block.mobscarecrow.zombie_scarecrow_statue": "Iron Golem Statue",
+  "block.mobscarecrow.turtle_scarecrow_statue": "Turtle Statue",
+  "block.mobscarecrow.endermite_scarecrow_statue": "Endermite Statue",
   "subtitles.mobscarecrow.plushie_break": "Plushie Hit",
   "subtitles.mobscarecrow.plushie_squeak": "Plushie Squeak"
 }

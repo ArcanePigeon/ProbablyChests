@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "RWI",
+    "WPW",
+    "IWR"
+  ],
+  "key": {
+    "P": {
+      "item": "minecraft:carved_pumpkin"
+    },
+    "W": {
+      "item": "minecraft:stone"
+    },
+    "R": {
+      "item": "minecraft:rotten_flesh"
+    },
+    "I": {
+      "item": "minecraft:iron_nugget"
+    }
+  },
+  "result": {
+    "item": "mobscarecrow:zombie_scarecrow_statue",
+    "count": 1
+  }
+}

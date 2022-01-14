@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SWE",
+    "WPW",
+    "EWS"
+  ],
+  "key": {
+    "P": {
+      "item": "minecraft:carved_pumpkin"
+    },
+    "W": {
+      "item": "minecraft:stone"
+    },
+    "S": {
+      "item": "minecraft:end_stone"
+    },
+    "E": {
+      "item": "minecraft:purpur_block"
+    }
+  },
+  "result": {
+    "item": "mobscarecrow:endermite_scarecrow_statue",
+    "count": 1
+  }
+}

@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "mobscarecrow:spider_scarecrow"
+    "mobscarecrow:spider_scarecrow",
+    "mobscarecrow:spider_scarecrow_statue"
   ]
 }

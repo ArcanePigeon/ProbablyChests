@@ -35,7 +35,7 @@ public class MobScarecrowBlock extends HorizontalFacingBlock implements BlockEnt
     protected static final VoxelShape NORTH_SHAPE_LOWER;
     protected static final VoxelShape EAST_SHAPE_LOWER;
 
-    public MobScarecrowBlock(Settings settings){
+    public MobScarecrowBlock(Settings settings) {
         super(settings);
         this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(HALF, DoubleBlockHalf.LOWER));
     }
@@ -79,7 +79,6 @@ public class MobScarecrowBlock extends HorizontalFacingBlock implements BlockEnt
                 if (!world.isClient) {
                     ItemStack itemStack = new ItemStack(state.getBlock().asItem());
                     ItemScatterer.spawn(world, (double) topPos.getX() + 0.5D, (double) topPos.getY() + 0.5D, (double) topPos.getZ() + 0.5D, itemStack);
-                } else {
                 }
             }
             world.removeBlockEntity(botPos);

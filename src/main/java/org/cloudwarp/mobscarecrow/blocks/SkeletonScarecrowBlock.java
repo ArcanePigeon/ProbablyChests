@@ -18,6 +18,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
+import org.cloudwarp.mobscarecrow.blockdetails.MobScarecrowBlockTags;
 import org.cloudwarp.mobscarecrow.blockentities.MobScarecrowBlockEntity;
 import org.cloudwarp.mobscarecrow.registry.ModSounds;
 import org.jetbrains.annotations.Nullable;
@@ -51,6 +52,9 @@ public class SkeletonScarecrowBlock  extends HorizontalFacingBlock implements Bl
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        if(!state.isIn(MobScarecrowBlockTags.PLUSHIE)){
+            return ActionResult.success(world.isClient);
+        }
         if(!world.isClient){
             world.playSound(null, pos, ModSounds.PLUSHIE_SQUEAK_EVENT, SoundCategory.BLOCKS, 1.0F, 1.0F);
         }

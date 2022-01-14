@@ -43,6 +43,7 @@ public class AvoidScarecrowGoal extends Goal {
 
     @Override
     public boolean canStart() {
+        scarecrowCheckLimiter = Math.max(scarecrowCheckLimiter - 1, 0);
         checkForScarecrow();
         if(pos != null && pathable && EntityUtils.isScarecrowAround(entity,pos)) {
             return generatePath();
@@ -54,7 +55,7 @@ public class AvoidScarecrowGoal extends Goal {
         if(scarecrowCheckLimiter <= 0) {
             Optional<BlockPos> foundPos = EntityUtils.findNearestScarecrow(entity.getEntityWorld(), entity, tag);
             pos = foundPos.isPresent() ? foundPos.get() : pos;
-            scarecrowCheckLimiter = 15;
+            scarecrowCheckLimiter = 60;
         }
     }
 
@@ -87,6 +88,5 @@ public class AvoidScarecrowGoal extends Goal {
     @Override
     public void tick(){
         pathTimeLimiter = Math.max(pathTimeLimiter - 1, 0);
-        scarecrowCheckLimiter = Math.max(scarecrowCheckLimiter - 1, 0);
     }
 }
