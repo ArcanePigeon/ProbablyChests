@@ -21,8 +21,9 @@ public class AvoidScarecrowGoal extends Goal {
     private EntityNavigation navigation;
     private PathAwareEntity pathEntity;
     private boolean pathable = false;
-    private Optional<BlockPos> pos;
+    private BlockPos pos;
     private int pathTimeLimiter;
+    private int scarecrowCheckLimiter;
     private Tag.Identified<Block> tag;
 
     public AvoidScarecrowGoal(LivingEntity e, Tag.Identified<Block> scarecrowTag){
@@ -42,21 +43,37 @@ public class AvoidScarecrowGoal extends Goal {
 
     @Override
     public boolean canStart() {
-        pos = EntityUtils.findNearestScarecrow(entity.getEntityWorld(),entity,tag);
-        if(pathable && EntityUtils.isScarecrowAround(entity,pos)){
+        checkForScarecrow();
+        if(pos != null && pathable && EntityUtils.isScarecrowAround(entity,pos)) {
             return generatePath();
         }
         return false;
     }
 
-    private boolean generatePath(){
-        Vec3d scarecrowPos = new Vec3d(pos.get().getX(),pos.get().getY(),pos.get().getZ());
-        Vec3d newPos = NoPenaltyTargeting.findFrom(pathEntity,9,7,scarecrowPos);
-        if(newPos != null){
-            path = navigation.findPathTo(new BlockPos(newPos),0);
-            if(path != null){
+    private void checkForScarecrow() {
+        if(scarecrowCheckLimiter <= 0) {
+            Optional<BlockPos> foundPos = EntityUtils.findNearestScarecrow(entity.getEntityWorld(), entity, tag);
+            pos = foundPos.isPresent() ? foundPos.get() : pos;
+            scarecrowCheckLimiter = 15;
+        }
+    }
+
+    private boolean generatePath() {
+        Vec3d scarecrowPos = new Vec3d(pos.getX(),pos.getY(),pos.getZ());
+        for(int i = 0; i < 10; i++) {
+            Vec3d newPos = NoPenaltyTargeting.findFrom(pathEntity, 8, 6, scarecrowPos);
+            if(newPos == null){
+                continue;
+            }
+            if (newPos.squaredDistanceTo(scarecrowPos) < entity.squaredDistanceTo(scarecrowPos)) {
+                continue;
+            }
+            path = navigation.findPathTo(new BlockPos(newPos), 0);
+            if (path != null) {
                 pathTimeLimiter = 5;
                 return true;
+            }else{
+                continue;
             }
         }
         return false;
@@ -70,5 +87,6 @@ public class AvoidScarecrowGoal extends Goal {
     @Override
     public void tick(){
         pathTimeLimiter = Math.max(pathTimeLimiter - 1, 0);
+        scarecrowCheckLimiter = Math.max(scarecrowCheckLimiter - 1, 0);
     }
 }

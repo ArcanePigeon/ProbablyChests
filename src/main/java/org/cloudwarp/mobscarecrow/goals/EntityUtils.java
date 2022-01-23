@@ -11,10 +11,10 @@ import java.util.Optional;
 public class EntityUtils {
 
     public static Optional<BlockPos> findNearestScarecrow(World world, LivingEntity entity, Tag.Identified<Block> tag) {
-        return BlockPos.findClosest(entity.getBlockPos(), 8, 4, (blockPos) -> world.getBlockState(blockPos).isIn(tag));
+        return BlockPos.findClosest(entity.getBlockPos(), 20, 10, (blockPos) -> world.getBlockState(blockPos).isIn(tag));
     }
 
-    public static boolean isScarecrowAround(LivingEntity entity, Optional<BlockPos> pos) {
-        return pos.isPresent() && pos.get().isWithinDistance(pos.get(), 8.0D);
+    public static boolean isScarecrowAround(LivingEntity entity, BlockPos pos) {
+        return pos != null && entity.getBlockPos().isWithinDistance(pos, 9.0D);
     }
 }
