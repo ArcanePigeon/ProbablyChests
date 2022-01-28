@@ -31,4 +31,4 @@ bin/
 # fabric
 
 oldrun/
-run/
+/run/
