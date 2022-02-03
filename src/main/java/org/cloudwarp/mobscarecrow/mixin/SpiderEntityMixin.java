@@ -14,13 +14,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(SpiderEntity.class)
 public abstract class SpiderEntityMixin extends MobEntity {
 
-    protected SpiderEntityMixin(EntityType<? extends MobEntity> entityType, World world) {
-        super(entityType, world);
-    }
+	protected SpiderEntityMixin (EntityType<? extends MobEntity> entityType, World world) {
+		super(entityType, world);
+	}
 
-    @Inject(at = @At("HEAD"), method = "initGoals()V")
-    private void mixinInitGoals(CallbackInfo ci){
-        this.goalSelector.add(0, new AvoidScarecrowGoal((SpiderEntity) (Object) this, MobScarecrowBlockTags.SPIDER_SCARECROW));
-        this.goalSelector.add(0, new AvoidScarecrowGoal((SpiderEntity) (Object) this, MobScarecrowBlockTags.MOB_SCARECROW));
-    }
+	@Inject(at = @At("HEAD"), method = "initGoals()V")
+	private void mixinInitGoals (CallbackInfo ci) {
+		this.goalSelector.add(0, new AvoidScarecrowGoal((SpiderEntity) (Object) this, MobScarecrowBlockTags.SPIDER_SCARECROW));
+		this.goalSelector.add(0, new AvoidScarecrowGoal((SpiderEntity) (Object) this, MobScarecrowBlockTags.MOB_SCARECROW));
+	}
 }

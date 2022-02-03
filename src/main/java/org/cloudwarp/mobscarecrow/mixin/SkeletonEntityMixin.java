@@ -14,13 +14,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(AbstractSkeletonEntity.class)
 public abstract class SkeletonEntityMixin extends MobEntity {
 
-    protected SkeletonEntityMixin(EntityType<? extends MobEntity> entityType, World world) {
-        super(entityType, world);
-    }
+	protected SkeletonEntityMixin (EntityType<? extends MobEntity> entityType, World world) {
+		super(entityType, world);
+	}
 
-    @Inject(at = @At("HEAD"), method = "initGoals()V")
-    private void mixinInitGoals(CallbackInfo ci){
-        this.goalSelector.add(0, new AvoidScarecrowGoal((AbstractSkeletonEntity) (Object) this, MobScarecrowBlockTags.SKELETON_SCARECROW));
-        this.goalSelector.add(0, new AvoidScarecrowGoal((AbstractSkeletonEntity) (Object) this, MobScarecrowBlockTags.MOB_SCARECROW));
-    }
+	@Inject(at = @At("HEAD"), method = "initGoals()V")
+	private void mixinInitGoals (CallbackInfo ci) {
+		this.goalSelector.add(0, new AvoidScarecrowGoal((AbstractSkeletonEntity) (Object) this, MobScarecrowBlockTags.SKELETON_SCARECROW));
+		this.goalSelector.add(0, new AvoidScarecrowGoal((AbstractSkeletonEntity) (Object) this, MobScarecrowBlockTags.MOB_SCARECROW));
+	}
 }

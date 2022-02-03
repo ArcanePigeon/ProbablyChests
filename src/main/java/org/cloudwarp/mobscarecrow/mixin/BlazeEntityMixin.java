@@ -14,12 +14,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(BlazeEntity.class)
 public abstract class BlazeEntityMixin extends MobEntity {
 
-    protected BlazeEntityMixin(EntityType<? extends MobEntity> entityType, World world) {
-        super(entityType, world);
-    }
+	protected BlazeEntityMixin (EntityType<? extends MobEntity> entityType, World world) {
+		super(entityType, world);
+	}
 
-    @Inject(at = @At("HEAD"), method = "initGoals()V")
-    private void mixinInitGoals(CallbackInfo ci){
-        this.goalSelector.add(0, new AvoidScarecrowGoal((BlazeEntity) (Object) this, MobScarecrowBlockTags.MOB_SCARECROW));
-    }
+	@Inject(at = @At("HEAD"), method = "initGoals()V")
+	private void mixinInitGoals (CallbackInfo ci) {
+		this.goalSelector.add(0, new AvoidScarecrowGoal((BlazeEntity) (Object) this, MobScarecrowBlockTags.MOB_SCARECROW));
+	}
 }
