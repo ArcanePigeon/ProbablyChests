@@ -25,6 +25,7 @@ public class ModBlocks {
 	public static final Block ZOMBIE_SCARECROW_STATUE = new ZombieScarecrowBlock(FabricBlockSettings.of(Material.STONE).requiresTool().strength(2.0f, 3f).sounds(BlockSoundGroup.STONE));
 	public static final Block TURTLE_SCARECROW_STATUE = new TurtleScarecrowBlock(FabricBlockSettings.of(Material.STONE).requiresTool().strength(2.0f, 3f).sounds(BlockSoundGroup.STONE));
 	public static final Block ENDERMITE_SCARECROW_STATUE = new EndermiteScarecrowBlock(FabricBlockSettings.of(Material.STONE).requiresTool().strength(2.0f, 3f).sounds(BlockSoundGroup.STONE));
+	public static final Block SKELETON_SCARECROW_BIG = new SkeletonScarecrowBigBlock(FabricBlockSettings.of(Material.WOOL).breakByHand(true).strength(1.0f, 1f).sounds(ModSounds.PLUSHIE));
 
 	public static void registerBlocks () {
 		Registry.register(Registry.BLOCK, "mobscarecrow:scarecrow", MOB_SCARECROW);
@@ -40,6 +41,7 @@ public class ModBlocks {
 		Registry.register(Registry.BLOCK, "mobscarecrow:zombie_scarecrow_statue", ZOMBIE_SCARECROW_STATUE);
 		Registry.register(Registry.BLOCK, "mobscarecrow:turtle_scarecrow_statue", TURTLE_SCARECROW_STATUE);
 		Registry.register(Registry.BLOCK, "mobscarecrow:endermite_scarecrow_statue", ENDERMITE_SCARECROW_STATUE);
+		Registry.register(Registry.BLOCK, "mobscarecrow:skeleton_scarecrow_big", SKELETON_SCARECROW_BIG);
 	}
 
 	public static void RegisterBlockEntities () {
@@ -50,6 +52,7 @@ public class ModBlocks {
 		Registry.register(Registry.BLOCK_ENTITY_TYPE, "mobscarecrow:zombie_scarecrow_block_entity", ZOMBIE_SCARECROW_BLOCK_ENTITY);
 		Registry.register(Registry.BLOCK_ENTITY_TYPE, "mobscarecrow:turtle_scarecrow_block_entity", TURTLE_SCARECROW_BLOCK_ENTITY);
 		Registry.register(Registry.BLOCK_ENTITY_TYPE, "mobscarecrow:endermite_scarecrow_block_entity", ENDERMITE_SCARECROW_BLOCK_ENTITY);
+		Registry.register(Registry.BLOCK_ENTITY_TYPE, "mobscarecrow:skeleton_scarecrow_big_block_entity", SKELETON_SCARECROW_BIG_BLOCK_ENTITY);
 	}
 
 	// BLOCK ENTITIES
@@ -90,6 +93,11 @@ public class ModBlocks {
 	public static final BlockEntityType<EndermiteScarecrowBlockEntity> ENDERMITE_SCARECROW_BLOCK_ENTITY = FabricBlockEntityTypeBuilder.create(
 			EndermiteScarecrowBlockEntity::new,
 			ENDERMITE_SCARECROW
+	).build(null);
+
+	public static final BlockEntityType<SkeletonScarecrowBigBlockEntity> SKELETON_SCARECROW_BIG_BLOCK_ENTITY = FabricBlockEntityTypeBuilder.create(
+			SkeletonScarecrowBigBlockEntity::new,
+			SKELETON_SCARECROW_BIG
 	).build(null);
 
 }

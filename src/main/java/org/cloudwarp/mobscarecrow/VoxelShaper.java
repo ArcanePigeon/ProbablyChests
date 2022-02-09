@@ -17,10 +17,20 @@ public class VoxelShaper {
 		Vec3d center = new Vec3d(8, 8, 8);
 		final Stream<VoxelShape>[] stream = new Stream[] {Stream.<VoxelShape>empty()};
 		shape.forEachBox((x1, y1, z1, x2, y2, z2) -> {
-			Vec3d v1 = new Vec3d(x1, y1, z1).subtract(center);
-			Vec3d v2 = new Vec3d(x2, y2, z2).subtract(center);
+			Vec3d v1 = new Vec3d(x1, y1, z1).multiply(16).subtract(center);
+			Vec3d v2 = new Vec3d(x2, y2, z2).multiply(16).subtract(center);
 			v1 = rotate(v1, rotation).add(center);
 			v2 = rotate(v2, rotation).add(center);
+			if(v1.x > v2.x){
+				Vec3d tmp = v1;
+				v1 = new Vec3d(v2.x,v1.y,v1.z);
+				v2 = new Vec3d(tmp.x,v2.y,v2.z);
+			}
+			if(v1.z > v2.z){
+				Vec3d tmp = v1;
+				v1 = new Vec3d(v1.x,v1.y,v2.z);
+				v2 = new Vec3d(v2.x,v2.y,tmp.z);
+			}
 			VoxelShape rotated = Block.createCuboidShape(v1.x, v1.y, v1.z, v2.x, v2.y, v2.z);
 			stream[0] = Stream.concat(stream[0], Stream.of(rotated));
 		});
@@ -28,10 +38,11 @@ public class VoxelShaper {
 	}
 
 	private static Vec3d rotate (Vec3d v, float rotation) {
-		return new Vec3d(v.x * Math.cos(rotation) - v.z * Math.sin(rotation), v.y, v.x * Math.sin(rotation) + v.z * Math.cos(rotation));
+		double rot = Math.toRadians(rotation);
+		return new Vec3d(v.x * Math.cos(rot) - v.z * Math.sin(rot), v.y, v.x * Math.sin(rot) + v.z * Math.cos(rot));
 	}
 
-	public Map<Direction, VoxelShape> generateRotations (VoxelShape shape) {
+	public static Map<Direction, VoxelShape> generateRotations (VoxelShape shape) {
 		Map<Direction, VoxelShape> shapes = new HashMap<>();
 		shapes.put(Direction.NORTH, shape);
 		shapes.put(Direction.EAST, rotatedCopy(shape, 90f));

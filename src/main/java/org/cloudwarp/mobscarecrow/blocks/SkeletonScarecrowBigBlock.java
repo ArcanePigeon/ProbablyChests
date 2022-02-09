@@ -21,15 +21,20 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
+import org.cloudwarp.mobscarecrow.VoxelShaper;
 import org.cloudwarp.mobscarecrow.blockentities.MobScarecrowBlockEntity;
+import org.cloudwarp.mobscarecrow.blockentities.SkeletonScarecrowBigBlockEntity;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Stream;
 
 public class SkeletonScarecrowBigBlock extends HorizontalFacingBlock implements BlockEntityProvider {
 	public static final DirectionProperty FACING;
 	public static final EnumProperty<DoubleBlockHalf> HALF;
 	protected static final VoxelShape SHAPE;
+	private static Map<Direction, VoxelShape> shapes;
 
 	static {
 		FACING = HorizontalFacingBlock.FACING;
@@ -69,18 +74,19 @@ public class SkeletonScarecrowBigBlock extends HorizontalFacingBlock implements 
 
 	public SkeletonScarecrowBigBlock (Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(HALF, DoubleBlockHalf.LOWER));
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH));
+		shapes = VoxelShaper.generateRotations(SHAPE);
 	}
 
 	@Override
 	public VoxelShape getOutlineShape (BlockState state, net.minecraft.world.BlockView world, BlockPos pos, ShapeContext context) {
 		Direction direction = state.get(FACING);
-		boolean lower = state.get(HALF) == DoubleBlockHalf.LOWER;
+		//boolean lower = state.get(HALF) == DoubleBlockHalf.LOWER;
 		// Set voxel shape of scarecrow half based on place direction.
-		return SHAPE;
+		return shapes.get(direction);
 	}
 
-	public void onPlaced (World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
+	/*public void onPlaced (World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
 		//world.setBlockState(pos.up(), (BlockState)state.with(HALF, DoubleBlockHalf.UPPER), Block.NOTIFY_ALL);
 		if (state.get(HALF) == DoubleBlockHalf.UPPER) {
 			super.onPlaced(world, pos, state, placer, itemStack);
@@ -88,9 +94,9 @@ public class SkeletonScarecrowBigBlock extends HorizontalFacingBlock implements 
 		}
 		// If placing bottom half, place top half above block pos.
 		world.setBlockState(pos.up(), state.with(HALF, DoubleBlockHalf.UPPER));
-	}
+	}*/
 
-	public void onBreak (World world, BlockPos pos, BlockState state, PlayerEntity player) {
+	/*public void onBreak (World world, BlockPos pos, BlockState state, PlayerEntity player) {
 		BlockPos topPos;
 		BlockPos botPos;
 		// Get block position of both halves.
@@ -121,9 +127,9 @@ public class SkeletonScarecrowBigBlock extends HorizontalFacingBlock implements 
 		world.updateNeighbors(topPos, Blocks.AIR);
 
 		super.onBreak(world, pos, state, player);
-	}
+	}*/
 
-	@Override
+	/*@Override
 	public void onStateReplaced (BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
 		BlockPos newPos;
 
@@ -143,19 +149,19 @@ public class SkeletonScarecrowBigBlock extends HorizontalFacingBlock implements 
 			world.setBlockState(newPos, newState);
 		}
 		super.onStateReplaced(state, world, pos, newState, moved);
-	}
+	}*/
 
 	@Override
 	public PistonBehavior getPistonBehavior (BlockState state) {
 		return PistonBehavior.DESTROY;
 	}
 
-	@Override
+	/*@Override
 	public boolean canPlaceAt (BlockState state, WorldView world, BlockPos pos) {
 		BlockPos blockPos = pos.down();
 		BlockState blockState = world.getBlockState(blockPos);
 		return state.get(HALF) == DoubleBlockHalf.LOWER ? blockState.isSideSolidFullSquare(world, blockPos, Direction.UP) : blockState.isOf(this);
-	}
+	}*/
 
 	@Override
 	public BlockState getPlacementState (ItemPlacementContext ctx) {
@@ -163,12 +169,12 @@ public class SkeletonScarecrowBigBlock extends HorizontalFacingBlock implements 
 	}
 
 	protected void appendProperties (StateManager.Builder<Block, BlockState> builder) {
-		builder.add(HALF, FACING);
+		builder.add(FACING);
 	}
 
 	@Nullable
 	@Override
 	public BlockEntity createBlockEntity (BlockPos pos, BlockState state) {
-		return state.get(HALF) == DoubleBlockHalf.UPPER ? null : new MobScarecrowBlockEntity(pos, state);
+		return new SkeletonScarecrowBigBlockEntity(pos, state);
 	}
 }
