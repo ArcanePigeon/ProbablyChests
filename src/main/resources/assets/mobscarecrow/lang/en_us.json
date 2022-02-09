@@ -14,5 +14,6 @@
   "block.mobscarecrow.turtle_scarecrow_statue": "Turtle Statue",
   "block.mobscarecrow.endermite_scarecrow_statue": "Endermite Statue",
   "subtitles.mobscarecrow.plushie_break": "Plushie Hit",
-  "subtitles.mobscarecrow.plushie_squeak": "Plushie Squeak"
+  "subtitles.mobscarecrow.plushie_squeak": "Plushie Squeak",
+  "gamerule.mob_scarecrow_radius" : "Mob Scarecrow Radius"
 }

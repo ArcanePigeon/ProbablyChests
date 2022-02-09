@@ -20,3 +20,7 @@ All notable changes to this project will be documented in this file.
 - Fixed bug that improperly checked for scarecrow distance.
 ### Changed
 - Scarecrow effective radius is now a circle instead of a square; This change is the result of a bug fix.
+
+## [1.2.0] - 2/8/2022
+### Added
+- Game Rule to set how far a scarecrow can scare mobs.
