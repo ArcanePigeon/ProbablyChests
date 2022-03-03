@@ -13,7 +13,7 @@ import org.cloudwarp.mobscarecrow.registry.ModSounds;
 public class MobScarecrow implements ModInitializer {
 	public static final Logger LOGGER = LogManager.getLogger();
 	public static final String MOD_ID = "mobscarecrow";
-	public static int mobScarecrowRadius = 8;
+	public static int mobScarecrowRadius;
 
 	public static Identifier id (String path) {
 		return new Identifier(MOD_ID, path);

@@ -39,7 +39,7 @@ public class ModItems {
 		registerItem("zombie_scarecrow_statue", new MobScarecrowItem(ModBlocks.ZOMBIE_SCARECROW_STATUE, new Item.Settings().group(MOB_SCARECROW_GROUP)));
 		registerItem("turtle_scarecrow_statue", new MobScarecrowItem(ModBlocks.TURTLE_SCARECROW_STATUE, new Item.Settings().group(MOB_SCARECROW_GROUP)));
 		registerItem("endermite_scarecrow_statue", new MobScarecrowItem(ModBlocks.ENDERMITE_SCARECROW_STATUE, new Item.Settings().group(MOB_SCARECROW_GROUP)));
-		//registerItem("skeleton_scarecrow_big", new MobScarecrowItem(ModBlocks.SKELETON_SCARECROW_BIG, new Item.Settings().group(MOB_SCARECROW_GROUP)));
+		registerItem("skeleton_scarecrow_big", new MobScarecrowItem(ModBlocks.SKELETON_SCARECROW_BIG, new Item.Settings().group(MOB_SCARECROW_GROUP)));
 	}
 
 	public static Item get (String id) {

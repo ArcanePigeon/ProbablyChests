@@ -5,7 +5,6 @@ import net.minecraft.entity.ai.goal.MoveToTargetPosGoal;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.tag.Tag;
-import net.minecraft.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.WorldView;
@@ -13,10 +12,10 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
 
 public class StepOnScarecrowBlockGoal extends MoveToTargetPosGoal {
-	private final TagKey<Block> targetTag;
+	private final Tag.Identified<Block> targetTag;
 	private final MobEntity stepAndDestroyMob;
 
-	public StepOnScarecrowBlockGoal (TagKey<Block> targetTag, PathAwareEntity mob, double speed, int maxYDifference) {
+	public StepOnScarecrowBlockGoal (Tag.Identified<Block> targetTag, PathAwareEntity mob, double speed, int maxYDifference) {
 		super(mob, speed, 24, maxYDifference);
 		this.targetTag = targetTag;
 		this.stepAndDestroyMob = mob;

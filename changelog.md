@@ -24,3 +24,9 @@ All notable changes to this project will be documented in this file.
 ## [1.2.0] - 2/8/2022
 ### Added
 - Game Rule to set how far a scarecrow can scare mobs.
+
+## [1.2.1] - 3/2/2022
+### Updated
+- Mob Scarecrows is now on 1.18.2
+### Fixed
+- Servers required the gamerule to be set as it was not properly initalized.

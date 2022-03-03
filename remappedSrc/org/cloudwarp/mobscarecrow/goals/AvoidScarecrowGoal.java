@@ -8,7 +8,6 @@ import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.tag.Tag;
-import net.minecraft.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
@@ -26,9 +25,9 @@ public class AvoidScarecrowGoal extends Goal {
 	private BlockPos pos;
 	private int pathTimeLimiter;
 	private int scarecrowCheckLimiter;
-	private TagKey<Block> tag;
+	private Tag.Identified<Block> tag;
 
-	public AvoidScarecrowGoal (LivingEntity e, TagKey<Block> scarecrowTag) {
+	public AvoidScarecrowGoal (LivingEntity e, Tag.Identified<Block> scarecrowTag) {
 		entity = e;
 		tag = scarecrowTag;
 		if (entity instanceof PathAwareEntity) {

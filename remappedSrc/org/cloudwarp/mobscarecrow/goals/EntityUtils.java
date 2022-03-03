@@ -3,7 +3,6 @@ package org.cloudwarp.mobscarecrow.goals;
 import net.minecraft.block.Block;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.tag.Tag;
-import net.minecraft.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.cloudwarp.mobscarecrow.MobScarecrow;
@@ -12,7 +11,7 @@ import java.util.Optional;
 
 public class EntityUtils {
 
-	public static Optional<BlockPos> findNearestScarecrow (World world, LivingEntity entity, TagKey<Block> tag) {
+	public static Optional<BlockPos> findNearestScarecrow (World world, LivingEntity entity, Tag.Identified<Block> tag) {
 		return BlockPos.findClosest(entity.getBlockPos(), 7 + MobScarecrow.mobScarecrowRadius, 10, (blockPos) -> world.getBlockState(blockPos).isIn(tag));
 	}
 

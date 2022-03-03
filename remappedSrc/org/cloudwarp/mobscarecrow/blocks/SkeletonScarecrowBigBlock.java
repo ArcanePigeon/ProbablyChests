@@ -2,7 +2,6 @@ package org.cloudwarp.mobscarecrow.blocks;
 
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.LivingEntity;
@@ -36,7 +35,6 @@ public class SkeletonScarecrowBigBlock extends HorizontalFacingBlock implements 
 	public static final EnumProperty<DoubleBlockHalf> HALF;
 	protected static final VoxelShape SHAPE;
 	private static Map<Direction, VoxelShape> shapes;
-	private static BlockEntityType<?> type;
 
 	static {
 		FACING = HorizontalFacingBlock.FACING;
@@ -177,6 +175,6 @@ public class SkeletonScarecrowBigBlock extends HorizontalFacingBlock implements 
 	@Nullable
 	@Override
 	public BlockEntity createBlockEntity (BlockPos pos, BlockState state) {
-		return new SkeletonScarecrowBigBlockEntity(type, pos, state);
+		return new SkeletonScarecrowBigBlockEntity(pos, state);
 	}
 }
