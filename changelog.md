@@ -30,3 +30,8 @@ All notable changes to this project will be documented in this file.
 - Mob Scarecrows is now on 1.18.2
 ### Fixed
 - Servers required the gamerule to be set as it was not properly initalized.
+
+## [1.2.2] - 3/17/2022
+### Changed
+- Gamerule has been removed in favor of a config file.
+- Voxel Shapes for scarecrows have been fixed

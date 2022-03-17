@@ -6,8 +6,9 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.util.math.BlockPos;
 import org.cloudwarp.mobscarecrow.registry.ModBlocks;
 
-public class SkeletonScarecrowBigBlockEntity extends BlockEntity {
-	public SkeletonScarecrowBigBlockEntity (BlockEntityType<?> type, BlockPos pos, BlockState state) {
-		super(type, pos, state);
+/*public class BigScarecrowBlockEntity extends BlockEntity {
+	public BigScarecrowBlockEntity (BlockPos pos, BlockState state) {
+		super(ModBlocks.BIG_SCARECROW_BLOCK_ENTITY, pos, state);
 	}
 }
+*/

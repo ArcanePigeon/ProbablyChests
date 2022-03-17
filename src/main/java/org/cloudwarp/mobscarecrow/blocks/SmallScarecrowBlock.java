@@ -17,42 +17,33 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.World;
 import org.cloudwarp.mobscarecrow.blockdetails.MobScarecrowBlockTags;
-import org.cloudwarp.mobscarecrow.blockentities.MobScarecrowBlockEntity;
+import org.cloudwarp.mobscarecrow.blockentities.SmallScarecrowBlockEntity;
 import org.cloudwarp.mobscarecrow.registry.ModSounds;
+import org.cloudwarp.mobscarecrow.utils.VoxelShaper;
 import org.jetbrains.annotations.Nullable;
 
-public class EndermiteScarecrowBlock extends HorizontalFacingBlock implements BlockEntityProvider {
+import java.util.Map;
+
+public class SmallScarecrowBlock extends HorizontalFacingBlock implements BlockEntityProvider {
 	public static final DirectionProperty FACING;
-	protected static final VoxelShape NORTH_SHAPE;
-	protected static final VoxelShape EAST_SHAPE;
-	protected static final VoxelShape SOUTH_SHAPE;
-	protected static final VoxelShape WEST_SHAPE;
+	private static VoxelShape SHAPE;
+	private Map<Direction, VoxelShape> shapes;
 
 	static {
 		FACING = HorizontalFacingBlock.FACING;
-		NORTH_SHAPE = Block.createCuboidShape(5, 0, 3.5, 11, 4, 12.5);
-		EAST_SHAPE = Block.createCuboidShape(3.5, 0, 5, 12.5, 4, 11);
-		SOUTH_SHAPE = Block.createCuboidShape(5, 0, 3.5, 11, 4, 12.5);
-		WEST_SHAPE = Block.createCuboidShape(3.5, 0, 5, 12.5, 4, 11);
 	}
 
-	public EndermiteScarecrowBlock (Settings settings) {
+	public SmallScarecrowBlock (Settings settings, VoxelShape voxelShape) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH));
+		SHAPE = voxelShape;
+		shapes = VoxelShaper.generateRotations(SHAPE);
 	}
 
 	@Override
 	public VoxelShape getOutlineShape (BlockState state, net.minecraft.world.BlockView world, BlockPos pos, ShapeContext context) {
 		Direction direction = state.get(FACING);
-		if (direction == Direction.NORTH) {
-			return NORTH_SHAPE;
-		} else if (direction == Direction.EAST) {
-			return EAST_SHAPE;
-		} else if (direction == Direction.SOUTH) {
-			return SOUTH_SHAPE;
-		} else {
-			return WEST_SHAPE;
-		}
+		return shapes.get(direction);
 	}
 
 	@Override
@@ -83,6 +74,6 @@ public class EndermiteScarecrowBlock extends HorizontalFacingBlock implements Bl
 	@Nullable
 	@Override
 	public BlockEntity createBlockEntity (BlockPos pos, BlockState state) {
-		return new MobScarecrowBlockEntity(pos, state);
+		return new SmallScarecrowBlockEntity(pos, state);
 	}
 }

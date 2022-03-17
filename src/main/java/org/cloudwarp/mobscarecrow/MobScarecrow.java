@@ -4,16 +4,16 @@ import net.fabricmc.api.ModInitializer;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cloudwarp.mobscarecrow.networking.MobScarecrowNetworking;
 import org.cloudwarp.mobscarecrow.registry.ModBlocks;
-import org.cloudwarp.mobscarecrow.registry.ModGameRules;
 import org.cloudwarp.mobscarecrow.registry.ModItems;
 import org.cloudwarp.mobscarecrow.registry.ModSounds;
+import org.cloudwarp.mobscarecrow.utils.Config;
 
 public class MobScarecrow implements ModInitializer {
 	public static final Logger LOGGER = LogManager.getLogger();
 	public static final String MOD_ID = "mobscarecrow";
 	public static int mobScarecrowRadius = 8;
+	public static Config config;
 
 	public static Identifier id (String path) {
 		return new Identifier(MOD_ID, path);
@@ -22,8 +22,9 @@ public class MobScarecrow implements ModInitializer {
 	@Override
 	public void onInitialize () {
 		LOGGER.info("[Mob-Scarecrow] is initializing.");
-		ModGameRules.init();
-		MobScarecrowNetworking.init();
+		Config.getInstance().loadConfig();
+		config = Config.getInstance();
+		mobScarecrowRadius = config.getScarecrowRadius();
 		ModSounds.registerSounds();
 		ModItems.registerItems();
 		ModBlocks.registerBlocks();

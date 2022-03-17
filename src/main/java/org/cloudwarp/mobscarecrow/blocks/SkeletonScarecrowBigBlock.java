@@ -3,44 +3,40 @@ package org.cloudwarp.mobscarecrow.blocks;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
+import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.shape.VoxelSet;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldView;
-import org.cloudwarp.mobscarecrow.VoxelShaper;
-import org.cloudwarp.mobscarecrow.blockentities.MobScarecrowBlockEntity;
-import org.cloudwarp.mobscarecrow.blockentities.SkeletonScarecrowBigBlockEntity;
+import org.cloudwarp.mobscarecrow.utils.MobScarecrowBlockProperties;
+import org.cloudwarp.mobscarecrow.utils.VoxelShaper;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
 public class SkeletonScarecrowBigBlock extends HorizontalFacingBlock implements BlockEntityProvider {
 	public static final DirectionProperty FACING;
-	public static final EnumProperty<DoubleBlockHalf> HALF;
+	public static final BooleanProperty VISIBLE;
 	protected static final VoxelShape SHAPE;
 	private static Map<Direction, VoxelShape> shapes;
 	private static BlockEntityType<?> type;
+	private static BlockPos mainPos;
 
 	static {
 		FACING = HorizontalFacingBlock.FACING;
-		HALF = Properties.DOUBLE_BLOCK_HALF;
+		VISIBLE = MobScarecrowBlockProperties.VISIBLE;
 		SHAPE = Stream.of(
 				Block.createCuboidShape(3.379999999999999, 0.005000000000000782, 0.7400000000000002, 6.02, 10.565000000000001, 3.379999999999999),
 				Block.createCuboidShape(1.379999999999999, 9.755, 1.7400000000000002, 14.52, 21.065, 4.379999999999999),
@@ -76,27 +72,29 @@ public class SkeletonScarecrowBigBlock extends HorizontalFacingBlock implements 
 
 	public SkeletonScarecrowBigBlock (Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH));
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(VISIBLE, true));
 		shapes = VoxelShaper.generateRotations(SHAPE);
 	}
 
 	@Override
 	public VoxelShape getOutlineShape (BlockState state, net.minecraft.world.BlockView world, BlockPos pos, ShapeContext context) {
 		Direction direction = state.get(FACING);
+		//VoxelShape v = VoxelShapes.union(Block.createCuboidShape(0, 0, 0, 0, 0, 0));
 		//boolean lower = state.get(HALF) == DoubleBlockHalf.LOWER;
 		// Set voxel shape of scarecrow half based on place direction.
 		return shapes.get(direction);
+		//return state.get(VISIBLE) == false ?   : shapes.get(direction);
 	}
 
-	/*public void onPlaced (World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
-		//world.setBlockState(pos.up(), (BlockState)state.with(HALF, DoubleBlockHalf.UPPER), Block.NOTIFY_ALL);
-		if (state.get(HALF) == DoubleBlockHalf.UPPER) {
+	public void onPlaced (World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
+
+		if (state.get(VISIBLE) == false) {
 			super.onPlaced(world, pos, state, placer, itemStack);
 			return;
 		}
 		// If placing bottom half, place top half above block pos.
-		world.setBlockState(pos.up(), state.with(HALF, DoubleBlockHalf.UPPER));
-	}*/
+		world.setBlockState(pos.up(), state.with(VISIBLE, false));
+	}
 
 	/*public void onBreak (World world, BlockPos pos, BlockState state, PlayerEntity player) {
 		BlockPos topPos;
@@ -171,12 +169,13 @@ public class SkeletonScarecrowBigBlock extends HorizontalFacingBlock implements 
 	}
 
 	protected void appendProperties (StateManager.Builder<Block, BlockState> builder) {
-		builder.add(FACING);
+		builder.add(FACING,VISIBLE);
 	}
 
 	@Nullable
 	@Override
 	public BlockEntity createBlockEntity (BlockPos pos, BlockState state) {
-		return new SkeletonScarecrowBigBlockEntity(type, pos, state);
+		return null;
+		//return state.get(VISIBLE) == false ? null : new BigScarecrowBlockEntity(pos, state);
 	}
 }

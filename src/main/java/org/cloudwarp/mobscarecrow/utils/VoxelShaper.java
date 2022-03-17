@@ -1,4 +1,4 @@
-package org.cloudwarp.mobscarecrow;
+package org.cloudwarp.mobscarecrow.utils;
 
 import net.minecraft.block.Block;
 import net.minecraft.util.function.BooleanBiFunction;

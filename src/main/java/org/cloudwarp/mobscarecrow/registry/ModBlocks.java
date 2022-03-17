@@ -2,6 +2,7 @@ package org.cloudwarp.mobscarecrow.registry;
 
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntityType;
@@ -12,21 +13,32 @@ import org.cloudwarp.mobscarecrow.blocks.*;
 
 public class ModBlocks {
 	// BLOCKS
-	public static final Block MOB_SCARECROW = new MobScarecrowBlock(FabricBlockSettings.of(Material.NETHER_WOOD).requiresTool().strength(2.0f, 3f).sounds(BlockSoundGroup.WOOD));
-	public static final Block CREEPER_SCARECROW = new CreeperScarecrowBlock(FabricBlockSettings.of(Material.WOOL).strength(1.0f, 1f).sounds(ModSounds.PLUSHIE));
-	public static final Block SKELETON_SCARECROW = new SkeletonScarecrowBlock(FabricBlockSettings.of(Material.WOOL).strength(1.0f, 1f).sounds(ModSounds.PLUSHIE));
-	public static final Block SPIDER_SCARECROW = new SpiderScarecrowBlock(FabricBlockSettings.of(Material.WOOL).strength(1.0f, 1f).sounds(ModSounds.PLUSHIE));
-	public static final Block ZOMBIE_SCARECROW = new ZombieScarecrowBlock(FabricBlockSettings.of(Material.WOOL).strength(1.0f, 1f).sounds(ModSounds.PLUSHIE));
-	public static final Block TURTLE_SCARECROW = new TurtleScarecrowBlock(FabricBlockSettings.of(Material.WOOL).strength(1.0f, 1f).sounds(ModSounds.PLUSHIE));
-	public static final Block ENDERMITE_SCARECROW = new EndermiteScarecrowBlock(FabricBlockSettings.of(Material.WOOL).strength(1.0f, 1f).sounds(ModSounds.PLUSHIE));
-	public static final Block CREEPER_SCARECROW_STATUE = new CreeperScarecrowBlock(FabricBlockSettings.of(Material.STONE).requiresTool().strength(2.0f, 3f).sounds(BlockSoundGroup.STONE));
-	public static final Block SKELETON_SCARECROW_STATUE = new SkeletonScarecrowBlock(FabricBlockSettings.of(Material.STONE).requiresTool().strength(2.0f, 3f).sounds(BlockSoundGroup.STONE));
-	public static final Block SPIDER_SCARECROW_STATUE = new SpiderScarecrowBlock(FabricBlockSettings.of(Material.STONE).requiresTool().strength(2.0f, 3f).sounds(BlockSoundGroup.STONE));
-	public static final Block ZOMBIE_SCARECROW_STATUE = new ZombieScarecrowBlock(FabricBlockSettings.of(Material.STONE).requiresTool().strength(2.0f, 3f).sounds(BlockSoundGroup.STONE));
-	public static final Block TURTLE_SCARECROW_STATUE = new TurtleScarecrowBlock(FabricBlockSettings.of(Material.STONE).requiresTool().strength(2.0f, 3f).sounds(BlockSoundGroup.STONE));
-	public static final Block ENDERMITE_SCARECROW_STATUE = new EndermiteScarecrowBlock(FabricBlockSettings.of(Material.STONE).requiresTool().strength(2.0f, 3f).sounds(BlockSoundGroup.STONE));
+	public static final Block MOB_SCARECROW = new MobScarecrowBlock(FabricBlockSettings.of(Material.NETHER_WOOD).requiresTool().strength(2.0f, 3f).sounds(BlockSoundGroup.WOOD).nonOpaque());
+	public static final Block CREEPER_SCARECROW = new SmallScarecrowBlock(FabricBlockSettings.of(Material.WOOL).strength(1.0f, 1f).sounds(ModSounds.PLUSHIE).nonOpaque(),
+			ModVoxelShapes.CREEPER_SCARECROW_VOXELSHAPE);
+	public static final Block SKELETON_SCARECROW = new SmallScarecrowBlock(FabricBlockSettings.of(Material.WOOL).strength(1.0f, 1f).sounds(ModSounds.PLUSHIE).nonOpaque(),
+			ModVoxelShapes.SKELETON_SCARECROW_VOXELSHAPE);
+	public static final Block SPIDER_SCARECROW = new SmallScarecrowBlock(FabricBlockSettings.of(Material.WOOL).strength(1.0f, 1f).sounds(ModSounds.PLUSHIE).nonOpaque(),
+			ModVoxelShapes.SPIDER_SCARECROW_VOXELSHAPE);
+	public static final Block ZOMBIE_SCARECROW = new SmallScarecrowBlock(FabricBlockSettings.of(Material.WOOL).strength(1.0f, 1f).sounds(ModSounds.PLUSHIE).nonOpaque(),
+			ModVoxelShapes.ZOMBIE_SCARECROW_VOXELSHAPE);
+	public static final Block TURTLE_SCARECROW = new SmallScarecrowBlock(FabricBlockSettings.of(Material.WOOL).strength(1.0f, 1f).sounds(ModSounds.PLUSHIE).nonOpaque(),
+			ModVoxelShapes.TURTLE_SCARECROW_VOXELSHAPE);
+	public static final Block ENDERMITE_SCARECROW = new SmallScarecrowBlock(FabricBlockSettings.of(Material.WOOL).strength(1.0f, 1f).sounds(ModSounds.PLUSHIE).nonOpaque(),
+			ModVoxelShapes.ENDERMITE_SCARECROW_VOXELSHAPE);
+	public static final Block CREEPER_SCARECROW_STATUE = new SmallScarecrowBlock(FabricBlockSettings.of(Material.STONE).requiresTool().strength(2.0f, 3f).sounds(BlockSoundGroup.STONE).nonOpaque(),
+			ModVoxelShapes.CREEPER_SCARECROW_VOXELSHAPE);
+	public static final Block SKELETON_SCARECROW_STATUE = new SmallScarecrowBlock(FabricBlockSettings.of(Material.STONE).requiresTool().strength(2.0f, 3f).sounds(BlockSoundGroup.STONE).nonOpaque(),
+			ModVoxelShapes.SKELETON_SCARECROW_VOXELSHAPE);
+	public static final Block SPIDER_SCARECROW_STATUE = new SmallScarecrowBlock(FabricBlockSettings.of(Material.STONE).requiresTool().strength(2.0f, 3f).sounds(BlockSoundGroup.STONE).nonOpaque(),
+			ModVoxelShapes.SPIDER_SCARECROW_VOXELSHAPE);
+	public static final Block ZOMBIE_SCARECROW_STATUE = new SmallScarecrowBlock(FabricBlockSettings.of(Material.STONE).requiresTool().strength(2.0f, 3f).sounds(BlockSoundGroup.STONE).nonOpaque(),
+			ModVoxelShapes.ZOMBIE_SCARECROW_VOXELSHAPE);
+	public static final Block TURTLE_SCARECROW_STATUE = new SmallScarecrowBlock(FabricBlockSettings.of(Material.STONE).requiresTool().strength(2.0f, 3f).sounds(BlockSoundGroup.STONE).nonOpaque(),
+			ModVoxelShapes.TURTLE_SCARECROW_VOXELSHAPE);
+	public static final Block ENDERMITE_SCARECROW_STATUE = new SmallScarecrowBlock(FabricBlockSettings.of(Material.STONE).requiresTool().strength(2.0f, 3f).sounds(BlockSoundGroup.STONE).nonOpaque(),
+			ModVoxelShapes.ENDERMITE_SCARECROW_VOXELSHAPE);
 	//public static final Block SKELETON_SCARECROW_BIG = new SkeletonScarecrowBigBlock(FabricBlockSettings.of(Material.WOOL).strength(1.0f, 1f).sounds(ModSounds.PLUSHIE));
-
 	public static void registerBlocks () {
 		Registry.register(Registry.BLOCK, "mobscarecrow:scarecrow", MOB_SCARECROW);
 		Registry.register(Registry.BLOCK, "mobscarecrow:creeper_scarecrow", CREEPER_SCARECROW);
@@ -46,13 +58,8 @@ public class ModBlocks {
 
 	public static void RegisterBlockEntities () {
 		Registry.register(Registry.BLOCK_ENTITY_TYPE, "mobscarecrow:scarecrow_block_entity", SCARECROW_BLOCK_ENTITY);
-		Registry.register(Registry.BLOCK_ENTITY_TYPE, "mobscarecrow:creeper_scarecrow_block_entity", CREEPER_SCARECROW_BLOCK_ENTITY);
-		Registry.register(Registry.BLOCK_ENTITY_TYPE, "mobscarecrow:skeleton_scarecrow_block_entity", SKELETON_SCARECROW_BLOCK_ENTITY);
-		Registry.register(Registry.BLOCK_ENTITY_TYPE, "mobscarecrow:spider_scarecrow_block_entity", SPIDER_SCARECROW_BLOCK_ENTITY);
-		Registry.register(Registry.BLOCK_ENTITY_TYPE, "mobscarecrow:zombie_scarecrow_block_entity", ZOMBIE_SCARECROW_BLOCK_ENTITY);
-		Registry.register(Registry.BLOCK_ENTITY_TYPE, "mobscarecrow:turtle_scarecrow_block_entity", TURTLE_SCARECROW_BLOCK_ENTITY);
-		Registry.register(Registry.BLOCK_ENTITY_TYPE, "mobscarecrow:endermite_scarecrow_block_entity", ENDERMITE_SCARECROW_BLOCK_ENTITY);
-		//Registry.register(Registry.BLOCK_ENTITY_TYPE, "mobscarecrow:skeleton_scarecrow_big_block_entity", SKELETON_SCARECROW_BIG_BLOCK_ENTITY);
+		Registry.register(Registry.BLOCK_ENTITY_TYPE, "mobscarecrow:small_scarecrow_block_entity", SMALL_SCARECROW_BLOCK_ENTITY);
+		//Registry.register(Registry.BLOCK_ENTITY_TYPE, "mobscarecrow:big_scarecrow_block_entity", BIG_SCARECROW_BLOCK_ENTITY);
 	}
 
 	// BLOCK ENTITIES
@@ -61,42 +68,22 @@ public class ModBlocks {
 			MOB_SCARECROW
 	).build(null);
 
-	public static final BlockEntityType<CreeperScarecrowBlockEntity> CREEPER_SCARECROW_BLOCK_ENTITY = FabricBlockEntityTypeBuilder.create(
-			CreeperScarecrowBlockEntity::new,
-			CREEPER_SCARECROW,
-			CREEPER_SCARECROW_STATUE
-	).build(null);
-
-	public static final BlockEntityType<SkeletonScarecrowBlockEntity> SKELETON_SCARECROW_BLOCK_ENTITY = FabricBlockEntityTypeBuilder.create(
-			SkeletonScarecrowBlockEntity::new,
+	public static final BlockEntityType<SmallScarecrowBlockEntity> SMALL_SCARECROW_BLOCK_ENTITY = FabricBlockEntityTypeBuilder.create(
+			SmallScarecrowBlockEntity::new,
 			SKELETON_SCARECROW,
-			SKELETON_SCARECROW_STATUE
-	).build(null);
-
-	public static final BlockEntityType<SpiderScarecrowBlockEntity> SPIDER_SCARECROW_BLOCK_ENTITY = FabricBlockEntityTypeBuilder.create(
-			SpiderScarecrowBlockEntity::new,
+			SKELETON_SCARECROW_STATUE,
+			CREEPER_SCARECROW,
+			CREEPER_SCARECROW_STATUE,
 			SPIDER_SCARECROW,
-			SPIDER_SCARECROW_STATUE
-	).build(null);
-
-	public static final BlockEntityType<ZombieScarecrowBlockEntity> ZOMBIE_SCARECROW_BLOCK_ENTITY = FabricBlockEntityTypeBuilder.create(
-			ZombieScarecrowBlockEntity::new,
+			SPIDER_SCARECROW_STATUE,
 			ZOMBIE_SCARECROW,
-			ZOMBIE_SCARECROW_STATUE
-	).build(null);
-
-	public static final BlockEntityType<TurtleScarecrowBlockEntity> TURTLE_SCARECROW_BLOCK_ENTITY = FabricBlockEntityTypeBuilder.create(
-			TurtleScarecrowBlockEntity::new,
-			TURTLE_SCARECROW
-	).build(null);
-
-	public static final BlockEntityType<EndermiteScarecrowBlockEntity> ENDERMITE_SCARECROW_BLOCK_ENTITY = FabricBlockEntityTypeBuilder.create(
-			EndermiteScarecrowBlockEntity::new,
+			ZOMBIE_SCARECROW_STATUE,
+			TURTLE_SCARECROW,
 			ENDERMITE_SCARECROW
 	).build(null);
 
-	/*public static final BlockEntityType<SkeletonScarecrowBigBlockEntity> SKELETON_SCARECROW_BIG_BLOCK_ENTITY = FabricBlockEntityTypeBuilder.create(
-			SkeletonScarecrowBigBlockEntity::new,
+	/*public static final BlockEntityType<BigScarecrowBlockEntity> BIG_SCARECROW_BLOCK_ENTITY = FabricBlockEntityTypeBuilder.create(
+			BigScarecrowBlockEntity::new,
 			SKELETON_SCARECROW_BIG
 	).build(null);*/
 
