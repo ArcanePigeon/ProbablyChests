@@ -72,6 +72,7 @@ public class PCChestBlockEntity extends ChestBlockEntity {
 		}
 	}
 
+
 	public void onClose (PlayerEntity player) {
 		if (! player.isSpectator()) {
 			-- this.viewerCount;
