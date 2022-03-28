@@ -1,11 +1,11 @@
-package org.cloudwarp.mobscarecrow.networking;
+package org.cloudwarp.probablychests.networking;
 
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
-import org.cloudwarp.mobscarecrow.MobScarecrow;
-import org.cloudwarp.mobscarecrow.registry.ModGameRules;
+import org.cloudwarp.probablychests.MobScarecrow;
+import org.cloudwarp.probablychests.registry.ModGameRules;
 
 public class MobScarecrowNetworking {
 	public static final Identifier MOB_SCARECROW_RADIUS = MobScarecrow.id("mob_scarecrow_radius");

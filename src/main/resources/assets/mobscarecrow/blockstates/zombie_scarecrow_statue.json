@@ -1,8 +1,0 @@
-{
-  "variants": {
-    "facing=north": { "model": "mobscarecrow:block/zombie_scarecrow_statue" },
-    "facing=east":  { "model": "mobscarecrow:block/zombie_scarecrow_statue" ,"y": 90},
-    "facing=south": { "model": "mobscarecrow:block/zombie_scarecrow_statue" ,"y": 180},
-    "facing=west":  { "model": "mobscarecrow:block/zombie_scarecrow_statue" ,"y": 270}
-  }
-}

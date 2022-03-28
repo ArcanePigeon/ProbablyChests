@@ -1,11 +1,11 @@
-package org.cloudwarp.mobscarecrow.goals;
+package org.cloudwarp.probablychests.goals;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.cloudwarp.mobscarecrow.MobScarecrow;
+import org.cloudwarp.probablychests.MobScarecrow;
 
 import java.util.Optional;
 

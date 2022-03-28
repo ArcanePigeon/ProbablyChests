@@ -1,4 +1,4 @@
-package org.cloudwarp.mobscarecrow.registry;
+package org.cloudwarp.probablychests.registry;
 
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvent;

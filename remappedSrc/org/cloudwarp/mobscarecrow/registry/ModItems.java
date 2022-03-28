@@ -1,4 +1,4 @@
-package org.cloudwarp.mobscarecrow.registry;
+package org.cloudwarp.probablychests.registry;
 
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.minecraft.item.Item;
@@ -7,7 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-import org.cloudwarp.mobscarecrow.blockdetails.MobScarecrowItem;
+import org.cloudwarp.probablychests.blockdetails.MobScarecrowItem;
 
 import java.util.HashMap;
 

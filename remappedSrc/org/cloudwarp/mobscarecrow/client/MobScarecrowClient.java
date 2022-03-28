@@ -1,4 +1,4 @@
-package org.cloudwarp.mobscarecrow.client;
+package org.cloudwarp.probablychests.client;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
@@ -6,9 +6,9 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.render.RenderLayer;
-import org.cloudwarp.mobscarecrow.MobScarecrow;
-import org.cloudwarp.mobscarecrow.networking.MobScarecrowNetworking;
-import org.cloudwarp.mobscarecrow.registry.ModBlocks;
+import org.cloudwarp.probablychests.MobScarecrow;
+import org.cloudwarp.probablychests.networking.MobScarecrowNetworking;
+import org.cloudwarp.probablychests.registry.ModBlocks;
 
 @Environment(EnvType.CLIENT)
 public class MobScarecrowClient implements ClientModInitializer {

@@ -1,7 +1,0 @@
-{
-  "parent": "mobscarecrow:block/endermite_scarecrow",
-  "textures": {
-    "0": "mobscarecrow:block/endermite_scarecrow_statue",
-    "particle": "minecraft:block/stone"
-  }
-}

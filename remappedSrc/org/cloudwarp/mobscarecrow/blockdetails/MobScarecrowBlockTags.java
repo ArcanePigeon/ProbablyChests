@@ -1,4 +1,4 @@
-package org.cloudwarp.mobscarecrow.blockdetails;
+package org.cloudwarp.probablychests.blockdetails;
 
 import net.fabricmc.fabric.api.tag.TagFactory;
 import net.minecraft.block.Block;

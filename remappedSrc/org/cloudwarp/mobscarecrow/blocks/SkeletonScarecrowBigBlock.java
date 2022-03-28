@@ -1,4 +1,4 @@
-package org.cloudwarp.mobscarecrow.blocks;
+package org.cloudwarp.probablychests.block;
 
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
@@ -21,9 +21,9 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
-import org.cloudwarp.mobscarecrow.VoxelShaper;
-import org.cloudwarp.mobscarecrow.blockentities.MobScarecrowBlockEntity;
-import org.cloudwarp.mobscarecrow.blockentities.SkeletonScarecrowBigBlockEntity;
+import org.cloudwarp.probablychests.VoxelShaper;
+import org.cloudwarp.probablychests.blockentities.MobScarecrowBlockEntity;
+import org.cloudwarp.probablychests.blockentities.SkeletonScarecrowBigBlockEntity;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;

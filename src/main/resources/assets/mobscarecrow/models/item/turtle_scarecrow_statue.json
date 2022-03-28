@@ -1,7 +1,0 @@
-{
-  "parent": "mobscarecrow:block/turtle_scarecrow",
-  "textures": {
-    "0": "mobscarecrow:block/turtle_scarecrow_statue",
-    "particle": "minecraft:block/stone"
-  }
-}

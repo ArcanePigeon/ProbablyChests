@@ -1,4 +1,4 @@
-package org.cloudwarp.mobscarecrow.blocks;
+package org.cloudwarp.probablychests.block;
 
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
@@ -16,9 +16,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.World;
-import org.cloudwarp.mobscarecrow.blockdetails.MobScarecrowBlockTags;
-import org.cloudwarp.mobscarecrow.blockentities.MobScarecrowBlockEntity;
-import org.cloudwarp.mobscarecrow.registry.ModSounds;
+import org.cloudwarp.probablychests.blockdetails.MobScarecrowBlockTags;
+import org.cloudwarp.probablychests.blockentities.MobScarecrowBlockEntity;
+import org.cloudwarp.probablychests.registry.ModSounds;
 import org.jetbrains.annotations.Nullable;
 
 public class EndermiteScarecrowBlock extends HorizontalFacingBlock implements BlockEntityProvider {

@@ -1,8 +1,0 @@
-{
-  "variants": {
-    "facing=north": { "model": "mobscarecrow:block/endermite_scarecrow" },
-    "facing=east":  { "model": "mobscarecrow:block/endermite_scarecrow" ,"y": 90},
-    "facing=south": { "model": "mobscarecrow:block/endermite_scarecrow" ,"y": 180},
-    "facing=west":  { "model": "mobscarecrow:block/endermite_scarecrow" ,"y": 270}
-  }
-}

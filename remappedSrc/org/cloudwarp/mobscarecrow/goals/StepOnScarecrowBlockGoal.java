@@ -1,4 +1,4 @@
-package org.cloudwarp.mobscarecrow.goals;
+package org.cloudwarp.probablychests.goals;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.ai.goal.MoveToTargetPosGoal;

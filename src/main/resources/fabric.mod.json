@@ -1,32 +1,32 @@
 {
   "schemaVersion": 1,
-  "id": "mobscarecrow",
+  "id": "probablychests",
   "version": "${version}",
 
-  "name": "Mob Scarecrow",
-  "description": "Scary scarecrows / plushies that keeps mobs away from your home.",
+  "name": "Probably Chests",
+  "description": "New chests can be found all over the world and in caves, but beware some of them are more than meets the eye.",
   "authors": [
     "ProbabilityPigeon"
   ],
   "contact": {
     "homepage": "https://cloudwarp.org/",
-    "sources": "https://github.com/ReillyGregorio/MobScarecrow.git"
+    "sources": "https://github.com/ReillyGregorio/ProbablyChests.git"
   },
 
   "license": "CC0-1.0",
-  "icon": "assets/mobscarecrow/icon.png",
+  "icon": "assets/probablychests/icon.png",
 
   "environment": "*",
   "entrypoints": {
     "main": [
-      "org.cloudwarp.mobscarecrow.MobScarecrow"
+      "org.cloudwarp.probablychests.ProbablyChests"
     ],
     "client": [
-      "org.cloudwarp.mobscarecrow.client.MobScarecrowClient"
+      "org.cloudwarp.probablychests.client.ProbablyChestsClient"
     ]
   },
   "mixins": [
-    "mobscarecrow.mixins.json"
+    "probablychests.mixins.json"
   ],
 
   "depends": {

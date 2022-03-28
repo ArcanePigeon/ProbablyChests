@@ -1,14 +1,14 @@
-package org.cloudwarp.mobscarecrow;
+package org.cloudwarp.probablychests;
 
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cloudwarp.mobscarecrow.networking.MobScarecrowNetworking;
-import org.cloudwarp.mobscarecrow.registry.ModBlocks;
-import org.cloudwarp.mobscarecrow.registry.ModGameRules;
-import org.cloudwarp.mobscarecrow.registry.ModItems;
-import org.cloudwarp.mobscarecrow.registry.ModSounds;
+import org.cloudwarp.probablychests.networking.MobScarecrowNetworking;
+import org.cloudwarp.probablychests.registry.ModBlocks;
+import org.cloudwarp.probablychests.registry.ModGameRules;
+import org.cloudwarp.probablychests.registry.ModItems;
+import org.cloudwarp.probablychests.registry.ModSounds;
 
 public class MobScarecrow implements ModInitializer {
 	public static final Logger LOGGER = LogManager.getLogger();

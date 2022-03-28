@@ -1,4 +1,4 @@
-package org.cloudwarp.mobscarecrow;
+package org.cloudwarp.probablychests;
 
 import net.minecraft.block.Block;
 import net.minecraft.util.function.BooleanBiFunction;

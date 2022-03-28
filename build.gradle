@@ -17,6 +17,10 @@ repositories {
     // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
     // See https://docs.gradle.org/current/userguide/declaring_repositories.html
     // for more information about repositories.
+    maven {
+        name = "CottonMC"
+        url = "https://server.bbkr.space/artifactory/libs-release"
+    }
 }
 
 dependencies {
@@ -30,6 +34,8 @@ dependencies {
 
     // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
     // You may need to force-disable transitiveness on them.
+    modImplementation "io.github.cottonmc:LibGui:5.3.2+1.18.2"
+    include "io.github.cottonmc:LibGui:5.3.2+1.18.2"
 }
 
 processResources {
@@ -101,7 +107,7 @@ curseforge {
             requiredDependency "fabric-api"
         }
         mainArtifact(jar) {
-            displayName = "Mob Scarecrows - ${project.mod_version} - Fabric"
+            displayName = "Probably Chests - ${project.mod_version} - Fabric"
         }
         afterEvaluate {
             uploadTask.dependsOn("build")

@@ -1,11 +1,11 @@
-package org.cloudwarp.mobscarecrow.mixin;
+package org.cloudwarp.probablychests.mixin;
 
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.SilverfishEntity;
 import net.minecraft.world.World;
-import org.cloudwarp.mobscarecrow.blockdetails.MobScarecrowBlockTags;
-import org.cloudwarp.mobscarecrow.goals.AvoidScarecrowGoal;
+import org.cloudwarp.probablychests.blockdetails.MobScarecrowBlockTags;
+import org.cloudwarp.probablychests.goals.AvoidScarecrowGoal;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

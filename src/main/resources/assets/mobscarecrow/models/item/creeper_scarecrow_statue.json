@@ -1,7 +1,0 @@
-{
-  "parent": "mobscarecrow:block/creeper_scarecrow",
-  "textures": {
-    "0": "mobscarecrow:block/creeper_scarecrow_statue",
-    "particle": "minecraft:block/stone"
-  }
-}

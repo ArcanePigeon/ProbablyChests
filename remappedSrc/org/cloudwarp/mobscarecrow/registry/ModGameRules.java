@@ -1,4 +1,4 @@
-package org.cloudwarp.mobscarecrow.registry;
+package org.cloudwarp.probablychests.registry;
 
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
@@ -7,8 +7,8 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.GameRules;
-import org.cloudwarp.mobscarecrow.MobScarecrow;
-import org.cloudwarp.mobscarecrow.networking.MobScarecrowNetworking;
+import org.cloudwarp.probablychests.MobScarecrow;
+import org.cloudwarp.probablychests.networking.MobScarecrowNetworking;
 
 import java.util.List;
 

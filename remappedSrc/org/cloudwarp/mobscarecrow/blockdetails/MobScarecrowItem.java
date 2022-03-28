@@ -1,4 +1,4 @@
-package org.cloudwarp.mobscarecrow.blockdetails;
+package org.cloudwarp.probablychests.blockdetails;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.item.TooltipContext;

@@ -1,4 +1,4 @@
-package org.cloudwarp.mobscarecrow.registry;
+package org.cloudwarp.probablychests.registry;
 
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
@@ -7,8 +7,8 @@ import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.registry.Registry;
-import org.cloudwarp.mobscarecrow.blockentities.*;
-import org.cloudwarp.mobscarecrow.blocks.*;
+import org.cloudwarp.probablychests.blockentities.*;
+import org.cloudwarp.probablychests.block.*;
 
 public class ModBlocks {
 	// BLOCKS
