@@ -4,20 +4,18 @@ import io.github.cottonmc.cotton.gui.SyncedGuiDescription;
 import io.github.cottonmc.cotton.gui.widget.WItemSlot;
 import io.github.cottonmc.cotton.gui.widget.WPlainPanel;
 import io.github.cottonmc.cotton.gui.widget.data.Insets;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.block.enums.ChestType;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.screen.slot.Slot;
 import org.cloudwarp.probablychests.block.PCChestTypes;
 
 public class PCScreenHandler extends SyncedGuiDescription {
 
 	Inventory inventory;
+	//PCChestTypes
 
 	public PCScreenHandler(ScreenHandlerType<?> type, PCChestTypes chestType, int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
 		super(type, syncId, playerInventory, getBlockInventory(context, chestType.size), null);

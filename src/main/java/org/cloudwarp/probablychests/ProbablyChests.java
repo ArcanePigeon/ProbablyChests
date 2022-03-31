@@ -7,11 +7,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cloudwarp.probablychests.registry.PCBlockEntities;
 import org.cloudwarp.probablychests.registry.PCBlocks;
-import org.cloudwarp.probablychests.registry.PCBlockEntityTypes;
 import org.cloudwarp.probablychests.registry.PCItems;
 import org.cloudwarp.probablychests.registry.PCScreenHandlerType;
 import org.cloudwarp.probablychests.utils.Config;
+import software.bernie.example.GeckoLibMod;
+import software.bernie.geckolib3.GeckoLib;
 
 public class ProbablyChests implements ModInitializer {
 	public static final Logger LOGGER = LogManager.getLogger();
@@ -26,11 +28,12 @@ public class ProbablyChests implements ModInitializer {
 	@Override
 	public void onInitialize () {
 		LOGGER.info("[Probably-Chests] is initializing.");
+		GeckoLibMod.DISABLE_IN_DEV = true;
 		Config.getInstance().loadConfig();
 		config = Config.getInstance();
-		PCItems.registerItems();
+		GeckoLib.initialize();
+		PCBlockEntities.init();
 		PCBlocks.init();
-		PCBlockEntityTypes.init();
 		PCScreenHandlerType.registerScreenHandlers();
 		LOGGER.info("[Probably-Chests] has successfully been initialized.");
 		LOGGER.info("[Probably-Chests] if you have any issues or questions feel free to join my Discord: https://discord.gg/fvcFxTg6sB");

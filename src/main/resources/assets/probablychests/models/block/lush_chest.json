@@ -1,7 +1,5 @@
 {
-  "parent": "probablychests:block/chest_template",
   "textures": {
-    "0": "probablychests:entity/chest/lush_chest",
     "particle": "probablychests:block/lush_chest_particle"
   }
 }

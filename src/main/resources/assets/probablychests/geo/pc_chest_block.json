@@ -1,0 +1,39 @@
+{
+	"format_version": "1.12.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.PCChestBlock",
+				"texture_width": 64,
+				"texture_height": 64,
+				"visible_bounds_width": 3,
+				"visible_bounds_height": 2.5,
+				"visible_bounds_offset": [0, 0.75, 0]
+			},
+			"bones": [
+				{
+					"name": "PCChestBlock",
+					"pivot": [0, 8, 0]
+				},
+				{
+					"name": "Lid",
+					"parent": "PCChestBlock",
+					"pivot": [0, 7, 6.5],
+					"cubes": [
+						{"origin": [-1, 6, -8.25], "size": [2, 3, 1.25], "uv": [0, 0]},
+						{"origin": [-7.5, 7, -7], "size": [15, 7, 14], "uv": [0, 22]},
+						{"origin": [-8, 7, -7.5], "size": [16, 7.5, 15], "uv": [0, 0]}
+					]
+				},
+				{
+					"name": "Base",
+					"parent": "PCChestBlock",
+					"pivot": [0, 7, 6.5],
+					"cubes": [
+						{"origin": [-7, 0, -6.5], "size": [14, 7, 13], "uv": [0, 43]}
+					]
+				}
+			]
+		}
+	]
+}

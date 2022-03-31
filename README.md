@@ -1,5 +1,5 @@
-# Mob Scarecrow
-A Fabric mod for Minecraft that adds scarecrows and plushies - make mobs run from your home with cute little plushies.
+# Probably Chests
+A fabric mod that adds chests that spawn all over the world that are sometimes mimics.
 
 ## Releases
-[CurseForge](https://www.curseforge.com/minecraft/mc-mods/mob-scarecrows)
+[CurseForge](https://www.curseforge.com/minecraft/mc-mods/probably_chests)
