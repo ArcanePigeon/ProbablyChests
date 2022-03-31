@@ -1,15 +1,10 @@
 package org.cloudwarp.probablychests.block.entity;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.ChestBlock;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.block.entity.ViewerCountManager;
-import net.minecraft.block.enums.ChestType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.DoubleInventory;
@@ -27,26 +22,33 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.cloudwarp.probablychests.block.PCChestTypes;
-import org.cloudwarp.probablychests.registry.PCBlockEntities;
 import org.cloudwarp.probablychests.screenhandlers.PCScreenHandler;
+import software.bernie.geckolib3.core.AnimationState;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
 import software.bernie.geckolib3.core.controller.AnimationController;
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
+import software.bernie.geckolib3.network.GeckoLibNetwork;
+import software.bernie.geckolib3.network.ISyncable;
+import software.bernie.geckolib3.util.GeckoLibUtil;
 
-public class PCChestBlockEntity extends LootableContainerBlockEntity implements IAnimatable {
+public class PCChestBlockEntity extends LootableContainerBlockEntity implements IAnimatable, ISyncable {
 
 	private final AnimationFactory factory = new AnimationFactory(this);
+	private static final String CONTROLLER_NAME = "chestController";
+	private static final int ANIM_IDLE = 0;
+	private static final int ANIM_OPEN = 1;
+	private static final int ANIM_CLOSE = 2;
 	public static final AnimationBuilder IDLE = new AnimationBuilder().addAnimation("animation.PCChestBlock.idle", false);
 	public static final AnimationBuilder OPEN = new AnimationBuilder().addAnimation("animation.PCChestBlock.open", false);
 	public static final AnimationBuilder CLOSE = new AnimationBuilder().addAnimation("animation.PCChestBlock.close", false);
+
+	private int chestState = 0;
 
 	PCChestTypes type;
 
@@ -56,11 +58,13 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 		@Override
 		protected void onContainerOpen(World world, BlockPos pos, BlockState state) {
 			PCChestBlockEntity.this.playSound(state, SoundEvents.BLOCK_CHEST_OPEN);
+			PCChestBlockEntity.this.setChestState(1);
 		}
 
 		@Override
 		protected void onContainerClose(World world, BlockPos pos, BlockState state) {
 			PCChestBlockEntity.this.playSound(state, SoundEvents.BLOCK_CHEST_CLOSE);
+			PCChestBlockEntity.this.setChestState(2);
 		}
 
 		@Override
@@ -77,6 +81,10 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 			return false;
 		}
 	};
+
+	public void setChestState(int state){
+		this.chestState = state;
+	}
 
 	public PCChestBlockEntity(PCChestTypes type, BlockPos  pos, BlockState state) {
 		super(type.getBlockEntityType(), pos, state);
@@ -159,20 +167,47 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 		return super.onSyncedBlockEvent(type, data);
 	}
 
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public void registerControllers(AnimationData data) {
-		data.addAnimationController(new AnimationController<>(this, "controller", 2, animationEvent -> {
-			AnimationBuilder anime = new AnimationBuilder().clearAnimations();
-			animationEvent.getController().getAnimationState();
-			anime = CLOSE;
-			if(isOpen()) {
-				animationEvent.getController().setAnimation(OPEN);
-			} else {
-				animationEvent.getController().setAnimation(anime);
+		AnimationController controller = new AnimationController(this, CONTROLLER_NAME, 3, animationEvent -> {
+			switch (this.chestState){
+				case ANIM_IDLE:
+					animationEvent.getController().setAnimation(IDLE);
+					break;
+				case ANIM_OPEN:
+					animationEvent.getController().setAnimation(OPEN);
+					break;
+				case ANIM_CLOSE:
+					animationEvent.getController().setAnimation(CLOSE);
+					break;
+				default:
+					break;
 			}
 			return PlayState.CONTINUE;
-		}));
+		});
+		data.addAnimationController(controller);
+	}
+
+	@SuppressWarnings({ "rawtypes", "resource" })
+	@Override
+	public void onAnimationSync(int id, int state) {
+		if (state == ANIM_OPEN) {
+			// Always use GeckoLibUtil to get AnimationControllers when you don't have
+			// access to an AnimationEvent
+			final AnimationController controller = GeckoLibUtil.getControllerForID(this.factory, id, CONTROLLER_NAME);
+
+			if (controller.getAnimationState() == AnimationState.Stopped) {
+				// If you don't do this, the popup animation will only play once because the
+				// animation will be cached.
+				controller.markNeedsReload();
+				// Set the animation to open the JackInTheBoxItem which will start playing music
+				// and
+				// eventually do the actual animation. Also sets it to not loop
+				controller.setAnimation(IDLE);
+			}
+		}
 	}
 
 	@Override

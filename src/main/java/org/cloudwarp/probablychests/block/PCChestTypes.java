@@ -7,6 +7,7 @@ import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.Identifier;
 import org.cloudwarp.probablychests.ProbablyChests;
+import org.cloudwarp.probablychests.block.entity.PCChestBlockEntity;
 import org.cloudwarp.probablychests.registry.PCBlockEntities;
 import org.cloudwarp.probablychests.registry.PCBlocks;
 import org.cloudwarp.probablychests.registry.PCScreenHandlerType;
@@ -38,10 +39,10 @@ public enum PCChestTypes {
 		};
 	}
 
-	public BlockEntityType<? extends ChestBlockEntity> getBlockEntityType() {
+	public BlockEntityType<? extends PCChestBlockEntity> getBlockEntityType() {
 		return switch (this) {
 			case LUSH -> PCBlockEntities.LUSH_CHEST_BLOCK_ENTITY;
-			default -> BlockEntityType.CHEST;
+			default -> PCBlockEntities.LUSH_CHEST_BLOCK_ENTITY;
 		};
 	}
 
