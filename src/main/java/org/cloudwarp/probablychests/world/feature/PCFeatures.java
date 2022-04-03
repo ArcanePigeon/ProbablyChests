@@ -22,11 +22,11 @@ public class PCFeatures {
 			ConfiguredFeatures.register("lush_chest", PC_CHEST, new PCChestFeatureConfig(UniformFloatProvider.create(0f,1f)));
 
 	public static final RegistryEntry<PlacedFeature> LUSH_CHEST_PLACED = PlacedFeatures.register("lush_chest_placed",
-			LUSH_CHEST, CountPlacementModifier.of(2), SquarePlacementModifier.of(), PlacedFeatures.BOTTOM_TO_120_RANGE,
-			EnvironmentScanPlacementModifier.of(Direction.DOWN, BlockPredicate.solid(), BlockPredicate.IS_AIR, 12),
-			BiomePlacementModifier.of());
+			LUSH_CHEST, CountPlacementModifier.of(4), SquarePlacementModifier.of(), PlacedFeatures.BOTTOM_TO_120_RANGE,
+			PCChestPlacement.of(Direction.DOWN,BlockPredicate.solid(), BlockPredicate.IS_AIR, 8));
+	//,BiomePlacementModifier.of()
 	//RarityFilterPlacementModifier.of(4)
-	//
+	//EnvironmentScanPlacementModifier.of(Direction.DOWN, BlockPredicate.solid(), BlockPredicate.IS_AIR, 12),
 
 	public static void init(){
 		Registry.register(Registry.FEATURE, new Identifier(ProbablyChests.MOD_ID, "pc_chest"), PC_CHEST);

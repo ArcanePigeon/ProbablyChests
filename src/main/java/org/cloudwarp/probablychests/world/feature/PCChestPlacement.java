@@ -1,6 +1,7 @@
 package org.cloudwarp.probablychests.world.feature;
 
 import com.mojang.datafixers.kinds.Applicative;
+import com.mojang.datafixers.kinds.K1;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -17,7 +18,7 @@ import net.minecraft.world.gen.placementmodifier.PlacementModifierType;
 import java.util.Random;
 import java.util.stream.Stream;
 
-public class PCChestPlacement extends PlacementModifier {
+public class PCChestPlacement extends PlacementModifier  {
 
 
 	private final Direction direction;
@@ -25,12 +26,12 @@ public class PCChestPlacement extends PlacementModifier {
 	private final BlockPredicate targetPredicate;
 	private final int maxSteps;
 
-	public static final Codec<PCChestPlacement> MODIFIER_CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			((MapCodec)Direction.VERTICAL_CODEC.fieldOf("direction_of_search")).forGetter(PCChestPlacement -> PCChestPlacement.direction),
-			((MapCodec)BlockPredicate.BASE_CODEC.fieldOf("direction_target_condition")).forGetter(PCChestPlacement -> PCChestPlacement.directionPredicate),
-			((MapCodec)BlockPredicate.BASE_CODEC.fieldOf("target_condition")).forGetter(PCChestPlacement -> PCChestPlacement.targetPredicate),
-			((MapCodec)Codec.intRange(1, 32).fieldOf("max_steps"))
-					.forGetter(PCChestPlacement -> PCChestPlacement.maxSteps)).apply((Applicative<PCChestPlacement, ?>)instance, PCChestPlacement::new));
+	public static final Codec<PCChestPlacement> MODIFIER_CODEC = RecordCodecBuilder.create((instance) -> instance.group(
+			(Direction.VERTICAL_CODEC.fieldOf("direction_of_search")).forGetter(PCChestPlacement -> PCChestPlacement.direction),
+			(BlockPredicate.BASE_CODEC.fieldOf("direction_target_condition")).forGetter(PCChestPlacement -> PCChestPlacement.directionPredicate),
+			(BlockPredicate.BASE_CODEC.fieldOf("target_condition")).forGetter(PCChestPlacement -> PCChestPlacement.targetPredicate),
+			(Codec.intRange(1, 32).fieldOf("max_steps")).forGetter(PCChestPlacement -> PCChestPlacement.maxSteps))
+			.apply(instance, PCChestPlacement::new));
 
 
 	private PCChestPlacement(Direction direction, BlockPredicate directionPredicate, BlockPredicate targetPredicate, int maxSteps) {
@@ -68,6 +69,6 @@ public class PCChestPlacement extends PlacementModifier {
 
 	@Override
 	public PlacementModifierType<?> getType () {
-		return PlacementModifierType.ENVIRONMENT_SCAN;
+		return PCPlacementModifierType.CHEST_SCAN;
 	}
 }

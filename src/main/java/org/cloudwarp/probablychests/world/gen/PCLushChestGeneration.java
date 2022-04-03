@@ -10,6 +10,6 @@ import org.cloudwarp.probablychests.world.feature.PCFeatures;
 public class PCLushChestGeneration {
 	public static void generateChest() {
 		BiomeModifications.addFeature(BiomeSelectors.all(),
-				GenerationStep.Feature.UNDERGROUND_DECORATION, PCFeatures.LUSH_CHEST_PLACED.getKey().get());
+				GenerationStep.Feature.UNDERGROUND_STRUCTURES, PCFeatures.LUSH_CHEST_PLACED.getKey().get());
 	}
 }

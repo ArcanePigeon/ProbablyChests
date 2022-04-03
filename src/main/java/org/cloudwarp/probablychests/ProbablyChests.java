@@ -13,6 +13,7 @@ import org.cloudwarp.probablychests.registry.PCItems;
 import org.cloudwarp.probablychests.registry.PCScreenHandlerType;
 import org.cloudwarp.probablychests.utils.Config;
 import org.cloudwarp.probablychests.world.feature.PCFeatures;
+import org.cloudwarp.probablychests.world.feature.PCPlacementModifierType;
 import org.cloudwarp.probablychests.world.gen.PCWorldGen;
 import software.bernie.example.GeckoLibMod;
 import software.bernie.geckolib3.GeckoLib;
@@ -34,6 +35,7 @@ public class ProbablyChests implements ModInitializer {
 		Config.getInstance().loadConfig();
 		config = Config.getInstance();
 		GeckoLib.initialize();
+		PCPlacementModifierType.init();
 		PCFeatures.init();
 		PCBlockEntities.init();
 		PCBlocks.init();
