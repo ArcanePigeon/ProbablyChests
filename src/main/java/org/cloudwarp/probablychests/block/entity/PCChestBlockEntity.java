@@ -7,17 +7,16 @@ import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.block.entity.ViewerCountManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.DoubleInventory;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.state.property.EnumProperty;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.collection.DefaultedList;
@@ -25,30 +24,32 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.cloudwarp.probablychests.block.PCChestTypes;
+import org.cloudwarp.probablychests.registry.PCProperties;
 import org.cloudwarp.probablychests.screenhandlers.PCScreenHandler;
+import org.cloudwarp.probablychests.utils.PCChestState;
 import software.bernie.geckolib3.core.AnimationState;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
 import software.bernie.geckolib3.core.controller.AnimationController;
+import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
-import software.bernie.geckolib3.network.GeckoLibNetwork;
 import software.bernie.geckolib3.network.ISyncable;
 import software.bernie.geckolib3.util.GeckoLibUtil;
 
-public class PCChestBlockEntity extends LootableContainerBlockEntity implements IAnimatable, ISyncable {
+import java.util.Objects;
+
+public class PCChestBlockEntity extends LootableContainerBlockEntity implements IAnimatable {
 
 	private final AnimationFactory factory = new AnimationFactory(this);
 	private static final String CONTROLLER_NAME = "chestController";
-	private static final int ANIM_IDLE = 0;
-	private static final int ANIM_OPEN = 1;
-	private static final int ANIM_CLOSE = 2;
-	public static final AnimationBuilder IDLE = new AnimationBuilder().addAnimation("animation.PCChestBlock.idle", false);
-	public static final AnimationBuilder OPEN = new AnimationBuilder().addAnimation("animation.PCChestBlock.open", false);
-	public static final AnimationBuilder CLOSE = new AnimationBuilder().addAnimation("animation.PCChestBlock.close", false);
+	public static final AnimationBuilder CLOSED = new AnimationBuilder().addAnimation("closed", false);
+	public static final AnimationBuilder CLOSE = new AnimationBuilder().addAnimation("close", false);
+	public static final AnimationBuilder OPEN = new AnimationBuilder().addAnimation("open", false);
+	public static final AnimationBuilder OPENED = new AnimationBuilder().addAnimation("opened", false);
+	public static final EnumProperty<PCChestState> CHEST_STATE = PCProperties.PC_CHEST_STATE;
 
-	private int chestState = 0;
 
 	PCChestTypes type;
 
@@ -58,13 +59,11 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 		@Override
 		protected void onContainerOpen(World world, BlockPos pos, BlockState state) {
 			PCChestBlockEntity.this.playSound(state, SoundEvents.BLOCK_CHEST_OPEN);
-			PCChestBlockEntity.this.setChestState(1);
 		}
 
 		@Override
 		protected void onContainerClose(World world, BlockPos pos, BlockState state) {
 			PCChestBlockEntity.this.playSound(state, SoundEvents.BLOCK_CHEST_CLOSE);
-			PCChestBlockEntity.this.setChestState(2);
 		}
 
 		@Override
@@ -74,17 +73,13 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 
 		@Override
 		protected boolean isPlayerViewing(PlayerEntity player) {
-			if (player.currentScreenHandler instanceof GenericContainerScreenHandler) {
-				Inventory inventory = ((GenericContainerScreenHandler)player.currentScreenHandler).getInventory();
-				return inventory == PCChestBlockEntity.this || inventory instanceof DoubleInventory && ((DoubleInventory)inventory).isPart(PCChestBlockEntity.this);
+			if (player.currentScreenHandler instanceof PCScreenHandler) {
+				Inventory inventory = ((PCScreenHandler)player.currentScreenHandler).getInventory();
+				return inventory == PCChestBlockEntity.this;
 			}
 			return false;
 		}
 	};
-
-	public void setChestState(int state){
-		this.chestState = state;
-	}
 
 	public PCChestBlockEntity(PCChestTypes type, BlockPos  pos, BlockState state) {
 		super(type.getBlockEntityType(), pos, state);
@@ -156,6 +151,9 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 	protected void onInvOpenOrClose(World world, BlockPos pos, BlockState state, int oldViewerCount, int newViewerCount) {
 		Block block = state.getBlock();
 		world.addSyncedBlockEvent(pos, block, 1, newViewerCount);
+		world.setBlockState(pos,state.with(CHEST_STATE,newViewerCount > 0 ?
+				(state.get(CHEST_STATE).equals(PCChestState.OPENED) ? PCChestState.OPENED : PCChestState.OPEN) :
+				(state.get(CHEST_STATE).equals(PCChestState.CLOSED) ? PCChestState.CLOSED : PCChestState.CLOSE)));
 	}
 
 
@@ -167,20 +165,38 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 		return super.onSyncedBlockEvent(type, data);
 	}
 
+	public PCChestState getChestState(){
+		return this.getCachedState().get(PCChestBlockEntity.CHEST_STATE);
+	}
+
+	public void setChestState(PCChestState state){
+		this.getWorld().setBlockState(this.getPos(),this.getCachedState().with(CHEST_STATE,state));
+	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public void registerControllers(AnimationData data) {
-		AnimationController controller = new AnimationController(this, CONTROLLER_NAME, 3, animationEvent -> {
-			switch (this.chestState){
-				case ANIM_IDLE:
-					animationEvent.getController().setAnimation(IDLE);
+		AnimationController controller = new AnimationController(this, CONTROLLER_NAME, 0, animationEvent -> {
+			switch (getChestState()){
+				case CLOSE:
+					if(animationEvent.getController().getAnimationState() == AnimationState.Stopped){
+						setChestState(PCChestState.CLOSED);
+						animationEvent.getController().setAnimation(CLOSED);
+						break;
+					}
+					if(animationEvent.getController().getCurrentAnimation() != null && !animationEvent.getController().getCurrentAnimation().animationName.equals(CLOSED.getRawAnimationList().get(0).animationName)){
+						animationEvent.getController().setAnimation(CLOSE);
+					}
 					break;
-				case ANIM_OPEN:
-					animationEvent.getController().setAnimation(OPEN);
-					break;
-				case ANIM_CLOSE:
-					animationEvent.getController().setAnimation(CLOSE);
+				case OPEN:
+					if(animationEvent.getController().getAnimationState() == AnimationState.Stopped){
+						setChestState(PCChestState.OPENED);
+						animationEvent.getController().setAnimation(OPENED);
+						break;
+					}
+					if(animationEvent.getController().getCurrentAnimation() != null && !animationEvent.getController().getCurrentAnimation().animationName.equals(OPENED.getRawAnimationList().get(0).animationName)){
+						animationEvent.getController().setAnimation(OPEN);
+					}
 					break;
 				default:
 					break;
@@ -190,25 +206,6 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 		data.addAnimationController(controller);
 	}
 
-	@SuppressWarnings({ "rawtypes", "resource" })
-	@Override
-	public void onAnimationSync(int id, int state) {
-		if (state == ANIM_OPEN) {
-			// Always use GeckoLibUtil to get AnimationControllers when you don't have
-			// access to an AnimationEvent
-			final AnimationController controller = GeckoLibUtil.getControllerForID(this.factory, id, CONTROLLER_NAME);
-
-			if (controller.getAnimationState() == AnimationState.Stopped) {
-				// If you don't do this, the popup animation will only play once because the
-				// animation will be cached.
-				controller.markNeedsReload();
-				// Set the animation to open the JackInTheBoxItem which will start playing music
-				// and
-				// eventually do the actual animation. Also sets it to not loop
-				controller.setAnimation(IDLE);
-			}
-		}
-	}
 
 	@Override
 	public AnimationFactory getFactory() {

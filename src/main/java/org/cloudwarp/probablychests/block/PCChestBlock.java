@@ -1,14 +1,10 @@
 package org.cloudwarp.probablychests.block;
 
-import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ChestBlockEntity;
-import net.minecraft.client.block.ChestAnimationProgress;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -23,6 +19,7 @@ import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -37,9 +34,9 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import org.cloudwarp.probablychests.block.entity.PCChestBlockEntity;
 import org.cloudwarp.probablychests.registry.PCBlockEntities;
-import org.jetbrains.annotations.Nullable;
+import org.cloudwarp.probablychests.registry.PCProperties;
+import org.cloudwarp.probablychests.utils.PCChestState;
 
-import java.util.Objects;
 import java.util.Random;
 
 public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> implements Waterloggable {
@@ -47,13 +44,14 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 	public static final DirectionProperty  FACING = HorizontalFacingBlock.FACING;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(1.0D, 0.0D, 1.0D, 15.0D, 14.0D, 15.0D);
+	public static final EnumProperty<PCChestState> CHEST_STATE = PCProperties.PC_CHEST_STATE;
 
 	private final PCChestTypes type;
 
 
 	public PCChestBlock(Settings settings, PCChestTypes type) {
 		super(settings, () -> PCBlockEntities.LUSH_CHEST_BLOCK_ENTITY);
-		this.setDefaultState(((this.stateManager.getDefaultState()).with(FACING, Direction.NORTH)).with(WATERLOGGED, false));
+		this.setDefaultState(((this.stateManager.getDefaultState()).with(FACING, Direction.NORTH)).with(WATERLOGGED, false).with(CHEST_STATE,PCChestState.CLOSED));
 		this.type = type;
 	}
 
@@ -133,7 +131,7 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 	}
 
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-		builder.add(FACING, WATERLOGGED);
+		builder.add(FACING, WATERLOGGED, CHEST_STATE);
 		super.appendProperties(builder);
 	}
 

@@ -54,4 +54,8 @@ public class PCScreenHandler extends SyncedGuiDescription {
 		root.add(this.createPlayerInventoryPanel(), width, height);
 		root.validate(this);
 	}
+
+	public Inventory getInventory() {
+		return this.inventory;
+	}
 }

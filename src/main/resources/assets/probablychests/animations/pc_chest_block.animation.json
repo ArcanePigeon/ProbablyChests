@@ -1,7 +1,7 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"animation.PCChestBlock.close": {
+		"close": {
 			"animation_length": 0.33333,
 			"bones": {
 				"Lid": {
@@ -17,7 +17,7 @@
 				}
 			}
 		},
-		"animation.PCChestBlock.open": {
+		"open": {
 			"animation_length": 0.33333,
 			"bones": {
 				"Lid": {
@@ -33,12 +33,22 @@
 				}
 			}
 		},
-		"animation.PCChestBlock.idle": {
-			"loop": true,
+		"closed": {
+			"loop": false,
 			"bones": {
 				"Lid": {
 					"rotation": {
 						"vector": [0, 0, 0]
+					}
+				}
+			}
+		},
+		"opened": {
+			"loop": false,
+			"bones": {
+				"Lid": {
+					"rotation": {
+						"vector": [-90, 0, 0]
 					}
 				}
 			}
