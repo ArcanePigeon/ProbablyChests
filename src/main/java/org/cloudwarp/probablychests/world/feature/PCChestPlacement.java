@@ -5,6 +5,9 @@ import com.mojang.datafixers.kinds.K1;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.block.Blocks;
+import net.minecraft.entity.EntityType;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.Heightmap;
@@ -15,6 +18,8 @@ import net.minecraft.world.gen.placementmodifier.EnvironmentScanPlacementModifie
 import net.minecraft.world.gen.placementmodifier.PlacementModifier;
 import net.minecraft.world.gen.placementmodifier.PlacementModifierType;
 
+import java.util.List;
+import java.util.Properties;
 import java.util.Random;
 import java.util.stream.Stream;
 
@@ -52,7 +57,7 @@ public class PCChestPlacement extends PlacementModifier  {
 		mutableDirection.move(Direction.DOWN);
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		for (int i = 0; i < this.maxSteps; ++i) {
-			if (this.targetPredicate.test(structureWorldAccess, mutableTarget) && this.directionPredicate.test(structureWorldAccess,mutableDirection)) {
+			if (this.targetPredicate.test(structureWorldAccess, mutableTarget) && this.directionPredicate.test(structureWorldAccess,mutableDirection) && !BlockPredicate.matchingBlock(Blocks.BEDROCK,BlockPos.ORIGIN).test(structureWorldAccess,mutableDirection)) {
 				return Stream.of(mutableTarget);
 			}
 			mutableTarget.move(this.direction);
@@ -61,7 +66,7 @@ public class PCChestPlacement extends PlacementModifier  {
 				return Stream.of(new BlockPos[0]);
 			}
 		}
-		if (this.targetPredicate.test(structureWorldAccess, mutableTarget) && this.directionPredicate.test(structureWorldAccess,mutableDirection)) {
+		if (this.targetPredicate.test(structureWorldAccess, mutableTarget) && this.directionPredicate.test(structureWorldAccess,mutableDirection) && !BlockPredicate.matchingBlock(Blocks.BEDROCK,BlockPos.ORIGIN).test(structureWorldAccess,mutableDirection)) {
 			return Stream.of(mutableTarget);
 		}
 		return Stream.of(new BlockPos[0]);

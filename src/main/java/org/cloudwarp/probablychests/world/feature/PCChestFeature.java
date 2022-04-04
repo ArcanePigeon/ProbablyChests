@@ -18,6 +18,7 @@ import net.minecraft.world.gen.feature.SmallDripstoneFeatureConfig;
 import net.minecraft.world.gen.feature.util.DripstoneHelper;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 import org.cloudwarp.probablychests.registry.PCBlocks;
+import org.cloudwarp.probablychests.registry.PCLootTables;
 
 import java.util.Collections;
 import java.util.List;
@@ -37,7 +38,8 @@ public class PCChestFeature extends Feature<PCChestFeatureConfig> {
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		BlockPos pos = context.getOrigin();
 		PCChestFeatureConfig config = context.getConfig();
-		structureWorldAccess.setBlockState(pos,Blocks.GLOWSTONE.getDefaultState(),3);
+		structureWorldAccess.setBlockState(pos,PCBlocks.LUSH_CHEST.getDefaultState(),3);
+		LootableContainerBlockEntity.setLootTable(structureWorldAccess, random, pos, PCLootTables.LUSH_CHEST);
 		return true;
 	}
 }
