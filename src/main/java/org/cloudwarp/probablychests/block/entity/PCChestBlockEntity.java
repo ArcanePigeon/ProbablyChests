@@ -32,169 +32,169 @@ import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
 import software.bernie.geckolib3.core.controller.AnimationController;
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
-import software.bernie.geckolib3.network.ISyncable;
-import software.bernie.geckolib3.util.GeckoLibUtil;
-
-import java.util.Objects;
 
 public class PCChestBlockEntity extends LootableContainerBlockEntity implements IAnimatable {
 
-	private final AnimationFactory factory = new AnimationFactory(this);
-	private static final String CONTROLLER_NAME = "chestController";
 	public static final AnimationBuilder CLOSED = new AnimationBuilder().addAnimation("closed", false);
 	public static final AnimationBuilder CLOSE = new AnimationBuilder().addAnimation("close", false);
 	public static final AnimationBuilder OPEN = new AnimationBuilder().addAnimation("open", false);
 	public static final AnimationBuilder OPENED = new AnimationBuilder().addAnimation("opened", false);
 	public static final EnumProperty<PCChestState> CHEST_STATE = PCProperties.PC_CHEST_STATE;
-
-
-	PCChestTypes type;
-
-	private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(54, ItemStack.EMPTY);
-	private final ViewerCountManager stateManager = new ViewerCountManager(){
+	private static final String CONTROLLER_NAME = "chestController";
+	private final AnimationFactory factory = new AnimationFactory(this);
+	private final ViewerCountManager stateManager = new ViewerCountManager() {
 
 		@Override
-		protected void onContainerOpen(World world, BlockPos pos, BlockState state) {
-			PCChestBlockEntity.this.playSound(state, SoundEvents.BLOCK_CHEST_OPEN);
+		protected void onContainerOpen (World world, BlockPos pos, BlockState state) {
+			PCChestBlockEntity.playSound(world, pos, state, SoundEvents.BLOCK_CHEST_OPEN);
 		}
 
 		@Override
-		protected void onContainerClose(World world, BlockPos pos, BlockState state) {
-			PCChestBlockEntity.this.playSound(state, SoundEvents.BLOCK_CHEST_CLOSE);
+		protected void onContainerClose (World world, BlockPos pos, BlockState state) {
+			PCChestBlockEntity.playSound(world, pos, state, SoundEvents.BLOCK_CHEST_CLOSE);
 		}
 
 		@Override
-		protected void onViewerCountUpdate(World world, BlockPos pos, BlockState state, int oldViewerCount, int newViewerCount) {
+		protected void onViewerCountUpdate (World world, BlockPos pos, BlockState state, int oldViewerCount, int newViewerCount) {
 			PCChestBlockEntity.this.onInvOpenOrClose(world, pos, state, oldViewerCount, newViewerCount);
 		}
 
 		@Override
-		protected boolean isPlayerViewing(PlayerEntity player) {
+		protected boolean isPlayerViewing (PlayerEntity player) {
 			if (player.currentScreenHandler instanceof PCScreenHandler) {
-				Inventory inventory = ((PCScreenHandler)player.currentScreenHandler).getInventory();
+				Inventory inventory = ((PCScreenHandler) player.currentScreenHandler).getInventory();
 				return inventory == PCChestBlockEntity.this;
 			}
 			return false;
 		}
 	};
+	PCChestTypes type;
+	private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(54, ItemStack.EMPTY);
 
-	public PCChestBlockEntity(PCChestTypes type, BlockPos  pos, BlockState state) {
+	public PCChestBlockEntity (PCChestTypes type, BlockPos pos, BlockState state) {
 		super(type.getBlockEntityType(), pos, state);
 		this.type = type;
 		this.setInvStackList(DefaultedList.ofSize(this.size(), ItemStack.EMPTY));
 	}
 
-	@Override
-	public void readNbt(NbtCompound nbt) {
-		super.readNbt(nbt);
-		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-		if (!this.deserializeLootTable(nbt)) {
-			Inventories.readNbt(nbt, this.inventory);
-		}
-	}
-
-	@Override
-	protected void writeNbt(NbtCompound nbt) {
-		super.writeNbt(nbt);
-		if (!this.serializeLootTable(nbt)) {
-			Inventories.writeNbt(nbt, this.inventory);
-		}
-	}
-
-	@Override
-	public void onOpen(PlayerEntity player) {
-		if (!this.removed && !player.isSpectator()) {
-			this.stateManager.openContainer(player, this.getWorld(), this.getPos(), this.getCachedState());
-		}
-	}
-
-	@Override
-	public void onClose(PlayerEntity player) {
-		if (!this.removed && !player.isSpectator()) {
-			this.stateManager.closeContainer(player, this.getWorld(), this.getPos(), this.getCachedState());
-		}
-	}
-	@Override
-	protected DefaultedList<ItemStack> getInvStackList() {
-		return this.inventory;
-	}
-
-	@Override
-	protected void setInvStackList(DefaultedList<ItemStack> list) {
-		this.inventory = list;
-	}
-
-	public static int getPlayersLookingInChestCount(BlockView world, BlockPos pos) {
+	public static int getPlayersLookingInChestCount (BlockView world, BlockPos pos) {
 		BlockEntity blockEntity;
 		BlockState blockState = world.getBlockState(pos);
 		if (blockState.hasBlockEntity() && (blockEntity = world.getBlockEntity(pos)) instanceof PCChestBlockEntity) {
-			return ((PCChestBlockEntity)blockEntity).stateManager.getViewerCount();
+			return ((PCChestBlockEntity) blockEntity).stateManager.getViewerCount();
 		}
 		return 0;
 	}
 
-	public static void copyInventory(PCChestBlockEntity from, PCChestBlockEntity to) {
+	public static void copyInventory (PCChestBlockEntity from, PCChestBlockEntity to) {
 		DefaultedList<ItemStack> defaultedList = from.getInvStackList();
 		from.setInvStackList(to.getInvStackList());
 		to.setInvStackList(defaultedList);
 	}
 
-	public void onScheduledTick() {
-		if (!this.removed) {
+	static void playSound (World world, BlockPos pos, BlockState state, SoundEvent soundEvent) {
+		double d = (double) pos.getX() + 0.5;
+		double e = (double) pos.getY() + 0.5;
+		double f = (double) pos.getZ() + 0.5;
+
+		world.playSound(null, d, e, f, soundEvent, SoundCategory.BLOCKS, 0.5f, world.random.nextFloat() * 0.1f + 0.9f);
+	}
+
+	@Override
+	public void readNbt (NbtCompound nbt) {
+		super.readNbt(nbt);
+		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
+		if (! this.deserializeLootTable(nbt)) {
+			Inventories.readNbt(nbt, this.inventory);
+		}
+	}
+
+	@Override
+	protected void writeNbt (NbtCompound nbt) {
+		super.writeNbt(nbt);
+		if (! this.serializeLootTable(nbt)) {
+			Inventories.writeNbt(nbt, this.inventory);
+		}
+	}
+
+	@Override
+	public void onOpen (PlayerEntity player) {
+		if (! this.removed && ! player.isSpectator()) {
+			this.stateManager.openContainer(player, this.getWorld(), this.getPos(), this.getCachedState());
+		}
+	}
+
+	@Override
+	public void onClose (PlayerEntity player) {
+		if (! this.removed && ! player.isSpectator()) {
+			this.stateManager.closeContainer(player, this.getWorld(), this.getPos(), this.getCachedState());
+		}
+	}
+
+	@Override
+	protected DefaultedList<ItemStack> getInvStackList () {
+		return this.inventory;
+	}
+
+	@Override
+	protected void setInvStackList (DefaultedList<ItemStack> list) {
+		this.inventory = list;
+	}
+
+	public void onScheduledTick () {
+		if (! this.removed) {
 			this.stateManager.updateViewerCount(this.getWorld(), this.getPos(), this.getCachedState());
 		}
 	}
 
-	protected void onInvOpenOrClose(World world, BlockPos pos, BlockState state, int oldViewerCount, int newViewerCount) {
+	protected void onInvOpenOrClose (World world, BlockPos pos, BlockState state, int oldViewerCount, int newViewerCount) {
 		Block block = state.getBlock();
 		world.addSyncedBlockEvent(pos, block, 1, newViewerCount);
-		world.setBlockState(pos,state.with(CHEST_STATE,newViewerCount > 0 ?
+		world.setBlockState(pos, state.with(CHEST_STATE, newViewerCount > 0 ?
 				(state.get(CHEST_STATE).equals(PCChestState.OPENED) ? PCChestState.OPENED : PCChestState.OPEN) :
 				(state.get(CHEST_STATE).equals(PCChestState.CLOSED) ? PCChestState.CLOSED : PCChestState.CLOSE)));
 	}
 
-
 	@Override
-	public boolean onSyncedBlockEvent(int type, int data) {
+	public boolean onSyncedBlockEvent (int type, int data) {
 		if (type == 1) {
 			return true;
 		}
 		return super.onSyncedBlockEvent(type, data);
 	}
 
-	public PCChestState getChestState(){
+	public PCChestState getChestState () {
 		return this.getCachedState().get(PCChestBlockEntity.CHEST_STATE);
 	}
 
-	public void setChestState(PCChestState state){
-		this.getWorld().setBlockState(this.getPos(),this.getCachedState().with(CHEST_STATE,state));
+	public void setChestState (PCChestState state) {
+		this.getWorld().setBlockState(this.getPos(), this.getCachedState().with(CHEST_STATE, state));
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Override
-	public void registerControllers(AnimationData data) {
+	public void registerControllers (AnimationData data) {
 		AnimationController controller = new AnimationController(this, CONTROLLER_NAME, 0, animationEvent -> {
-			switch (getChestState()){
+			switch (getChestState()) {
 				case CLOSE:
-					if(animationEvent.getController().getAnimationState() == AnimationState.Stopped){
+					if (animationEvent.getController().getAnimationState() == AnimationState.Stopped) {
 						setChestState(PCChestState.CLOSED);
 						animationEvent.getController().setAnimation(CLOSED);
 						break;
 					}
-					if(animationEvent.getController().getCurrentAnimation() != null && !animationEvent.getController().getCurrentAnimation().animationName.equals(CLOSED.getRawAnimationList().get(0).animationName)){
+					if (animationEvent.getController().getCurrentAnimation() != null && ! animationEvent.getController().getCurrentAnimation().animationName.equals(CLOSED.getRawAnimationList().get(0).animationName)) {
 						animationEvent.getController().setAnimation(CLOSE);
 					}
 					break;
 				case OPEN:
-					if(animationEvent.getController().getAnimationState() == AnimationState.Stopped){
+					if (animationEvent.getController().getAnimationState() == AnimationState.Stopped) {
 						setChestState(PCChestState.OPENED);
 						animationEvent.getController().setAnimation(OPENED);
 						break;
 					}
-					if(animationEvent.getController().getCurrentAnimation() != null && !animationEvent.getController().getCurrentAnimation().animationName.equals(OPENED.getRawAnimationList().get(0).animationName)){
+					if (animationEvent.getController().getCurrentAnimation() != null && ! animationEvent.getController().getCurrentAnimation().animationName.equals(OPENED.getRawAnimationList().get(0).animationName)) {
 						animationEvent.getController().setAnimation(OPEN);
 					}
 					break;
@@ -206,40 +206,32 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 		data.addAnimationController(controller);
 	}
 
-
 	@Override
-	public AnimationFactory getFactory() {
+	public AnimationFactory getFactory () {
 		return factory;
 	}
 
 	@Override
-	public ScreenHandler createMenu(int syncId, PlayerInventory inventory, PlayerEntity player) {
+	public ScreenHandler createMenu (int syncId, PlayerInventory inventory, PlayerEntity player) {
 		return new PCScreenHandler(type.getScreenHandlerType(), type, syncId, inventory, ScreenHandlerContext.create(world, pos));
 	}
 
 	@Override
-	protected ScreenHandler createScreenHandler(int syncId, PlayerInventory inventory) {
+	protected ScreenHandler createScreenHandler (int syncId, PlayerInventory inventory) {
 		return new PCScreenHandler(type.getScreenHandlerType(), type, syncId, inventory, ScreenHandlerContext.create(world, pos));
 	}
 
 	@Override
-	protected Text getContainerName() {
+	protected Text getContainerName () {
 		return new TranslatableText(getCachedState().getBlock().getTranslationKey());
 	}
 
 	@Override
-	public int size() {
+	public int size () {
 		return type.size;
 	}
 
-	public PCChestTypes type() {
+	public PCChestTypes type () {
 		return type;
-	}
-
-	private void playSound(BlockState state, SoundEvent soundEvent) {
-		double d = (double) this.pos.getX() + 0.5D;
-		double e = (double) this.pos.getY() + 0.5D;
-		double f = (double) this.pos.getZ() + 0.5D;
-		this.world.playSound(d, e, f, soundEvent, SoundCategory.BLOCKS, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 	}
 }

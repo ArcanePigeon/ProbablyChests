@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "probablychests:block/normal_pot" },
+    "facing=east":  { "model": "probablychests:block/normal_pot" ,"y": 90},
+    "facing=south": { "model": "probablychests:block/normal_pot" ,"y": 180},
+    "facing=west":  { "model": "probablychests:block/normal_pot" ,"y": 270}
+  }
+}

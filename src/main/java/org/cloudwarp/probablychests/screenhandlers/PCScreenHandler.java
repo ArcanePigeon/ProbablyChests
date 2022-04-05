@@ -4,7 +4,6 @@ import io.github.cottonmc.cotton.gui.SyncedGuiDescription;
 import io.github.cottonmc.cotton.gui.widget.WItemSlot;
 import io.github.cottonmc.cotton.gui.widget.WPlainPanel;
 import io.github.cottonmc.cotton.gui.widget.data.Insets;
-import net.minecraft.block.enums.ChestType;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Items;
@@ -17,7 +16,7 @@ public class PCScreenHandler extends SyncedGuiDescription {
 	Inventory inventory;
 	//PCChestTypes
 
-	public PCScreenHandler(ScreenHandlerType<?> type, PCChestTypes chestType, int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
+	public PCScreenHandler (ScreenHandlerType<?> type, PCChestTypes chestType, int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
 		super(type, syncId, playerInventory, getBlockInventory(context, chestType.size), null);
 		inventory = blockInventory;
 		int rows = chestType.getRowCount();
@@ -55,7 +54,7 @@ public class PCScreenHandler extends SyncedGuiDescription {
 		root.validate(this);
 	}
 
-	public Inventory getInventory() {
+	public Inventory getInventory () {
 		return this.inventory;
 	}
 }

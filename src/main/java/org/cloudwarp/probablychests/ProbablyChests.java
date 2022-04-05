@@ -7,7 +7,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cloudwarp.probablychests.registry.*;
+import org.cloudwarp.probablychests.registry.PCBlockEntities;
+import org.cloudwarp.probablychests.registry.PCBlocks;
+import org.cloudwarp.probablychests.registry.PCLootTables;
+import org.cloudwarp.probablychests.registry.PCScreenHandlerType;
 import org.cloudwarp.probablychests.utils.Config;
 import org.cloudwarp.probablychests.world.feature.PCFeatures;
 import org.cloudwarp.probablychests.world.feature.PCPlacementModifierType;
@@ -28,9 +31,9 @@ public class ProbablyChests implements ModInitializer {
 	@Override
 	public void onInitialize () {
 		LOGGER.info("[Probably-Chests] is initializing.");
-		GeckoLibMod.DISABLE_IN_DEV = true;
 		Config.getInstance().loadConfig();
 		config = Config.getInstance();
+		GeckoLibMod.DISABLE_IN_DEV = true;
 		GeckoLib.initialize();
 		PCLootTables.init();
 		PCPlacementModifierType.init();

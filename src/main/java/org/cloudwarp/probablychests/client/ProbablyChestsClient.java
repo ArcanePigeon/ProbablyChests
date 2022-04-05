@@ -10,6 +10,8 @@ import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import org.cloudwarp.probablychests.registry.PCBlockEntities;
 import org.cloudwarp.probablychests.registry.PCScreenHandlerType;
 import org.cloudwarp.probablychests.screenhandlers.PCScreenHandler;
+import software.bernie.example.GeckoLibMod;
+import software.bernie.geckolib3.GeckoLib;
 
 @Environment(EnvType.CLIENT)
 public class ProbablyChestsClient implements ClientModInitializer {

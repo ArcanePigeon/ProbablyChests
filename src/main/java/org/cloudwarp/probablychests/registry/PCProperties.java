@@ -1,6 +1,5 @@
 package org.cloudwarp.probablychests.registry;
 
-import net.minecraft.block.enums.JigsawOrientation;
 import net.minecraft.state.property.EnumProperty;
 import org.cloudwarp.probablychests.utils.PCChestState;
 

@@ -21,7 +21,10 @@ repositories {
         name = "CottonMC"
         url = "https://server.bbkr.space/artifactory/libs-release"
     }
-    maven { url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
+    maven {
+        name "geckolib"
+        url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+    }
 }
 
 dependencies {
@@ -38,7 +41,7 @@ dependencies {
     modImplementation "io.github.cottonmc:LibGui:5.3.2+1.18.2"
     include "io.github.cottonmc:LibGui:5.3.2+1.18.2"
 
-    modImplementation 'software.bernie.geckolib:geckolib-fabric-1.18:3.0.35'
+    modImplementation 'software.bernie.geckolib:geckolib-fabric-1.18:3.0.36'
 }
 
 processResources {
@@ -97,9 +100,9 @@ publishing {
 }
 
 curseforge {
-    apiKey = "98a5754b-c7f9-4e74-9daa-49ce6ad36471"
+    apiKey = "9c3797f7-4850-46af-899f-bb7af3c05c9c"
     project {
-        id = "560657"
+        id = "601735"
         releaseType = "release"
         addGameVersion "1.18.2"
         addGameVersion "Java 17"
@@ -108,6 +111,8 @@ curseforge {
         changelog = file("changelog.md")
         relations {
             requiredDependency "fabric-api"
+            requiredDependency "geckolib"
+            requiredDependency "CottonMC"
         }
         mainArtifact(jar) {
             displayName = "Probably Chests - ${project.mod_version} - Fabric"

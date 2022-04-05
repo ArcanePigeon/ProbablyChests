@@ -1,0 +1,6 @@
+{
+  "parent": "probablychests:block/normal_pot",
+  "textures": {
+    "0": "probablychests:block/normal_pot"
+  }
+}

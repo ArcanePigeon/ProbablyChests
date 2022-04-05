@@ -1,4 +1,5 @@
 {
-  "itemGroup.probablychests.general": "Probably Chests",
-  "block.probablychests.lush_chest": "Lush Chest"
+  "itemGroup.probablychests.probablychests": "Probably Chests",
+  "block.probablychests.lush_chest": "Lush Chest",
+  "block.probablychests.normal_pot": "Clay Pot"
 }

@@ -11,22 +11,22 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "weight": 5,
+          "weight": 1,
           "name": "minecraft:netherite_scrap"
         },
         {
           "type": "minecraft:item",
-          "weight": 5,
+          "weight": 1,
           "name": "minecraft:netherite_hoe"
         },
         {
           "type": "minecraft:item",
-          "weight": 2,
+          "weight": 6,
           "name": "minecraft:enchanted_golden_apple"
         },
         {
           "type": "minecraft:item",
-          "weight": 2,
+          "weight": 4,
           "name": "minecraft:music_disc_otherside"
         },
         {
@@ -36,12 +36,12 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 5,
+          "weight": 1,
           "name": "minecraft:netherite_ingot"
         },
         {
           "type": "minecraft:item",
-          "weight": 2,
+          "weight": 1,
           "name": "minecraft:wither_skeleton_skull"
         },
         {
@@ -51,42 +51,51 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 2,
+          "weight": 1,
           "name": "minecraft:enchanting_table"
         },
         {
           "type": "minecraft:item",
-          "weight": 4,
+          "weight": 8,
           "name": "minecraft:nautilus_shell"
         },
         {
           "type": "minecraft:item",
-          "weight": 4,
+          "weight": 8,
           "name": "minecraft:sculk_sensor"
         },
         {
           "type": "minecraft:item",
-          "weight": 3,
+          "weight": 1,
           "name": "minecraft:budding_amethyst"
         },
         {
           "type": "minecraft:item",
-          "weight": 3,
+          "weight": 6,
           "name": "minecraft:totem_of_undying"
         },
         {
           "type": "minecraft:item",
-          "weight": 30,
+          "weight": 35,
           "functions": [
             {
               "function": "minecraft:enchant_randomly"
+            },
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1.0,
+                "max": 3.0
+              },
+              "add": false
             }
           ],
           "name": "minecraft:book"
         },
         {
           "type": "minecraft:item",
-          "weight": 4,
+          "weight": 2,
           "functions": [
             {
               "function": "minecraft:enchant_randomly"
@@ -102,7 +111,7 @@
         "min": 6.0,
         "max": 10.0
       },
-      "bonus_rolls": 0.0,
+      "bonus_rolls": 3.0,
       "entries": [
         {
           "type": "minecraft:item",
@@ -122,7 +131,7 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 10,
+          "weight": 20,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -138,7 +147,7 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 2,
+          "weight": 4,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -154,7 +163,7 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 5,
+          "weight": 8,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -170,7 +179,7 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 7,
+          "weight": 12,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -186,29 +195,8 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 20,
-          "name": "minecraft:bread"
-        },
-        {
-          "type": "minecraft:item",
-          "weight": 20,
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 1.0,
-                "max": 4.0
-              },
-              "add": false
-            }
-          ],
-          "name": "minecraft:wheat"
-        },
-        {
-          "type": "minecraft:item",
           "weight": 10,
-          "name": "minecraft:bucket"
+          "name": "minecraft:bread"
         },
         {
           "type": "minecraft:item",
@@ -219,7 +207,7 @@
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1.0,
-                "max": 4.0
+                "max": 8.0
               },
               "add": false
             }
@@ -228,7 +216,7 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 6,
+          "weight": 10,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -244,7 +232,7 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 15,
+          "weight": 8,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -260,7 +248,7 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 7,
+          "weight": 14,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -308,39 +296,7 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 5,
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 1.0,
-                "max": 10.0
-              },
-              "add": false
-            }
-          ],
-          "name": "minecraft:sweet_berries"
-        },
-        {
-          "type": "minecraft:item",
-          "weight": 5,
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 1.0,
-                "max": 10.0
-              },
-              "add": false
-            }
-          ],
-          "name": "minecraft:glow_berries"
-        },
-        {
-          "type": "minecraft:item",
-          "weight": 5,
+          "weight": 7,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -363,7 +319,7 @@
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1.0,
-                "max": 8.0
+                "max": 16.0
               },
               "add": false
             }
@@ -372,7 +328,7 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 8,
+          "weight": 14,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -388,7 +344,7 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 5,
+          "weight": 10,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -404,14 +360,14 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 5,
+          "weight": 10,
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1.0,
-                "max": 2.0
+                "max": 4.0
               },
               "add": false
             },
@@ -424,14 +380,14 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 5,
+          "weight": 10,
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1.0,
-                "max": 2.0
+                "max": 4.0
               },
               "add": false
             },
@@ -444,14 +400,14 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 5,
+          "weight": 10,
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1.0,
-                "max": 2.0
+                "max": 4.0
               },
               "add": false
             },
@@ -464,14 +420,14 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 5,
+          "weight": 10,
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1.0,
-                "max": 2.0
+                "max": 4.0
               },
               "add": false
             },
@@ -484,14 +440,14 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 5,
+          "weight": 10,
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1.0,
-                "max": 2.0
+                "max": 4.0
               },
               "add": false
             },
@@ -504,14 +460,14 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 5,
+          "weight": 10,
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1.0,
-                "max": 2.0
+                "max": 4.0
               },
               "add": false
             },
@@ -524,14 +480,14 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 5,
+          "weight": 10,
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1.0,
-                "max": 2.0
+                "max": 4.0
               },
               "add": false
             },
@@ -544,14 +500,14 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 5,
+          "weight": 10,
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1.0,
-                "max": 2.0
+                "max": 4.0
               },
               "add": false
             },
@@ -564,14 +520,14 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 5,
+          "weight": 10,
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1.0,
-                "max": 2.0
+                "max": 4.0
               },
               "add": false
             },
@@ -584,14 +540,14 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 5,
+          "weight": 10,
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1.0,
-                "max": 2.0
+                "max": 4.0
               },
               "add": false
             },
@@ -604,14 +560,14 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 5,
+          "weight": 10,
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1.0,
-                "max": 2.0
+                "max": 4.0
               },
               "add": false
             },
@@ -624,14 +580,14 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 5,
+          "weight": 10,
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1.0,
-                "max": 2.0
+                "max": 4.0
               },
               "add": false
             },
@@ -644,14 +600,14 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 5,
+          "weight": 10,
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1.0,
-                "max": 2.0
+                "max": 4.0
               },
               "add": false
             },
@@ -664,14 +620,14 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 5,
+          "weight": 10,
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1.0,
-                "max": 2.0
+                "max": 4.0
               },
               "add": false
             },
@@ -684,14 +640,14 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 5,
+          "weight": 10,
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1.0,
-                "max": 2.0
+                "max": 4.0
               },
               "add": false
             },
@@ -704,14 +660,14 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 5,
+          "weight": 10,
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1.0,
-                "max": 2.0
+                "max": 4.0
               },
               "add": false
             },
@@ -724,7 +680,7 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 3,
+          "weight": 5,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -740,7 +696,7 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 5,
+          "weight": 3,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -811,44 +767,12 @@
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1.0,
-                "max": 6.0
-              },
-              "add": false
-            }
-          ],
-          "name": "minecraft:clay_ball"
-        },
-        {
-          "type": "minecraft:item",
-          "weight": 5,
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 1.0,
                 "max": 2.0
               },
               "add": false
             }
           ],
           "name": "minecraft:minecart"
-        },
-        {
-          "type": "minecraft:item",
-          "weight": 2,
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 1.0,
-                "max": 2.0
-              },
-              "add": false
-            }
-          ],
-          "name": "minecraft:painting"
         },
         {
           "type": "minecraft:item",
@@ -868,14 +792,14 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 5,
+          "weight": 10,
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1.0,
-                "max": 3.0
+                "max": 4.0
               },
               "add": false
             }
