@@ -208,7 +208,7 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 
 	@Override
 	public AnimationFactory getFactory () {
-		return factory;
+		return this.factory;
 	}
 
 	@Override
@@ -232,6 +232,6 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 	}
 
 	public PCChestTypes type () {
-		return type;
+		return this.type;
 	}
 }

@@ -1,5 +1,7 @@
 {
   "itemGroup.probablychests.probablychests": "Probably Chests",
   "block.probablychests.lush_chest": "Lush Chest",
+  "block.probablychests.normal_chest": "Wooden Chest",
+  "block.probablychests.rocky_chest": "Rocky Chest",
   "block.probablychests.normal_pot": "Clay Pot"
 }

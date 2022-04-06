@@ -49,7 +49,7 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 
 
 	public PCChestBlock (Settings settings, PCChestTypes type) {
-		super(settings, () -> PCBlockEntities.LUSH_CHEST_BLOCK_ENTITY);
+		super(settings, type::getBlockEntityType);
 		this.setDefaultState(((this.stateManager.getDefaultState()).with(FACING, Direction.NORTH)).with(WATERLOGGED, false).with(CHEST_STATE, PCChestState.CLOSED));
 		this.type = type;
 	}
@@ -117,7 +117,7 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 	}
 
 	public BlockEntity createBlockEntity (BlockPos pos, BlockState state) {
-		return new PCChestBlockEntity(type, pos, state);
+		return this.type.makeEntity(pos,state);
 	}
 
 	@Override

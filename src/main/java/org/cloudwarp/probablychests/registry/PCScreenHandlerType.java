@@ -9,9 +9,9 @@ import org.cloudwarp.probablychests.block.PCChestTypes;
 import org.cloudwarp.probablychests.screenhandlers.PCScreenHandler;
 
 public class PCScreenHandlerType {
-	public static ScreenHandlerType<PCScreenHandler> LUSH_CHEST;
+	public static ScreenHandlerType<PCScreenHandler> PC_CHEST;
 
 	public static void registerScreenHandlers () {
-		LUSH_CHEST = ScreenHandlerRegistry.registerSimple(new Identifier(ProbablyChests.MOD_ID, "lush_chest"), (syncId, inventory) -> new PCScreenHandler(LUSH_CHEST, PCChestTypes.LUSH, syncId, inventory, ScreenHandlerContext.EMPTY));
+		PC_CHEST = ScreenHandlerRegistry.registerSimple(new Identifier(ProbablyChests.MOD_ID, "pc_chest"), (syncId, inventory) -> new PCScreenHandler(PC_CHEST, PCChestTypes.NORMAL, syncId, inventory, ScreenHandlerContext.EMPTY));
 	}
 }

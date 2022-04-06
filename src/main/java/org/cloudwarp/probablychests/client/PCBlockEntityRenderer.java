@@ -12,8 +12,8 @@ import software.bernie.geckolib3.renderers.geo.GeoBlockRenderer;
 
 public class PCBlockEntityRenderer extends GeoBlockRenderer<PCChestBlockEntity> {
 
-	public PCBlockEntityRenderer () {
-		super(new PCChestBlockModel());
+	public PCBlockEntityRenderer (String texture) {
+		super(new PCChestBlockModel(texture));
 	}
 
 	@Override
