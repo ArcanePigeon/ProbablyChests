@@ -52,7 +52,7 @@ public class PCGroundPlacementModifier extends PlacementModifier {
 	public Stream<BlockPos> getPositions (FeaturePlacementContext context, Random random, BlockPos pos) {
 		BlockPos.Mutable mutableTarget = pos.mutableCopy();
 		int k = context.getTopY(this.heightmap, mutableTarget.getX(), mutableTarget.getZ());
-		mutableTarget.set(mutableTarget.getX(),k - 1,mutableTarget.getZ());
+		mutableTarget.set(mutableTarget.getX(),k - (1 + random.nextInt(Math.abs(context.getBottomY() - k))),mutableTarget.getZ());
 		BlockPos.Mutable mutableDirection = mutableTarget.mutableCopy();
 		mutableDirection.move(Direction.DOWN);
 		StructureWorldAccess structureWorldAccess = context.getWorld();

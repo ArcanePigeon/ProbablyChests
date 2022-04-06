@@ -10,9 +10,9 @@ import org.cloudwarp.probablychests.block.entity.PCChestBlockEntity;
 import org.cloudwarp.probablychests.client.entity.model.PCChestBlockModel;
 import software.bernie.geckolib3.renderers.geo.GeoBlockRenderer;
 
-public class PCBlockEntityRenderer extends GeoBlockRenderer<PCChestBlockEntity> {
+public class PCChestRenderer extends GeoBlockRenderer<PCChestBlockEntity> {
 
-	public PCBlockEntityRenderer (String texture) {
+	public PCChestRenderer (String texture) {
 		super(new PCChestBlockModel(texture));
 	}
 

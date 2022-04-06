@@ -32,12 +32,11 @@ public class ProbablyChests implements ModInitializer {
 		config = Config.getInstance();
 		GeckoLibMod.DISABLE_IN_DEV = true;
 		GeckoLib.initialize();
-		PCBiomeTags.init();
 		PCLootTables.init();
-		PCPlacementModifierType.init();
-		PCFeatures.init();
 		PCBlockEntities.init();
 		PCBlocks.init();
+		PCPlacementModifierType.init();
+		PCFeatures.init();
 		PCScreenHandlerType.registerScreenHandlers();
 		PCWorldGen.generatePCWorldGen();
 		LOGGER.info("[Probably-Chests] has successfully been initialized.");

@@ -11,8 +11,6 @@ import org.cloudwarp.probablychests.block.PCChestTypes;
 import org.cloudwarp.probablychests.registry.PCBlockEntities;
 import org.cloudwarp.probablychests.registry.PCScreenHandlerType;
 import org.cloudwarp.probablychests.screenhandlers.PCScreenHandler;
-import software.bernie.example.GeckoLibMod;
-import software.bernie.geckolib3.GeckoLib;
 
 @Environment(EnvType.CLIENT)
 public class ProbablyChestsClient implements ClientModInitializer {
@@ -21,9 +19,9 @@ public class ProbablyChestsClient implements ClientModInitializer {
 		// The IDE is lying to you the type casting is necessary
 		ScreenRegistry.<PCScreenHandler, CottonInventoryScreen<PCScreenHandler>>register(PCScreenHandlerType.PC_CHEST, (desc, inventory, title) -> new CottonInventoryScreen<>(desc, inventory.player, title));
 
-		BlockEntityRendererRegistry.register(PCBlockEntities.LUSH_CHEST_BLOCK_ENTITY, (BlockEntityRendererFactory.Context rendererDispatcherIn) -> new PCBlockEntityRenderer(PCChestTypes.LUSH.name));
-		BlockEntityRendererRegistry.register(PCBlockEntities.NORMAL_CHEST_BLOCK_ENTITY, (BlockEntityRendererFactory.Context rendererDispatcherIn) -> new PCBlockEntityRenderer(PCChestTypes.NORMAL.name));
-		BlockEntityRendererRegistry.register(PCBlockEntities.ROCKY_CHEST_BLOCK_ENTITY, (BlockEntityRendererFactory.Context rendererDispatcherIn) -> new PCBlockEntityRenderer(PCChestTypes.ROCKY.name));
+		BlockEntityRendererRegistry.register(PCBlockEntities.LUSH_CHEST_BLOCK_ENTITY, (BlockEntityRendererFactory.Context rendererDispatcherIn) -> new PCChestRenderer(PCChestTypes.LUSH.name));
+		BlockEntityRendererRegistry.register(PCBlockEntities.NORMAL_CHEST_BLOCK_ENTITY, (BlockEntityRendererFactory.Context rendererDispatcherIn) -> new PCChestRenderer(PCChestTypes.NORMAL.name));
+		BlockEntityRendererRegistry.register(PCBlockEntities.ROCKY_CHEST_BLOCK_ENTITY, (BlockEntityRendererFactory.Context rendererDispatcherIn) -> new PCChestRenderer(PCChestTypes.ROCKY.name));
 
 	}
 }
