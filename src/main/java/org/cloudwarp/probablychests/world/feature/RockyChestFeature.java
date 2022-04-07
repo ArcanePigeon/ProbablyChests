@@ -25,7 +25,7 @@ public class RockyChestFeature extends Feature<PCChestFeatureConfig> {
 		PCChestFeatureConfig config = context.getConfig();
 		structureWorldAccess.setBlockState(pos, PCBlocks.ROCKY_CHEST.getDefaultState(), 3);
 		//structureWorldAccess.setBlockState(pos, Blocks.GLOWSTONE.getDefaultState(), 3);
-		LootableContainerBlockEntity.setLootTable(structureWorldAccess, random, pos, PCLootTables.LUSH_CHEST);
+		LootableContainerBlockEntity.setLootTable(structureWorldAccess, random, pos, PCLootTables.ROCKY_CHEST);
 
 		return true;
 	}

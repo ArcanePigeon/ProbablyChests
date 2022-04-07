@@ -25,11 +25,11 @@
                   }
                 }
               ],
-              "name": "probablychests:normal_pot"
+              "name": "probablychests:nether_pot"
             },
             {
               "type": "loot_table",
-              "name": "probablychests:blocks/pc_pot_normal"
+              "name": "probablychests:blocks/pc_pot_nether"
             }
           ],
           "conditions": [

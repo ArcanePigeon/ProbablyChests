@@ -11,11 +11,13 @@ import org.cloudwarp.probablychests.block.PCChestTypes;
 import org.cloudwarp.probablychests.registry.PCBlockEntities;
 import org.cloudwarp.probablychests.registry.PCScreenHandlerType;
 import org.cloudwarp.probablychests.screenhandlers.PCScreenHandler;
+import software.bernie.example.GeckoLibMod;
 
 @Environment(EnvType.CLIENT)
 public class ProbablyChestsClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient () {
+		GeckoLibMod.DISABLE_IN_DEV = true;
 		// The IDE is lying to you the type casting is necessary
 		ScreenRegistry.<PCScreenHandler, CottonInventoryScreen<PCScreenHandler>>register(PCScreenHandlerType.PC_CHEST, (desc, inventory, title) -> new CottonInventoryScreen<>(desc, inventory.player, title));
 

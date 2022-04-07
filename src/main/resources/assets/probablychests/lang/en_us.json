@@ -3,5 +3,8 @@
   "block.probablychests.lush_chest": "Lush Chest",
   "block.probablychests.normal_chest": "Wooden Chest",
   "block.probablychests.rocky_chest": "Rocky Chest",
-  "block.probablychests.normal_pot": "Clay Pot"
+  "block.probablychests.normal_pot": "Clay Pot",
+  "block.probablychests.lush_pot": "Lush Pot",
+  "block.probablychests.rocky_pot": "Rocky Pot",
+  "block.probablychests.nether_pot": "Molten Pot"
 }

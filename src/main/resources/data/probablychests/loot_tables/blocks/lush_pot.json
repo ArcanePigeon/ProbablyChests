@@ -25,11 +25,11 @@
                   }
                 }
               ],
-              "name": "probablychests:normal_pot"
+              "name": "probablychests:lush_pot"
             },
             {
               "type": "loot_table",
-              "name": "probablychests:blocks/pc_pot_normal"
+              "name": "probablychests:blocks/pc_pot_lush"
             }
           ],
           "conditions": [

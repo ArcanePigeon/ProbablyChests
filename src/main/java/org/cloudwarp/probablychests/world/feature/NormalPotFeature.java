@@ -9,8 +9,8 @@ import org.cloudwarp.probablychests.registry.PCBlocks;
 
 import java.util.Random;
 
-public class PCPotFeature extends Feature<PCPotFeatureConfig> {
-	public PCPotFeature (Codec<PCPotFeatureConfig> configCodec) {
+public class NormalPotFeature extends Feature<PCPotFeatureConfig> {
+	public NormalPotFeature (Codec<PCPotFeatureConfig> configCodec) {
 		super(configCodec);
 	}
 
@@ -20,7 +20,7 @@ public class PCPotFeature extends Feature<PCPotFeatureConfig> {
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		BlockPos pos = context.getOrigin();
 		PCPotFeatureConfig config = context.getConfig();
-		structureWorldAccess.setBlockState(pos, PCBlocks.POT.getDefaultState(), 3);
+		structureWorldAccess.setBlockState(pos, PCBlocks.NORMAL_POT.getDefaultState(), 3);
 		return true;
 	}
 }

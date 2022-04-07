@@ -1,0 +1,7 @@
+{
+  "parent": "probablychests:block/pc_pot_block",
+  "textures": {
+    "0": "probablychests:block/rocky_pot",
+    "particle": "probablychests:block/rocky_pot"
+  }
+}

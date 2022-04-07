@@ -17,7 +17,10 @@ public class PCBlocks {
 	public static final Block LUSH_CHEST = create("lush_chest", new PCChestBlock(PCChestTypes.LUSH.setting(), PCChestTypes.LUSH), true);
 	public static final Block NORMAL_CHEST = create("normal_chest", new PCChestBlock(PCChestTypes.NORMAL.setting(), PCChestTypes.NORMAL), true);
 	public static final Block ROCKY_CHEST = create("rocky_chest", new PCChestBlock(PCChestTypes.ROCKY.setting(), PCChestTypes.ROCKY), true);
-	public static final Block POT = create("normal_pot", new NormalPot(), true);
+	public static final Block LUSH_POT = create("lush_pot", new PCPot(PCPotTypes.LUSH.setting(), PCVoxelShapes.POT_VOXELSHAPE), true);
+	public static final Block NORMAL_POT = create("normal_pot", new PCPot(PCPotTypes.NORMAL.setting(), PCVoxelShapes.POT_VOXELSHAPE), true);
+	public static final Block ROCKY_POT = create("rocky_pot", new PCPot(PCPotTypes.ROCKY.setting(), PCVoxelShapes.POT_VOXELSHAPE), true);
+	public static final Block NETHER_POT = create("nether_pot", new PCPot(PCPotTypes.NETHER.setting(), PCVoxelShapes.POT_VOXELSHAPE), true);
 
 	private static <T extends Block> T create (String name, T block, boolean createItem) {
 		BLOCKS.put(block, new Identifier(ProbablyChests.MOD_ID, name));

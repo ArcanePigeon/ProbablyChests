@@ -45,8 +45,11 @@ public class Config {
 		return result;
 	}
 
-	public int getChestSpawnRate () {
-		return configData.getInt("chest_spawn_rate");
+	public int getPotFrequency(){
+		return configData.getInt("pot_frequency");
+	}
+	public int getChestFrequency(){
+		return configData.getInt("chest_frequency");
 	}
 
 	public int getIntOrDefault (NbtCompound getFrom, String key, NbtCompound defaults) {
@@ -151,7 +154,8 @@ public class Config {
 	private NbtCompound getDefaults () {
 		NbtCompound defaultConfig = new NbtCompound();
 
-		defaultConfig.putInt("chest_spawn_rate", 8);
+		defaultConfig.putInt("pot_frequency", 12);
+		defaultConfig.putInt("chest_frequency", 2);
 
 		return defaultConfig;
 	}
@@ -161,7 +165,8 @@ public class Config {
 
 		NbtCompound defaults = getDefaults();
 
-		json.addProperty("chest_spawn_rate", getIntOrDefault(tag, "chest_spawn_rate", defaults));
+		json.addProperty("pot_frequency", getIntOrDefault(tag, "pot_frequency", defaults));
+		json.addProperty("chest_frequency", getIntOrDefault(tag, "chest_frequency", defaults));
 
 		createFile(json, difference > 0);
 		difference = 0;
@@ -173,7 +178,8 @@ public class Config {
 
 		NbtCompound defaults = getDefaults();
 
-		tag.putInt("chest_spawn_rate", getIntOrDefault(json, "chest_spawn_rate", defaults));
+		tag.putInt("pot_frequency", getIntOrDefault(json, "pot_frequency", defaults));
+		tag.putInt("chest_frequency", getIntOrDefault(json, "chest_frequency", defaults));
 
 		createFile(toJson(tag), difference > 0);
 		difference = 0;
