@@ -1,0 +1,82 @@
+{
+	"format_version": "1.12.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.PCChestBlock",
+				"texture_width": 128,
+				"texture_height": 128,
+				"visible_bounds_width": 3,
+				"visible_bounds_height": 2.5,
+				"visible_bounds_offset": [0, 0.75, 0]
+			},
+			"bones": [
+				{
+					"name": "PCChestBlock",
+					"pivot": [0, 0, -6.5]
+				},
+				{
+					"name": "Lid",
+					"parent": "PCChestBlock",
+					"pivot": [0, 7, 6.5],
+					"rotation": [-42.5, 0, 0],
+					"cubes": [
+						{"origin": [-1, 6, -8.25], "size": [2, 3, 1.25], "uv": [0, 0]},
+						{"origin": [-7.5, 7, -7], "size": [15, 7, 14], "uv": [0, 22]},
+						{"origin": [-8, 7, -7.5], "size": [16, 7.5, 15], "uv": [0, 0]},
+						{"origin": [-6.85, 4, -6.35], "size": [13.7, 3, 12.7], "uv": [0, 64]}
+					]
+				},
+				{
+					"name": "Base",
+					"parent": "PCChestBlock",
+					"pivot": [0, 7, 6.5],
+					"cubes": [
+						{"origin": [-7, 0, -6.5], "size": [14, 7, 13], "uv": [0, 43]},
+						{"origin": [-6.9, 7, -6.4], "size": [13.8, 3, 12.8], "uv": [0, 79]}
+					]
+				},
+				{
+					"name": "Tongue",
+					"parent": "Base",
+					"pivot": [0, 6.5, 5]
+				},
+				{
+					"name": "back",
+					"parent": "Tongue",
+					"pivot": [0, 6.5, 5],
+					"cubes": [
+						{"origin": [-2.925, 6.375, 2.29904], "size": [5.85, 2, 3], "pivot": [0, 7.375, 3.79904], "rotation": [-30, 0, 0], "uv": [18, 97]}
+					]
+				},
+				{
+					"name": "middle",
+					"parent": "back",
+					"pivot": [0, 8, 2.75],
+					"rotation": [-22.54624, -4.88119, 1.08482],
+					"cubes": [
+						{"origin": [-3, 7, -2], "size": [6, 2, 5], "uv": [0, 102]}
+					]
+				},
+				{
+					"name": "middleEnd",
+					"parent": "middle",
+					"pivot": [0.40617, 7.9846, -1.7364],
+					"rotation": [27.70212, -6.64851, -3.47875],
+					"cubes": [
+						{"origin": [-2.675, 7.175, -5.5], "size": [5.35, 1.65, 4], "uv": [23, 104]}
+					]
+				},
+				{
+					"name": "tip",
+					"parent": "middleEnd",
+					"pivot": [0, 8, -4.875],
+					"rotation": [15.0547, -4.82922, -1.29717],
+					"cubes": [
+						{"origin": [-1.97895, 7.2353, -7.65944], "size": [4, 1.4, 3], "uv": [2, 97]}
+					]
+				}
+			]
+		}
+	]
+}
