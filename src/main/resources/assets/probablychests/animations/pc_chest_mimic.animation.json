@@ -97,8 +97,7 @@
 			}
 		},
 		"jump": {
-			"loop": "hold_on_last_frame",
-			"animation_length": 0.45833,
+			"animation_length": 0.54167,
 			"bones": {
 				"PCChestBlock": {
 					"rotation": {
@@ -556,6 +555,184 @@
 						},
 						"0.6333": {
 							"vector": [0, 0, 0]
+						}
+					}
+				}
+			}
+		},
+		"sleeping": {
+			"loop": true,
+			"animation_length": 0.04167,
+			"bones": {
+				"PCChestBlock": {
+					"rotation": {
+						"vector": [0, 0, 0],
+						"easing": "easeInSine"
+					}
+				},
+				"Lid": {
+					"rotation": {
+						"vector": [42.5, 0, 0],
+						"easing": "easeInOutQuint"
+					}
+				},
+				"back": {
+					"rotation": {
+						"vector": [0, 0, 0],
+						"easing": "easeInExpo"
+					}
+				},
+				"middle": {
+					"rotation": {
+						"vector": [0, 0, 0],
+						"easing": "easeInExpo"
+					},
+					"position": {
+						"vector": [0, 0, 1],
+						"easing": "easeInExpo"
+					}
+				},
+				"middleEnd": {
+					"rotation": {
+						"vector": [0, 0, 0],
+						"easing": "easeInExpo"
+					}
+				},
+				"tip": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0],
+							"easing": "easeInExpo"
+						},
+						"0.0417": {
+							"vector": [0, 0, 0],
+							"easing": "easeInExpo"
+						}
+					}
+				}
+			}
+		},
+		"flying": {
+			"loop": true,
+			"animation_length": 0.51,
+			"bones": {
+				"PCChestBlock": {
+					"rotation": {
+						"0.0": {
+							"vector": [24.51599, 0, 0],
+							"easing": "linear"
+						},
+						"0.51": {
+							"vector": [24.51599, 0, 0],
+							"easing": "linear"
+						}
+					}
+				},
+				"Lid": {
+					"rotation": {
+						"0.0": {
+							"vector": [-17.45, 0, 0],
+							"easing": "step"
+						},
+						"0.51": {
+							"vector": [-17.45, 0, 0],
+							"easing": "step"
+						}
+					}
+				},
+				"back": {
+					"rotation": {
+						"0.0": {
+							"vector": [10.28484, 35.76512, -18.29963],
+							"easing": "easeInSine"
+						},
+						"0.13": {
+							"vector": [-34.73861, 48.56022, -17.3469],
+							"easing": "easeInSine"
+						},
+						"0.25": {
+							"vector": [10.28484, 35.76512, -18.29963],
+							"easing": "easeInSine"
+						},
+						"0.38": {
+							"vector": [-34.73861, 48.56022, -17.3469],
+							"easing": "easeInSine"
+						},
+						"0.51": {
+							"vector": [10.28484, 35.76512, -18.29963],
+							"easing": "easeInSine"
+						}
+					}
+				},
+				"middle": {
+					"rotation": {
+						"0.0": {
+							"vector": [-34.92648, 17.63784, -19.65912],
+							"easing": "easeInSine"
+						},
+						"0.13": {
+							"vector": [30.12, 7.93, -9.17],
+							"easing": "easeInSine"
+						},
+						"0.25": {
+							"vector": [-34.92648, 17.63784, -19.65912],
+							"easing": "easeInSine"
+						},
+						"0.38": {
+							"vector": [30.12, 7.93, -9.17],
+							"easing": "easeInSine"
+						},
+						"0.51": {
+							"vector": [-34.92648, 17.63784, -19.65912],
+							"easing": "easeInSine"
+						}
+					}
+				},
+				"middleEnd": {
+					"rotation": {
+						"0.0": {
+							"vector": [-57.11347, 21.97199, -4.48015],
+							"easing": "easeInSine"
+						},
+						"0.13": {
+							"vector": [10.77494, 23.04049, 6.26555],
+							"easing": "easeInSine"
+						},
+						"0.25": {
+							"vector": [-57.11347, 21.97199, -4.48015],
+							"easing": "easeInSine"
+						},
+						"0.38": {
+							"vector": [10.77494, 23.04049, 6.26555],
+							"easing": "easeInSine"
+						},
+						"0.51": {
+							"vector": [-57.11347, 21.97199, -4.48015],
+							"easing": "easeInSine"
+						}
+					}
+				},
+				"tip": {
+					"rotation": {
+						"0.0": {
+							"vector": [-47.76121, 33.2656, -3.63378],
+							"easing": "easeInSine"
+						},
+						"0.13": {
+							"vector": [13.93578, 27.73558, 4.00557],
+							"easing": "easeInSine"
+						},
+						"0.25": {
+							"vector": [-47.76121, 33.2656, -3.63378],
+							"easing": "easeInSine"
+						},
+						"0.38": {
+							"vector": [13.93578, 27.73558, 4.00557],
+							"easing": "easeInSine"
+						},
+						"0.51": {
+							"vector": [-47.76121, 33.2656, -3.63378],
+							"easing": "easeInSine"
 						}
 					}
 				}

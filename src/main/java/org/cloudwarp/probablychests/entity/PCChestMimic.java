@@ -1,9 +1,6 @@
 package org.cloudwarp.probablychests.entity;
 
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.*;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
@@ -14,18 +11,13 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.PathAwareEntity;
-import net.minecraft.entity.passive.IronGolemEntity;
+import net.minecraft.entity.mob.SlimeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.state.property.EnumProperty;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import org.cloudwarp.probablychests.registry.PCProperties;
-import org.cloudwarp.probablychests.utils.PCChestState;
-import software.bernie.geckolib3.core.AnimationState;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
@@ -38,21 +30,29 @@ import java.util.EnumSet;
 
 public class PCChestMimic extends PathAwareEntity implements IAnimatable {
 	private AnimationFactory factory = new AnimationFactory(this);
-	public static final AnimationBuilder IDLE = new AnimationBuilder().addAnimation("idle", true);
-	public static final AnimationBuilder JUMP = new AnimationBuilder().addAnimation("jump", false);
-	public static final AnimationBuilder CLOSE = new AnimationBuilder().addAnimation("close", false);
-	//public static final AnimationBuilder CLOSED = new AnimationBuilder().addAnimation("closed", true);
-	//public static final AnimationBuilder IN_AIR = new AnimationBuilder().addAnimation("inAir", true);
+	public static final AnimationBuilder IDLE = new AnimationBuilder().addAnimation("idle", true)
+			.addAnimation("flying",true);
+	public static final AnimationBuilder JUMP = new AnimationBuilder().addAnimation("jump", false).addAnimation("flying",true);
+	public static final AnimationBuilder CLOSE = new AnimationBuilder().addAnimation("close", false).addAnimation("idle", true);
+	public static final AnimationBuilder SLEEPING = new AnimationBuilder().addAnimation("sleeping", true);
+	public static final AnimationBuilder FLYING = new AnimationBuilder().addAnimation("flying", true);
 	private static final String CONTROLLER_NAME = "mimicController";
 	private boolean onGroundLastTick;
-	private static final TrackedData<Boolean> IS_JUMPING = DataTracker.registerData(PCChestMimic.class, TrackedDataHandlerRegistry.BOOLEAN);
-	private static final TrackedData<Boolean> IS_IDLE = DataTracker.registerData(PCChestMimic.class, TrackedDataHandlerRegistry.BOOLEAN);
-	private static final TrackedData<Boolean> IS_CLOSED = DataTracker.registerData(PCChestMimic.class, TrackedDataHandlerRegistry.BOOLEAN);
-	private static final TrackedData<Boolean> IS_GROUNDED = DataTracker.registerData(PCChestMimic.class, TrackedDataHandlerRegistry.BOOLEAN);
-	private static final TrackedData<Boolean> IS_FLYING = DataTracker.registerData(PCChestMimic.class, TrackedDataHandlerRegistry.BOOLEAN);
-	public boolean isJumping = false;
+	private static final TrackedData<Boolean> IS_JUMPING;
+	private static final TrackedData<Boolean> IS_IDLE;
+	private static final TrackedData<Boolean> IS_SLEEPING;
+	private static final TrackedData<Boolean> IS_GROUNDED;
+	private static final TrackedData<Boolean> IS_FLYING;
+	private int timeUntilSleep = 30;
+	private int jumpEndTimer = 10;
 
 
+	/*
+	TODO: reduce fall damage
+	TODO: make not drown
+	TODO: make it able to jump much higher
+	TODO: make fire resistant
+	 */
 	public PCChestMimic(EntityType<? extends PathAwareEntity> entityType, World world) {
 		super(entityType, world);
 		this.ignoreCameraFrustum = true;
@@ -62,49 +62,42 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable {
 	protected void initGoals() {
 		this.goalSelector.add(2, new PCChestMimic.FaceTowardTargetGoal(this));
 		this.goalSelector.add(7, new PCChestMimic.IdleGoal(this));
+		this.goalSelector.add(1, new PCChestMimic.SwimmingGoal(this));
 		this.goalSelector.add(5, new PCChestMimic.MoveGoal(this));
 		this.targetSelector.add(1, new ActiveTargetGoal<>(this, PlayerEntity.class, 10, true, false, livingEntity -> Math.abs(livingEntity.getY() - this.getY()) <= 4.0D));
 	}
 
+	static {
+		IS_JUMPING = DataTracker.registerData(PCChestMimic.class, TrackedDataHandlerRegistry.BOOLEAN);
+		IS_IDLE = DataTracker.registerData(PCChestMimic.class, TrackedDataHandlerRegistry.BOOLEAN);
+		IS_SLEEPING = DataTracker.registerData(PCChestMimic.class, TrackedDataHandlerRegistry.BOOLEAN);
+		IS_GROUNDED = DataTracker.registerData(PCChestMimic.class, TrackedDataHandlerRegistry.BOOLEAN);
+		IS_FLYING = DataTracker.registerData(PCChestMimic.class, TrackedDataHandlerRegistry.BOOLEAN);
+	}
+
+
 	public static DefaultAttributeContainer.Builder createMobAttributes() {
-		return LivingEntity.createLivingAttributes().add(EntityAttributes.GENERIC_FOLLOW_RANGE, 26.0D)
+		return LivingEntity.createLivingAttributes().add(EntityAttributes.GENERIC_FOLLOW_RANGE, 20.0D)
 				.add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK)
 				.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 9)
 				.add(EntityAttributes.GENERIC_MOVEMENT_SPEED,1)
 				.add(EntityAttributes.GENERIC_MAX_HEALTH,20)
 				.add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE,0.5D);
 	}
+
 	private <E extends IAnimatable> PlayState devMovement(AnimationEvent<E> animationEvent) {
-		final AnimationController animationController = animationEvent.getController();
-		AnimationBuilder builder = new AnimationBuilder();
-		System.out.println(this.isJumping() + "  " + this.isGrounded() + "  " + this.isFlying() + "  " + this.isIdle() + " " + this.isJumping);
-		if(this.isJumping()){
-			if(!this.isJumping){
-				builder.addAnimation("jump",false);
-				this.isJumping = true;
-				this.setIsJumping(false);
-			}
-			System.out.println("A");
-		}else if(this.isJumping) {
-			System.out.println("B");
-			if (!animationEvent.getController().isJustStarting && animationEvent.getController().getAnimationState() == AnimationState.Stopped) {
-				System.out.println("C");
-				this.isJumping = false;
-				this.setIsFlying(true);
-			}
-		}else if(this.isFlying() && this.isGrounded() && !this.isJumping() && !this.isIdle()){
-			System.out.println("D");
-			this.setIsFlying(false);
-			builder.addAnimation("close",false);
-		}else if(this.isFlying() && !this.isGrounded() && !this.isJumping() && !this.isIdle()){
-			System.out.println("E");
-
-		}else if(!this.isFlying() && this.isGrounded() && !this.isJumping() && this.isIdle()){
-			System.out.println("F");
-			builder.addAnimation("idle",false);
+		System.out.println(this.isJumping() + "  " + this.isGrounded() + "  " + this.isFlying() + "  " + this.isIdle());
+		if(isJumping()){
+			animationEvent.getController().setAnimation(JUMP);
+		}else if(this.isFlying()){
+			animationEvent.getController().setAnimation(FLYING);
+		}else if(this.isSleeping()){
+			animationEvent.getController().setAnimation(SLEEPING);
+		} else if(this.isIdle()){
+			animationEvent.getController().setAnimation(IDLE);
+		}else if(this.isGrounded()){
+			animationEvent.getController().setAnimation(CLOSE);
 		}
-
-		animationController.setAnimation(builder);
 		return PlayState.CONTINUE;
 	}
 
@@ -236,6 +229,32 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable {
 		}
 	}
 
+	static class SwimmingGoal extends Goal {
+		private final PCChestMimic mimic;
+
+		public SwimmingGoal(PCChestMimic mimic) {
+			this.mimic = mimic;
+			this.setControls(EnumSet.of(Control.JUMP, Control.MOVE));
+			mimic.getNavigation().setCanSwim(true);
+		}
+
+		public boolean canStart() {
+			return (this.mimic.isTouchingWater() || this.mimic.isInLava()) && this.mimic.getMoveControl() instanceof PCChestMimic.MimicMoveControl;
+		}
+
+		public boolean shouldRunEveryTick() {
+			return true;
+		}
+
+		public void tick() {
+			if (this.mimic.getRandom().nextFloat() < 0.8F) {
+				this.mimic.getJumpControl().setActive();
+			}
+
+			((PCChestMimic.MimicMoveControl)this.mimic.getMoveControl()).move(2.2D);
+		}
+	}
+
 	static class IdleGoal extends Goal {
 		private final PCChestMimic mimic;
 
@@ -277,8 +296,10 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable {
 		Vec3d vec3d = this.getVelocity();
 		this.setVelocity(vec3d.x, (double)this.getJumpVelocity(), vec3d.z);
 		this.velocityDirty = true;
-		System.out.println("HERE1");
-		this.setIsJumping(true);
+		if(this.isGrounded() && this.jumpEndTimer <= 0) {
+			this.jumpEndTimer = 10;
+			this.setIsJumping(true);
+		}
 	}
 
 	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
@@ -302,7 +323,7 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable {
 
 	protected void damage(LivingEntity target) {
 		if (this.isAlive()) {
-			if (this.squaredDistanceTo(target) < 1.2D && this.canSee(target) && target.damage(DamageSource.mob(this), this.getDamageAmount())) {
+			if (this.squaredDistanceTo(target) < 1.9D && this.canSee(target) && target.damage(DamageSource.mob(this), this.getDamageAmount())) {
 				this.playSound(SoundEvents.BLOCK_CHEST_CLOSE, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 				this.applyDamageEffects(this, target);
 			}
@@ -315,11 +336,38 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable {
 
 	public void tick() {
 		super.tick();
-		if (this.onGround && !this.onGroundLastTick) {
-			// play landing
-			this.playSound(this.getLandingSound(), this.getSoundVolume(), ((this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F) / 0.8F);
-		} else if (!this.onGround && this.onGroundLastTick) {
-			// set flying animation to true
+		if(jumpEndTimer >= 0){
+			jumpEndTimer -= 1;
+		}
+		if(this.onGround){
+			this.setIsFlying(false);
+			this.setIsGrounded(true);
+			if(this.onGroundLastTick){
+				if(!this.isSleeping() && !this.isIdle()) {
+					timeUntilSleep = 30;
+					this.setIsIdle(true);
+				}
+				if(this.isIdle()){
+					timeUntilSleep -= 1;
+					if(timeUntilSleep <= 0){
+						this.setIsIdle(false);
+						this.setIsSleeping(true);
+					}
+				}
+			}else{
+				this.setIsJumping(false);
+				this.playSound(this.getLandingSound(), this.getSoundVolume(),
+						((this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F) / 0.8F);
+			}
+		}else{
+			this.setIsSleeping(false);
+			this.setIsIdle(false);
+			this.setIsGrounded(false);
+			if(this.onGroundLastTick && !this.isJumping()){
+				this.setIsFlying(true);
+			}else{
+				this.setIsFlying(false);
+			}
 		}
 
 		this.onGroundLastTick = this.onGround;
@@ -332,19 +380,22 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable {
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
 		nbt.putBoolean("wasOnGround", this.onGroundLastTick);
-		/*nbt.putBoolean("grounded",this.isOnGround());
+		nbt.putBoolean("grounded",this.isOnGround());
 		nbt.putBoolean("jumping",this.isJumping());
 		nbt.putBoolean("idle",this.isIdle());
-		nbt.putBoolean("flying",this.isFlying());*/
+		nbt.putBoolean("flying",this.isFlying());
+		nbt.putBoolean("sleeping",this.isSleeping());
+
 	}
 
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
 		this.onGroundLastTick = nbt.getBoolean("wasOnGround");
-		/*this.setIsGrounded(nbt.getBoolean("grounded"));
+		this.setIsGrounded(nbt.getBoolean("grounded"));
 		this.setIsJumping(nbt.getBoolean("jumping"));
 		this.setIsIdle(nbt.getBoolean("idle"));
-		this.setIsFlying(nbt.getBoolean("flying"));*/
+		this.setIsFlying(nbt.getBoolean("flying"));
+		this.setIsSleeping(nbt.getBoolean("sleeping"));
 	}
 
 	public void setIsJumping(boolean jumping) {
@@ -368,8 +419,7 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable {
 	}
 
 	public boolean isGrounded() {
-		return this.isOnGround();
-		//return this.dataTracker.get(IS_GROUNDED);
+		return this.dataTracker.get(IS_GROUNDED);
 	}
 
 	public void setIsIdle(boolean idle) {
@@ -380,14 +430,22 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable {
 		return this.dataTracker.get(IS_IDLE);
 	}
 
+	public void setIsSleeping(boolean sleeping) {
+		this.dataTracker.set(IS_SLEEPING, sleeping);
+	}
+
+	public boolean isSleeping() {
+		return this.dataTracker.get(IS_SLEEPING);
+	}
+
 	@Override
 	protected void initDataTracker() {
-		super.initDataTracker();
 		this.dataTracker.startTracking(IS_GROUNDED, true);
 		this.dataTracker.startTracking(IS_JUMPING, false);
 		this.dataTracker.startTracking(IS_FLYING, false);
 		this.dataTracker.startTracking(IS_IDLE, false);
-
+		this.dataTracker.startTracking(IS_SLEEPING, true);
+		super.initDataTracker();
 	}
 
 }

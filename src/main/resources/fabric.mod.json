@@ -6,7 +6,7 @@
   "name": "Probably Chests",
   "description": "New chests can be found all over the world and in caves, but beware some of them are more than meets the eye.",
   "authors": [
-    "ProbabilityPigeon"
+    "ArcanePigeon"
   ],
   "contact": {
     "homepage": "https://cloudwarp.org/",
@@ -33,6 +33,7 @@
     "fabricloader": ">=0.13.3",
     "fabric": "*",
     "minecraft": "1.18.x",
+    "geckolib3": ">=3.0.36",
     "java": ">=17"
   },
   "suggests": {
