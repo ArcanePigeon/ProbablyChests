@@ -32,8 +32,11 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.event.GameEvent;
 import org.cloudwarp.probablychests.block.entity.PCChestBlockEntity;
+import org.cloudwarp.probablychests.entity.PCChestMimic;
 import org.cloudwarp.probablychests.registry.PCBlockEntities;
+import org.cloudwarp.probablychests.registry.PCEntities;
 import org.cloudwarp.probablychests.registry.PCProperties;
 import org.cloudwarp.probablychests.utils.PCChestState;
 
@@ -67,6 +70,16 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 	public ActionResult onUse (BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
+		}
+		if(world.getBlockEntity(pos) instanceof PCChestBlockEntity && ((PCChestBlockEntity) world.getBlockEntity(pos)).isMimic){
+			PCChestMimic mimic = new PCChestMimic(PCEntities.NORMAL_CHEST_MIMIC,world);
+			mimic.setPos(pos.getX() + 0.5D,pos.getY(),pos.getZ() + 0.5D);
+			mimic.setYaw(state.get(FACING).asRotation());
+			System.out.println(state.get(FACING).asRotation());
+			world.spawnEntity(mimic);
+			boolean waterlogged = state.get(WATERLOGGED);
+			world.setBlockState(pos, waterlogged ? Blocks.WATER.getDefaultState() : Blocks.AIR.getDefaultState());
+			return ActionResult.PASS;
 		}
 		NamedScreenHandlerFactory namedScreenHandlerFactory = this.createScreenHandlerFactory(state, world, pos);
 		if (namedScreenHandlerFactory != null) {

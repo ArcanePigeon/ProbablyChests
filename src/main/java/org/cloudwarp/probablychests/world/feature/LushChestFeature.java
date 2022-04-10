@@ -9,6 +9,7 @@ import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.util.FeatureContext;
+import org.cloudwarp.probablychests.block.entity.PCChestBlockEntity;
 import org.cloudwarp.probablychests.registry.PCBlocks;
 import org.cloudwarp.probablychests.registry.PCLootTables;
 
@@ -26,6 +27,10 @@ public class LushChestFeature extends Feature<PCChestFeatureConfig> {
 		BlockPos pos = context.getOrigin();
 		PCChestFeatureConfig config = context.getConfig();
 		structureWorldAccess.setBlockState(pos, PCBlocks.LUSH_CHEST.getDefaultState(), 3);
+		PCChestBlockEntity chest = (PCChestBlockEntity) structureWorldAccess.getBlockEntity(pos);
+		if(chest != null) {
+			chest.isMimic = structureWorldAccess.getRandom().nextFloat() < 0.5F;
+		}
 		//structureWorldAccess.setBlockState(pos, Blocks.GLOWSTONE.getDefaultState(), 3);
 		LootableContainerBlockEntity.setLootTable(structureWorldAccess, random, pos, PCLootTables.LUSH_CHEST);
 

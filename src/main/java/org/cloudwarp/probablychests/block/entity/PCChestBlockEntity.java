@@ -44,6 +44,7 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 	public static final EnumProperty<PCChestState> CHEST_STATE = PCProperties.PC_CHEST_STATE;
 	private static final String CONTROLLER_NAME = "chestController";
 	private final AnimationFactory factory = new AnimationFactory(this);
+	public boolean isMimic = true;
 	private final ViewerCountManager stateManager = new ViewerCountManager() {
 
 		@Override
