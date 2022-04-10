@@ -51,11 +51,12 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable {
 	private static final TrackedData<Boolean> IS_SLEEPING;
 	private static final TrackedData<Boolean> IS_GROUNDED;
 	private static final TrackedData<Boolean> IS_FLYING;
-	private int timeUntilSleep = 150;
+	private int timeUntilSleep = 0;
 	private int jumpEndTimer = 10;
 	private static double moveSpeed = 1.5D;
 	private boolean isJumpAnimationPlaying = false;
 	private boolean isJumpAnimationFinished = false;
+	private int spawnWaitTimer = 8;
 
 
 	/*
@@ -65,6 +66,12 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable {
 	TODO: make fire resistant
 	TODO: add locking to block pos to be like a normal chest
 	TODO: add time between jumps
+	fix attacking through shield
+	add new chest
+	add new feature spawn mechanics
+	add on hit and on explosion for spawning mimic
+	add wand to make a chest a mimic
+	add configs
 	 */
 	public PCChestMimic(EntityType<? extends PathAwareEntity> entityType, World world) {
 		super(entityType, world);
@@ -110,7 +117,12 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable {
 		return MathHelper.ceil((fallDistance - 20.0F - f) * damageMultiplier);
 	}
 
+	public void printStates(){
+		System.out.println(isJumping() + "  " + isFlying() + "  " + isSleeping() + "  " + isGrounded() + "  " + isIdle());
+	}
+
 	private <E extends IAnimatable> PlayState devMovement(AnimationEvent<E> animationEvent) {
+		printStates();
 		if(isJumping() && !this.isJumpAnimationFinished){
 			if(!this.isJumpAnimationPlaying){
 				animationEvent.getController().setAnimationSpeed(2D);
@@ -138,6 +150,9 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable {
 			this.isJumpAnimationPlaying = false;
 			animationEvent.getController().setAnimation(CLOSE);
 		}
+		if(animationEvent.getController().getCurrentAnimation() == null){
+		animationEvent.getController().setAnimation(SLEEPING);
+		}
 		return PlayState.CONTINUE;
 	}
 
@@ -161,7 +176,6 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable {
 			super(mimic);
 			this.mimic = mimic;
 			this.targetYaw = 180.0F * mimic.getYaw() / 3.1415927F;
-			System.out.println(mimic.getYaw() + "  " + this.entity.getYaw() + "  " + this.targetYaw);
 		}
 
 		public void look(float targetYaw, boolean jumpOften) {
@@ -175,9 +189,9 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable {
 		}
 
 		public void tick() {
-			//mimic.setYaw(this.wrapDegrees(mimic.getYaw(), this.targetYaw, 90.0F));
-			//mimic.headYaw = mimic.getYaw();
-			//mimic.bodyYaw = mimic.getYaw();
+			this.entity.setYaw(this.wrapDegrees(this.entity.getYaw(), this.targetYaw, 90.0F));
+			this.entity.headYaw = this.entity.getYaw();
+			this.entity.bodyYaw = this.entity.getYaw();
 			if (this.state != State.MOVE_TO) {
 				this.entity.setForwardSpeed(0.0F);
 			} else {
@@ -216,7 +230,7 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable {
 
 		public boolean canStart() {
 			LivingEntity livingEntity = this.mimic.getTarget();
-			if (livingEntity == null || this.mimic.isSleeping() || this.mimic.isIdle()) {
+			if (livingEntity == null) {
 				return false;
 			} else {
 				return !this.mimic.canTarget(livingEntity) ? false : this.mimic.getMoveControl() instanceof PCChestMimic.MimicMoveControl;
@@ -230,7 +244,7 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable {
 
 		public boolean shouldContinue() {
 			LivingEntity livingEntity = this.mimic.getTarget();
-			if (livingEntity == null || this.mimic.isSleeping() || this.mimic.isIdle()) {
+			if (livingEntity == null) {
 				return false;
 			} else if (!this.mimic.canTarget(livingEntity)) {
 				return false;
@@ -343,7 +357,7 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable {
 			jumpStrength = livingEntity.getY() - this.getY();
 			jumpStrength = jumpStrength <= 0 ? 1D : jumpStrength / 2.5D + 1.0D;
 		}
-		moveSpeed = this.world.random.nextDouble(1.5D,2.1D);
+		//moveSpeed = this.world.random.nextDouble(1.5D,2.1D);
 		this.setVelocity(vec3d.x, (double)this.getJumpVelocity()* jumpStrength, vec3d.z);
 		this.velocityDirty = true;
 		if(this.isGrounded() && this.jumpEndTimer <= 0) {
@@ -409,10 +423,15 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable {
 						((this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F) / 0.8F);
 			}
 		}else{
-			this.setIsSleeping(false);
-			this.setIsIdle(false);
-			this.setIsGrounded(false);
-			this.setIsFlying(true);
+			if(spawnWaitTimer > 0){
+				spawnWaitTimer -= 1;
+			}else{
+				this.setIsSleeping(false);
+				this.setIsIdle(false);
+				this.setIsGrounded(false);
+				this.setIsFlying(true);
+			}
+
 		}
 
 		this.onGroundLastTick = this.onGround;

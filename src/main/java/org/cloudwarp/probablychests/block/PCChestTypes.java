@@ -7,14 +7,17 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ChestBlockEntity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import org.cloudwarp.probablychests.ProbablyChests;
 import org.cloudwarp.probablychests.block.entity.PCChestBlockEntity;
+import org.cloudwarp.probablychests.entity.PCChestMimic;
 import org.cloudwarp.probablychests.registry.PCBlockEntities;
 import org.cloudwarp.probablychests.registry.PCBlocks;
+import org.cloudwarp.probablychests.registry.PCEntities;
 import org.cloudwarp.probablychests.registry.PCScreenHandlerType;
 import org.cloudwarp.probablychests.screenhandlers.PCScreenHandler;
 
@@ -35,6 +38,15 @@ public enum PCChestTypes {
 		this.rowLength = rowLength;
 		this.texture = texture;
 		this.name = name;
+	}
+
+	public EntityType<PCChestMimic> getMimicType(){
+		return switch(this){
+			case LUSH -> PCEntities.LUSH_CHEST_MIMIC;
+			case ROCKY -> PCEntities.ROCKY_CHEST_MIMIC;
+			case NORMAL -> PCEntities.NORMAL_CHEST_MIMIC;
+			default -> PCEntities.NORMAL_CHEST_MIMIC;
+		};
 	}
 
 

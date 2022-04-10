@@ -11,6 +11,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.world.ServerWorld;
@@ -28,8 +29,10 @@ import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.event.GameEvent;
@@ -71,15 +74,28 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		}
-		if(world.getBlockEntity(pos) instanceof PCChestBlockEntity && ((PCChestBlockEntity) world.getBlockEntity(pos)).isMimic){
-			PCChestMimic mimic = new PCChestMimic(PCEntities.NORMAL_CHEST_MIMIC,world);
-			mimic.setPos(pos.getX() + 0.5D,pos.getY(),pos.getZ() + 0.5D);
-			mimic.setYaw(state.get(FACING).asRotation());
-			System.out.println(state.get(FACING).asRotation());
-			world.spawnEntity(mimic);
-			boolean waterlogged = state.get(WATERLOGGED);
-			world.setBlockState(pos, waterlogged ? Blocks.WATER.getDefaultState() : Blocks.AIR.getDefaultState());
-			return ActionResult.PASS;
+		PCChestBlockEntity chest = null;
+		if(world.getBlockEntity(pos) instanceof PCChestBlockEntity){
+			chest = (PCChestBlockEntity) world.getBlockEntity(pos);
+		}
+		if(chest != null) {
+			if (player.getMainHandStack().isOf(Items.STICK)) {
+				chest.isMimic = true;
+				return ActionResult.PASS;
+			}
+			if (world.getDifficulty() != Difficulty.PEACEFUL && chest.isMimic) {
+				PCChestMimic mimic = new PCChestMimic(this.type.getMimicType(), world);
+				mimic.setPos(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D);
+				mimic.setYaw(state.get(FACING).asRotation());
+				mimic.refreshPositionAndAngles((double) pos.getX() + 0.5D, (double) pos.getY(), (double) pos.getZ() + 0.5D, MathHelper.wrapDegrees(state.get(FACING).asRotation()), 0.0F);
+				mimic.headYaw = mimic.getYaw();
+				mimic.bodyYaw = mimic.getYaw();
+				world.spawnEntity(mimic);
+
+				boolean waterlogged = state.get(WATERLOGGED);
+				world.setBlockState(pos, waterlogged ? Blocks.WATER.getDefaultState() : Blocks.AIR.getDefaultState());
+				return ActionResult.PASS;
+			}
 		}
 		NamedScreenHandlerFactory namedScreenHandlerFactory = this.createScreenHandlerFactory(state, world, pos);
 		if (namedScreenHandlerFactory != null) {
