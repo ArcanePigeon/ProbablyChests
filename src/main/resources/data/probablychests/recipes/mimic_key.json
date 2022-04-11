@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "probablychests:mimic_key_fragment"
+    },
+    {
+      "item": "probablychests:mimic_key_fragment"
+    },
+    {
+      "item": "probablychests:mimic_key_fragment"
+    }
+  ],
+  "result": {
+    "item": "probablychests:mimic_key",
+    "count": 1
+  }
+}

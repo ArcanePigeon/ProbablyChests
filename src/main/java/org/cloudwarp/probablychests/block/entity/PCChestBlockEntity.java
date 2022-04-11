@@ -45,6 +45,8 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 	private static final String CONTROLLER_NAME = "chestController";
 	private final AnimationFactory factory = new AnimationFactory(this);
 	public boolean isMimic = false;
+	public boolean isNatural = false;
+	public boolean hasBeenOpened = false;
 	private final ViewerCountManager stateManager = new ViewerCountManager() {
 
 		@Override

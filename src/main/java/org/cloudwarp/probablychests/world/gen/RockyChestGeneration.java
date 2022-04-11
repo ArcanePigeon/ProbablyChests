@@ -11,10 +11,14 @@ import java.util.List;
 
 public class RockyChestGeneration {
 	public static void generateChest () {
+		BiomeModifications.addFeature(BiomeSelectors.all().and(BiomeSelectors.foundInOverworld())
+						.and(BiomeSelectors.includeByKey(List.of(BiomeKeys.DRIPSTONE_CAVES))),
+				GenerationStep.Feature.UNDERGROUND_STRUCTURES, PCFeatures.ROCKY_CHEST_PLACED.getKey().get());
+		//----------------------------------------------------------
 		BiomeModifications.addFeature(BiomeSelectors.all().and(BiomeSelectors.foundInOverworld()).and(context ->{
 					Biome biome = context.getBiome();
-					return biome.getTemperature() >= 1.0f || (biome.getTemperature() == 0.8f && biome.getDownfall() == 0.4f);
-				}).and(BiomeSelectors.excludeByKey(List.of(BiomeKeys.PLAINS,BiomeKeys.SUNFLOWER_PLAINS,BiomeKeys.BEACH))),
-				GenerationStep.Feature.UNDERGROUND_STRUCTURES, PCFeatures.ROCKY_CHEST_PLACED.getKey().get());
+					return biome.getTemperature() >= 1.0f;
+				}),
+				GenerationStep.Feature.SURFACE_STRUCTURES, PCFeatures.ROCKY_CHEST_PLACED_SURFACE.getKey().get());
 	}
 }

@@ -5,6 +5,8 @@ public class PCWorldGen {
 		LushChestGeneration.generateChest();
 		NormalChestGeneration.generateChest();
 		RockyChestGeneration.generateChest();
+		StoneChestGeneration.generateChest();
+		GoldChestGeneration.generateChest();
 		PCPotGeneration.generatePot();
 	}
 }

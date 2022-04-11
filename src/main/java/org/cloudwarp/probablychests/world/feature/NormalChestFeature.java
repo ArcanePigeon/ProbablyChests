@@ -7,6 +7,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.util.FeatureContext;
+import org.cloudwarp.probablychests.block.entity.PCChestBlockEntity;
 import org.cloudwarp.probablychests.registry.PCBlocks;
 import org.cloudwarp.probablychests.registry.PCLootTables;
 import org.cloudwarp.probablychests.world.feature.PCChestFeatureConfig;
@@ -26,7 +27,11 @@ public class NormalChestFeature extends Feature<PCChestFeatureConfig> {
 		PCChestFeatureConfig config = context.getConfig();
 		structureWorldAccess.setBlockState(pos, PCBlocks.NORMAL_CHEST.getDefaultState(), 3);
 		//structureWorldAccess.setBlockState(pos, Blocks.GLOWSTONE.getDefaultState(), 3);
-		LootableContainerBlockEntity.setLootTable(structureWorldAccess, random, pos, PCLootTables.NORMAL_CHEST);
+		PCChestBlockEntity chest = (PCChestBlockEntity) structureWorldAccess.getBlockEntity(pos);
+		if(chest != null) {
+			chest.isNatural = true;
+		}
+		//LootableContainerBlockEntity.setLootTable(structureWorldAccess, random, pos, PCLootTables.NORMAL_CHEST);
 
 		return true;
 	}

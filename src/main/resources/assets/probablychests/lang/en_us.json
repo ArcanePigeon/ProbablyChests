@@ -3,11 +3,15 @@
   "block.probablychests.lush_chest": "Lush Chest",
   "block.probablychests.normal_chest": "Wooden Chest",
   "block.probablychests.rocky_chest": "Rocky Chest",
+  "block.probablychests.stone_chest": "Stone Chest",
+  "block.probablychests.gold_chest": "Gold Chest",
   "block.probablychests.normal_pot": "Clay Pot",
   "block.probablychests.lush_pot": "Lush Pot",
   "block.probablychests.rocky_pot": "Rocky Pot",
   "block.probablychests.nether_pot": "Molten Pot",
   "entity.probablychests.lush_chest_mimic": "Lush Mimic",
   "entity.probablychests.normal_chest_mimic": "Mimic",
-  "entity.probablychests.rocky_chest_mimic": "Rocky Mimic"
+  "entity.probablychests.rocky_chest_mimic": "Rocky Mimic",
+  "item.probablychests.mimic_key": "Mimic Key",
+  "item.probablychests.mimic_key_fragment": "Key Fragment"
 }

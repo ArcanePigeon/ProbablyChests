@@ -17,6 +17,9 @@ public class PCBlocks {
 	public static final Block LUSH_CHEST = create("lush_chest", new PCChestBlock(PCChestTypes.LUSH.setting(), PCChestTypes.LUSH), true);
 	public static final Block NORMAL_CHEST = create("normal_chest", new PCChestBlock(PCChestTypes.NORMAL.setting(), PCChestTypes.NORMAL), true);
 	public static final Block ROCKY_CHEST = create("rocky_chest", new PCChestBlock(PCChestTypes.ROCKY.setting(), PCChestTypes.ROCKY), true);
+	public static final Block STONE_CHEST = create("stone_chest", new PCChestBlock(PCChestTypes.STONE.setting(), PCChestTypes.STONE), true);
+	public static final Block GOLD_CHEST = create("gold_chest", new PCChestBlock(PCChestTypes.GOLD.setting(), PCChestTypes.GOLD), true);
+	//---------------------------
 	public static final Block LUSH_POT = create("lush_pot", new PCPot(PCPotTypes.LUSH.setting(), PCVoxelShapes.POT_VOXELSHAPE), true);
 	public static final Block NORMAL_POT = create("normal_pot", new PCPot(PCPotTypes.NORMAL.setting(), PCVoxelShapes.POT_VOXELSHAPE), true);
 	public static final Block ROCKY_POT = create("rocky_pot", new PCPot(PCPotTypes.ROCKY.setting(), PCVoxelShapes.POT_VOXELSHAPE), true);

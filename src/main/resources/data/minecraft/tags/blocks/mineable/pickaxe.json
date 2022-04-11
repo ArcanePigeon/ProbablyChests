@@ -1,5 +1,8 @@
 {
   "replace": false,
   "values": [
+    "probablychests:stone_chest",
+    "probablychests:rocky_chest",
+    "probablychests:gold_chest"
   ]
 }

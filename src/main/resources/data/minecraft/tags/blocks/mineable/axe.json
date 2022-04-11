@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "probablychests:lush_chest"
+    "probablychests:lush_chest",
+    "probablychests:normal_chest"
   ]
 }

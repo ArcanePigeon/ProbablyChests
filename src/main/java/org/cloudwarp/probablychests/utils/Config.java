@@ -45,11 +45,11 @@ public class Config {
 		return result;
 	}
 
-	public int getPotFrequency(){
-		return configData.getInt("pot_frequency");
+	public float getPotFrequency(){
+		return configData.getFloat("pot_frequency");
 	}
-	public int getChestFrequency(){
-		return configData.getInt("chest_frequency");
+	public float getChestFrequency(){
+		return configData.getFloat("chest_frequency");
 	}
 
 	public int getIntOrDefault (NbtCompound getFrom, String key, NbtCompound defaults) {
@@ -154,8 +154,8 @@ public class Config {
 	private NbtCompound getDefaults () {
 		NbtCompound defaultConfig = new NbtCompound();
 
-		defaultConfig.putInt("pot_frequency", 12);
-		defaultConfig.putInt("chest_frequency", 2);
+		defaultConfig.putFloat("pot_frequency", 0.8f);
+		defaultConfig.putFloat("chest_frequency", 0.25f);
 
 		return defaultConfig;
 	}
@@ -165,8 +165,8 @@ public class Config {
 
 		NbtCompound defaults = getDefaults();
 
-		json.addProperty("pot_frequency", getIntOrDefault(tag, "pot_frequency", defaults));
-		json.addProperty("chest_frequency", getIntOrDefault(tag, "chest_frequency", defaults));
+		json.addProperty("pot_frequency", getFloatOrDefault(tag, "pot_frequency", defaults));
+		json.addProperty("chest_frequency", getFloatOrDefault(tag, "chest_frequency", defaults));
 
 		createFile(json, difference > 0);
 		difference = 0;
@@ -178,8 +178,8 @@ public class Config {
 
 		NbtCompound defaults = getDefaults();
 
-		tag.putInt("pot_frequency", getIntOrDefault(json, "pot_frequency", defaults));
-		tag.putInt("chest_frequency", getIntOrDefault(json, "chest_frequency", defaults));
+		tag.putFloat("pot_frequency", getFloatOrDefault(json, "pot_frequency", defaults));
+		tag.putFloat("chest_frequency", getFloatOrDefault(json, "chest_frequency", defaults));
 
 		createFile(toJson(tag), difference > 0);
 		difference = 0;

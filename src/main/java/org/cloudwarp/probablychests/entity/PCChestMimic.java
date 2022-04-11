@@ -56,22 +56,25 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable {
 	private static double moveSpeed = 1.5D;
 	private boolean isJumpAnimationPlaying = false;
 	private boolean isJumpAnimationFinished = false;
-	private int spawnWaitTimer = 8;
+	private int spawnWaitTimer = 5;
 
 
 	/*
-	TODO: reduce fall damage
 	TODO: make not drown
-	TODO: make it able to jump much higher
 	TODO: make fire resistant
 	TODO: add locking to block pos to be like a normal chest
-	TODO: add time between jumps
 	fix attacking through shield
-	add new chest
+	new loot tables
 	add new feature spawn mechanics
-	add on hit and on explosion for spawning mimic
-	add wand to make a chest a mimic
+	fix item drop for explosion and set resistance back to 2
 	add configs
+	add mimic key shards to loot table
+	add survival way to make pet mimic using mimic core mixed with mimic key to make friendly? mimic key
+	see if changing the pitch to match velocity makes the mimic dive and stuff
+	play sound on mimic creation
+	custom sounds
+
+	Make isNatural a block state because it seems like the variables in the block entity dont save between reloads
 	 */
 	public PCChestMimic(EntityType<? extends PathAwareEntity> entityType, World world) {
 		super(entityType, world);
@@ -122,7 +125,7 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable {
 	}
 
 	private <E extends IAnimatable> PlayState devMovement(AnimationEvent<E> animationEvent) {
-		printStates();
+		//printStates();
 		if(isJumping() && !this.isJumpAnimationFinished){
 			if(!this.isJumpAnimationPlaying){
 				animationEvent.getController().setAnimationSpeed(2D);

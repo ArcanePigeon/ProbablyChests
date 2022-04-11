@@ -3,6 +3,8 @@
   "values": [
     "probablychests:lush_chest",
     "probablychests:normal_chest",
-    "probablychests:rocky_chest"
+    "probablychests:rocky_chest",
+    "probablychests:stone_chest",
+    "probablychests:gold_chest"
   ]
 }

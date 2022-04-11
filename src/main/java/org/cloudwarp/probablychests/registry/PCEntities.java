@@ -26,10 +26,22 @@ public class PCEntities {
 			new Identifier(ProbablyChests.MOD_ID, "rocky_chest_mimic"),
 			FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, PCChestMimic::new).dimensions(EntityDimensions.fixed(0.9f, 0.9f)).build()
 	);
+	public static final EntityType<PCChestMimic> STONE_CHEST_MIMIC = Registry.register(
+			Registry.ENTITY_TYPE,
+			new Identifier(ProbablyChests.MOD_ID, "stone_chest_mimic"),
+			FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, PCChestMimic::new).dimensions(EntityDimensions.fixed(0.9f, 0.9f)).build()
+	);
+	public static final EntityType<PCChestMimic> GOLD_CHEST_MIMIC = Registry.register(
+			Registry.ENTITY_TYPE,
+			new Identifier(ProbablyChests.MOD_ID, "gold_chest_mimic"),
+			FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, PCChestMimic::new).dimensions(EntityDimensions.fixed(0.9f, 0.9f)).build()
+	);
 
 	public static void init(){
 		FabricDefaultAttributeRegistry.register(NORMAL_CHEST_MIMIC, PCChestMimic.createMobAttributes());
 		FabricDefaultAttributeRegistry.register(LUSH_CHEST_MIMIC, PCChestMimic.createMobAttributes());
 		FabricDefaultAttributeRegistry.register(ROCKY_CHEST_MIMIC, PCChestMimic.createMobAttributes());
+		FabricDefaultAttributeRegistry.register(STONE_CHEST_MIMIC, PCChestMimic.createMobAttributes());
+		FabricDefaultAttributeRegistry.register(GOLD_CHEST_MIMIC, PCChestMimic.createMobAttributes());
 	}
 }

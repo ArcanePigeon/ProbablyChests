@@ -36,6 +36,7 @@ public class ProbablyChests implements ModInitializer {
 		PCBlockEntities.init();
 		PCBlocks.init();
 		PCEntities.init();
+		PCItems.init();
 		PCPlacementModifierType.init();
 		PCFeatures.init();
 		PCScreenHandlerType.registerScreenHandlers();

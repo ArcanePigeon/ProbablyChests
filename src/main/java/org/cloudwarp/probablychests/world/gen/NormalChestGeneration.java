@@ -12,11 +12,14 @@ import java.util.List;
 
 public class NormalChestGeneration {
 	public static void generateChest () {
+		BiomeModifications.addFeature(BiomeSelectors.all().and(BiomeSelectors.foundInOverworld()),
+				GenerationStep.Feature.UNDERGROUND_STRUCTURES, PCFeatures.NORMAL_CHEST_PLACED.getKey().get());
+		//---------------------------------------------------
 		BiomeModifications.addFeature(BiomeSelectors.all().and(BiomeSelectors.foundInOverworld()).and(context -> {
 					Biome biome = context.getBiome();
-					return biome.getTemperature() <= 0.5f || (biome.getTemperature() == 0.8 && biome.getDownfall() == 0.4f);
-				}).and(BiomeSelectors.excludeByKey(List.of(BiomeKeys.LUSH_CAVES,BiomeKeys.DRIPSTONE_CAVES))),
-				GenerationStep.Feature.UNDERGROUND_STRUCTURES, PCFeatures.NORMAL_CHEST_PLACED.getKey().get());
+					return biome.getTemperature() < 0.5f;
+				}),
+				GenerationStep.Feature.SURFACE_STRUCTURES, PCFeatures.NORMAL_CHEST_PLACED_SURFACE.getKey().get());
 		//---------------------------------------------------
 		BiomeModifications.addFeature(BiomeSelectors.all().and(BiomeSelectors.foundInTheNether()),
 				GenerationStep.Feature.UNDERGROUND_STRUCTURES, PCFeatures.NORMAL_CHEST_PLACED.getKey().get());

@@ -15,17 +15,16 @@ import net.minecraft.util.math.BlockPos;
 import org.cloudwarp.probablychests.ProbablyChests;
 import org.cloudwarp.probablychests.block.entity.PCChestBlockEntity;
 import org.cloudwarp.probablychests.entity.PCChestMimic;
-import org.cloudwarp.probablychests.registry.PCBlockEntities;
-import org.cloudwarp.probablychests.registry.PCBlocks;
-import org.cloudwarp.probablychests.registry.PCEntities;
-import org.cloudwarp.probablychests.registry.PCScreenHandlerType;
+import org.cloudwarp.probablychests.registry.*;
 import org.cloudwarp.probablychests.screenhandlers.PCScreenHandler;
 
 public enum PCChestTypes {
 
 	LUSH(54, 9, new Identifier(ProbablyChests.MOD_ID, "lush_chest"), "lush_chest"),
 	NORMAL(54, 9, new Identifier(ProbablyChests.MOD_ID, "normal_chest"), "normal_chest"),
-	ROCKY(54, 9, new Identifier(ProbablyChests.MOD_ID, "rocky_chest"), "rocky_chest");
+	ROCKY(54, 9, new Identifier(ProbablyChests.MOD_ID, "rocky_chest"), "rocky_chest"),
+	STONE(54, 9, new Identifier(ProbablyChests.MOD_ID, "stone_chest"), "stone_chest"),
+	GOLD(54, 9, new Identifier(ProbablyChests.MOD_ID, "gold_chest"), "gold_chest");
 
 
 	public final int size;
@@ -45,7 +44,20 @@ public enum PCChestTypes {
 			case LUSH -> PCEntities.LUSH_CHEST_MIMIC;
 			case ROCKY -> PCEntities.ROCKY_CHEST_MIMIC;
 			case NORMAL -> PCEntities.NORMAL_CHEST_MIMIC;
+			case STONE -> PCEntities.STONE_CHEST_MIMIC;
+			case GOLD -> PCEntities.GOLD_CHEST_MIMIC;
 			default -> PCEntities.NORMAL_CHEST_MIMIC;
+		};
+	}
+
+	public Identifier getLootTable(){
+		return switch(this){
+			case LUSH -> PCLootTables.LUSH_CHEST;
+			case ROCKY -> PCLootTables.ROCKY_CHEST;
+			case NORMAL -> PCLootTables.NORMAL_CHEST;
+			//case STONE -> PCLootTables.STONE_CHEST;
+			//case GOLD -> PCLootTables.GOLD_CHEST;
+			default -> PCLootTables.NORMAL_CHEST;
 		};
 	}
 
@@ -59,6 +71,8 @@ public enum PCChestTypes {
 			case LUSH -> PCBlockEntities.LUSH_CHEST_BLOCK_ENTITY;
 			case NORMAL -> PCBlockEntities.NORMAL_CHEST_BLOCK_ENTITY;
 			case ROCKY -> PCBlockEntities.ROCKY_CHEST_BLOCK_ENTITY;
+			case STONE -> PCBlockEntities.STONE_CHEST_BLOCK_ENTITY;
+			case GOLD -> PCBlockEntities.GOLD_CHEST_BLOCK_ENTITY;
 			default -> PCBlockEntities.NORMAL_CHEST_BLOCK_ENTITY;
 		};
 	}
@@ -68,6 +82,8 @@ public enum PCChestTypes {
 			case LUSH -> PCBlockEntities.LUSH_CHEST_BLOCK_ENTITY.instantiate(pos, state);
 			case NORMAL -> PCBlockEntities.NORMAL_CHEST_BLOCK_ENTITY.instantiate(pos, state);
 			case ROCKY -> PCBlockEntities.ROCKY_CHEST_BLOCK_ENTITY.instantiate(pos, state);
+			case STONE -> PCBlockEntities.STONE_CHEST_BLOCK_ENTITY.instantiate(pos, state);
+			case GOLD -> PCBlockEntities.GOLD_CHEST_BLOCK_ENTITY.instantiate(pos, state);
 			default -> PCBlockEntities.NORMAL_CHEST_BLOCK_ENTITY.instantiate(pos, state);
 		};
 	}
@@ -81,12 +97,16 @@ public enum PCChestTypes {
 		return switch (this) {
 			case LUSH, NORMAL -> FabricBlockSettings.of(Material.WOOD)
 					.hardness(2.0F)
-					.resistance(2.0F)
+					.resistance(10.0F)
 					.sounds(BlockSoundGroup.WOOD);
-			case ROCKY -> FabricBlockSettings.of(Material.STONE)
+			case ROCKY, STONE -> FabricBlockSettings.of(Material.STONE)
 					.hardness(2.0F)
-					.resistance(2.0F)
+					.resistance(10.0F)
 					.sounds(BlockSoundGroup.STONE);
+			case GOLD -> FabricBlockSettings.of(Material.METAL)
+					.hardness(2.0F)
+					.resistance(10.0F)
+					.sounds(BlockSoundGroup.METAL);
 			default -> FabricBlockSettings.of(Material.WOOD);
 		};
 	}

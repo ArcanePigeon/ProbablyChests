@@ -1,22 +1,17 @@
 package org.cloudwarp.probablychests.world.feature;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.entity.LootableContainerBlockEntity;
-import net.minecraft.tag.BiomeTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 import org.cloudwarp.probablychests.block.entity.PCChestBlockEntity;
 import org.cloudwarp.probablychests.registry.PCBlocks;
-import org.cloudwarp.probablychests.registry.PCLootTables;
 
 import java.util.Random;
 
-public class LushChestFeature extends Feature<PCChestFeatureConfig> {
-	public LushChestFeature (Codec<PCChestFeatureConfig> configCodec) {
+public class GoldChestFeature extends Feature<PCChestFeatureConfig> {
+	public GoldChestFeature (Codec<PCChestFeatureConfig> configCodec) {
 		super(configCodec);
 	}
 
@@ -26,7 +21,7 @@ public class LushChestFeature extends Feature<PCChestFeatureConfig> {
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		BlockPos pos = context.getOrigin();
 		PCChestFeatureConfig config = context.getConfig();
-		structureWorldAccess.setBlockState(pos, PCBlocks.LUSH_CHEST.getDefaultState(), 3);
+		structureWorldAccess.setBlockState(pos, PCBlocks.GOLD_CHEST.getDefaultState(), 3);
 		PCChestBlockEntity chest = (PCChestBlockEntity) structureWorldAccess.getBlockEntity(pos);
 		if(chest != null) {
 			chest.isNatural = true;
