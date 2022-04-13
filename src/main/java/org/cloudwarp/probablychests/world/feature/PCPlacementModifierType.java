@@ -8,6 +8,7 @@ import net.minecraft.world.gen.placementmodifier.PlacementModifierType;
 public class PCPlacementModifierType<P extends PlacementModifier> {
 	public static PlacementModifierType<PCGroundPlacementModifier> CHEST_SCAN;
 	public static PlacementModifierType<PCRarityFilterPlacementModifier> PC_RARITY;
+	public static PlacementModifierType<PCSolidGroundPlacementModifier> SOLID_CHECK;
 
 	private static <P extends PlacementModifier> PlacementModifierType<P> register (String id, Codec<P> codec) {
 		return Registry.register(Registry.PLACEMENT_MODIFIER_TYPE, id, () -> codec);
@@ -16,5 +17,6 @@ public class PCPlacementModifierType<P extends PlacementModifier> {
 	public static void init () {
 		CHEST_SCAN = register("chest_scan", PCGroundPlacementModifier.MODIFIER_CODEC);
 		PC_RARITY = register("pc_rarity", PCRarityFilterPlacementModifier.MODIFIER_CODEC);
+		SOLID_CHECK = register("sold_check", PCSolidGroundPlacementModifier.MODIFIER_CODEC);
 	}
 }

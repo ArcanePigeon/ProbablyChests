@@ -60,21 +60,22 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable {
 
 
 	/*
-	TODO: make not drown
-	TODO: make fire resistant
-	TODO: add locking to block pos to be like a normal chest
+	TODO:
+	make not drown
+	make fire resistant
+	add locking to block pos to be like a normal chest
 	fix attacking through shield
 	new loot tables
-	add new feature spawn mechanics
 	fix item drop for explosion and set resistance back to 2
-	add configs
-	add mimic key shards to loot table
 	add survival way to make pet mimic using mimic core mixed with mimic key to make friendly? mimic key
 	see if changing the pitch to match velocity makes the mimic dive and stuff
 	play sound on mimic creation
 	custom sounds
 
-	Make isNatural a block state because it seems like the variables in the block entity dont save between reloads
+	make mimic core 3d cube eye model?
+	make my mods ARR
+	change icons for mods
+	change name in mod credits
 	 */
 	public PCChestMimic(EntityType<? extends PathAwareEntity> entityType, World world) {
 		super(entityType, world);

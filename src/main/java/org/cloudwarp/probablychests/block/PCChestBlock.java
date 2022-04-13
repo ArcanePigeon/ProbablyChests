@@ -45,6 +45,7 @@ import net.minecraft.world.explosion.Explosion;
 import org.cloudwarp.probablychests.block.entity.PCChestBlockEntity;
 import org.cloudwarp.probablychests.entity.PCChestMimic;
 import org.cloudwarp.probablychests.registry.*;
+import org.cloudwarp.probablychests.utils.Config;
 import org.cloudwarp.probablychests.utils.PCChestState;
 import org.jetbrains.annotations.Nullable;
 
@@ -59,8 +60,6 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 	public static final EnumProperty<PCChestState> CHEST_STATE = PCProperties.PC_CHEST_STATE;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(1.0D, 0.0D, 1.0D, 15.0D, 14.0D, 15.0D);
 	private final PCChestTypes type;
-	private boolean hasMadeMimic = false;
-	private boolean hasSetLootTable = false;
 
 
 	public PCChestBlock (Settings settings, PCChestTypes type) {
@@ -91,26 +90,17 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 		if(world.getBlockEntity(pos) instanceof PCChestBlockEntity){
 			chest = (PCChestBlockEntity) world.getBlockEntity(pos);
 		}
-		System.out.println("A");
-		// WHY DOES IT THINK IT HAS ALREADY MADE A MIMIC????
-		System.out.println(chest.isMimic + "  " + hasMadeMimic + "  " + this.hasMadeMimic);
+		Config config = Config.getInstance();
 		if(chest != null) {
-			System.out.println("B");
 			if (! chest.hasBeenOpened && chest.isNatural) {
-				System.out.println("C");
 				chest.hasBeenOpened = true;
-				chest.isMimic = world.getRandom().nextFloat() < 0.5f;
-				System.out.println("D: " + chest.isMimic);
+				chest.isMimic = world.getRandom().nextFloat() < config.getMimicChance();
 				if(!chest.isMimic){
-					System.out.println("E");
-					hasSetLootTable = true;
 					LootableContainerBlockEntity.setLootTable(world, world.getRandom(), pos, this.type.getLootTable());
 				}
 			}
-			System.out.println(chest.isMimic + "  " + hasMadeMimic + "  " + this.hasMadeMimic);
-			if (world.getDifficulty() != Difficulty.PEACEFUL && chest.isMimic && ! this.hasMadeMimic) {
-				System.out.println("F");
-				hasMadeMimic = true;
+			if (world.getDifficulty() != Difficulty.PEACEFUL && chest.isMimic && ! chest.hasMadeMimic) {
+				chest.hasMadeMimic = true;
 				PCChestMimic mimic = new PCChestMimic(this.type.getMimicType(), world);
 				mimic.setPos(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D);
 				mimic.setYaw(state.get(FACING).asRotation());
@@ -135,9 +125,8 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 		if(world.getBlockEntity(pos) instanceof PCChestBlockEntity){
 			chest = (PCChestBlockEntity) world.getBlockEntity(pos);
 		}
-		System.out.println("G");
 		if(chest != null) {
-			System.out.println("H");
+			// TODO: add check for empty inventory before making mimic
 			if (player.getMainHandStack().isOf(PCItems.MIMIC_KEY) && !chest.isMimic) {
 				chest.isMimic = true;
 				if(!player.isCreative()){
@@ -152,12 +141,9 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 				}
 				return ActionResult.PASS;
 			}
-			System.out.println("I");
 			if(createMimic(world,pos,state)){
-				System.out.println("J");
 				return ActionResult.PASS;
 			}
-			System.out.println("K");
 		}
 		NamedScreenHandlerFactory namedScreenHandlerFactory = this.createScreenHandlerFactory(state, world, pos);
 		if (namedScreenHandlerFactory != null) {

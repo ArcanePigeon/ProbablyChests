@@ -45,11 +45,17 @@ public class Config {
 		return result;
 	}
 
-	public float getPotFrequency(){
-		return configData.getFloat("pot_frequency");
+	public float getPotSpawnChance (){
+		return configData.getFloat("pot_spawn_chance");
 	}
-	public float getChestFrequency(){
-		return configData.getFloat("chest_frequency");
+	public float getChestSpawnChance (){
+		return configData.getFloat("chest_spawn_chance");
+	}
+	public float getSurfaceChestSpawnChance (){
+		return configData.getFloat("surface_chest_spawn_chance");
+	}
+	public float getMimicChance (){
+		return configData.getFloat("mimic_chance");
 	}
 
 	public int getIntOrDefault (NbtCompound getFrom, String key, NbtCompound defaults) {
@@ -154,8 +160,10 @@ public class Config {
 	private NbtCompound getDefaults () {
 		NbtCompound defaultConfig = new NbtCompound();
 
-		defaultConfig.putFloat("pot_frequency", 0.8f);
-		defaultConfig.putFloat("chest_frequency", 0.25f);
+		defaultConfig.putFloat("pot_spawn_chance", 0.4f);
+		defaultConfig.putFloat("chest_spawn_chance", 0.20f);
+		defaultConfig.putFloat("surface_chest_spawn_chance", 0.02f);
+		defaultConfig.putFloat("mimic_chance", 0.45f);
 
 		return defaultConfig;
 	}
@@ -165,8 +173,10 @@ public class Config {
 
 		NbtCompound defaults = getDefaults();
 
-		json.addProperty("pot_frequency", getFloatOrDefault(tag, "pot_frequency", defaults));
-		json.addProperty("chest_frequency", getFloatOrDefault(tag, "chest_frequency", defaults));
+		json.addProperty("pot_spawn_chance", getFloatOrDefault(tag, "pot_spawn_chance", defaults));
+		json.addProperty("chest_spawn_chance", getFloatOrDefault(tag, "chest_spawn_chance", defaults));
+		json.addProperty("surface_chest_spawn_chance", getFloatOrDefault(tag, "surface_chest_spawn_chance", defaults));
+		json.addProperty("mimic_chance", getFloatOrDefault(tag, "mimic_chance", defaults));
 
 		createFile(json, difference > 0);
 		difference = 0;
@@ -178,8 +188,10 @@ public class Config {
 
 		NbtCompound defaults = getDefaults();
 
-		tag.putFloat("pot_frequency", getFloatOrDefault(json, "pot_frequency", defaults));
-		tag.putFloat("chest_frequency", getFloatOrDefault(json, "chest_frequency", defaults));
+		tag.putFloat("pot_spawn_chance", getFloatOrDefault(json, "pot_spawn_chance", defaults));
+		tag.putFloat("chest_spawn_chance", getFloatOrDefault(json, "chest_spawn_chance", defaults));
+		tag.putFloat("surface_chest_spawn_chance", getFloatOrDefault(json, "surface_chest_spawn_chance", defaults));
+		tag.putFloat("mimic_chance", getFloatOrDefault(json, "mimic_chance", defaults));
 
 		createFile(toJson(tag), difference > 0);
 		difference = 0;

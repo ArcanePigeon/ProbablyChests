@@ -47,6 +47,7 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 	public boolean isMimic = false;
 	public boolean isNatural = false;
 	public boolean hasBeenOpened = false;
+	public boolean hasMadeMimic = false;
 	private final ViewerCountManager stateManager = new ViewerCountManager() {
 
 		@Override
@@ -112,6 +113,10 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 		if (! this.deserializeLootTable(nbt)) {
 			Inventories.readNbt(nbt, this.inventory);
 		}
+		this.isMimic = nbt.getBoolean("isMimic");
+		this.isNatural = nbt.getBoolean("isNatural");
+		this.hasBeenOpened = nbt.getBoolean("hasBeenOpened");
+		this.hasMadeMimic = nbt.getBoolean("hasMadeMimic");
 	}
 
 	@Override
@@ -120,6 +125,10 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 		if (! this.serializeLootTable(nbt)) {
 			Inventories.writeNbt(nbt, this.inventory);
 		}
+		nbt.putBoolean("isMimic", this.isMimic);
+		nbt.putBoolean("isNatural", this.isNatural);
+		nbt.putBoolean("hasBeenOpened", this.hasBeenOpened);
+		nbt.putBoolean("hasMadeMimic", this.hasMadeMimic);
 	}
 
 	@Override
