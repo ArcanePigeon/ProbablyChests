@@ -51,9 +51,12 @@ public class PCGroundPlacementModifier extends PlacementModifier {
 	@Override
 	public Stream<BlockPos> getPositions (FeaturePlacementContext context, Random random, BlockPos pos) {
 		BlockPos.Mutable mutableTarget = pos.mutableCopy();
+		// get top of heightmap
 		int k = context.getTopY(this.heightmap, mutableTarget.getX(), mutableTarget.getZ());
+		// get which is lower
 		k = Math.min(this.maxHeight, k);
-		mutableTarget.set(mutableTarget.getX(),k - (1 + random.nextInt(Math.abs(context.getBottomY() - k))),mutableTarget.getZ());
+		//k - (1 + random.nextInt(Math.abs(context.getBottomY() - k)))
+		mutableTarget.set(mutableTarget.getX(),random.nextInt(context.getBottomY(),k-1),mutableTarget.getZ());
 		BlockPos.Mutable mutableDirection = mutableTarget.mutableCopy();
 		mutableDirection.move(Direction.DOWN);
 		StructureWorldAccess structureWorldAccess = context.getWorld();

@@ -76,6 +76,7 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable {
 	make my mods ARR
 	change icons for mods
 	change name in mod credits
+	make chests spawn with random rotations
 	 */
 	public PCChestMimic(EntityType<? extends PathAwareEntity> entityType, World world) {
 		super(entityType, world);

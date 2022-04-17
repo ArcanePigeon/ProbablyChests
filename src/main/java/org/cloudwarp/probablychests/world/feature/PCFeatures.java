@@ -3,6 +3,7 @@ package org.cloudwarp.probablychests.world.feature;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.floatprovider.UniformFloatProvider;
+import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.Heightmap;
@@ -11,6 +12,8 @@ import net.minecraft.world.gen.feature.*;
 import net.minecraft.world.gen.placementmodifier.*;
 import org.cloudwarp.probablychests.ProbablyChests;
 import org.cloudwarp.probablychests.utils.Config;
+
+import java.util.List;
 
 public class PCFeatures {
 
@@ -86,78 +89,86 @@ public class PCFeatures {
 		float potRarity = config.getPotSpawnChance();
 		float surfaceChestRarity = config.getSurfaceChestSpawnChance();
 		//-----------------------------------
-		LUSH_CHEST_PLACED = PlacedFeatures.register("lush_chest_placed",
+		LUSH_CHEST_PLACED = register(ProbablyChests.id("lush_chest_placed"),
 				LUSH_CHEST, PCRarityFilterPlacementModifier.of(chestRarity),  SquarePlacementModifier.of(),
 				PCGroundPlacementModifier.of(Direction.DOWN, BlockPredicate.hasSturdyFace(Direction.UP), BlockPredicate.IS_AIR,
 						20, Heightmap.Type.WORLD_SURFACE_WG, 300),
 				BiomePlacementModifier.of());
-		LUSH_CHEST_PLACED_SURFACE = PlacedFeatures.register("lush_chest_placed_surface",
+		LUSH_CHEST_PLACED_SURFACE = register(ProbablyChests.id("lush_chest_placed_surface"),
 				LUSH_CHEST_SURFACE, SquarePlacementModifier.of(), PlacedFeatures.MOTION_BLOCKING_HEIGHTMAP,
 				PCRarityFilterPlacementModifier.of(surfaceChestRarity), PCSolidGroundPlacementModifier.of(BlockPredicate.hasSturdyFace(Direction.UP)),
 				BiomePlacementModifier.of());
 		//------------------------------------------------
-		NORMAL_CHEST_PLACED = PlacedFeatures.register("normal_chest_placed",
+		NORMAL_CHEST_PLACED = register(ProbablyChests.id("normal_chest_placed"),
 				NORMAL_CHEST, PCRarityFilterPlacementModifier.of(chestRarity),  SquarePlacementModifier.of(),
 				PCGroundPlacementModifier.of(Direction.DOWN, BlockPredicate.hasSturdyFace(Direction.UP), BlockPredicate.IS_AIR,
 						20, Heightmap.Type.WORLD_SURFACE_WG, 300),
 				BiomePlacementModifier.of());
-		NORMAL_CHEST_PLACED_SURFACE = PlacedFeatures.register("normal_chest_placed_surface",
+		NORMAL_CHEST_PLACED_SURFACE = register(ProbablyChests.id("normal_chest_placed_surface"),
 				NORMAL_CHEST_SURFACE,  SquarePlacementModifier.of(), PlacedFeatures.MOTION_BLOCKING_HEIGHTMAP,
 				PCRarityFilterPlacementModifier.of(surfaceChestRarity), PCSolidGroundPlacementModifier.of(BlockPredicate.hasSturdyFace(Direction.UP)),
 				BiomePlacementModifier.of());
 		//------------------------------------------------
-		ROCKY_CHEST_PLACED = PlacedFeatures.register("rocky_chest_placed",
+		ROCKY_CHEST_PLACED = register(ProbablyChests.id("rocky_chest_placed"),
 				ROCKY_CHEST, PCRarityFilterPlacementModifier.of(chestRarity),  SquarePlacementModifier.of(),
 				PCGroundPlacementModifier.of(Direction.DOWN, BlockPredicate.hasSturdyFace(Direction.UP), BlockPredicate.IS_AIR,
 						20, Heightmap.Type.WORLD_SURFACE_WG, 300),
 				BiomePlacementModifier.of());
-		ROCKY_CHEST_PLACED_SURFACE = PlacedFeatures.register("rocky_chest_placed_surface",
+		ROCKY_CHEST_PLACED_SURFACE = register(ProbablyChests.id("rocky_chest_placed_surface"),
 				ROCKY_CHEST_SURFACE,  SquarePlacementModifier.of(), PlacedFeatures.MOTION_BLOCKING_HEIGHTMAP,
 				PCRarityFilterPlacementModifier.of(surfaceChestRarity), PCSolidGroundPlacementModifier.of(BlockPredicate.hasSturdyFace(Direction.UP)),
 				BiomePlacementModifier.of());
 		//---------------------------------------------------------
-		STONE_CHEST_PLACED = PlacedFeatures.register("stone_chest_placed",
+		STONE_CHEST_PLACED = register(ProbablyChests.id("stone_chest_placed"),
 				STONE_CHEST, PCRarityFilterPlacementModifier.of(chestRarity),  SquarePlacementModifier.of(),
 				PCGroundPlacementModifier.of(Direction.DOWN, BlockPredicate.hasSturdyFace(Direction.UP), BlockPredicate.IS_AIR,
-						20, Heightmap.Type.WORLD_SURFACE_WG, 0),
+						20, Heightmap.Type.WORLD_SURFACE_WG, 64),
 				BiomePlacementModifier.of());
-		GOLD_CHEST_PLACED = PlacedFeatures.register("gold_chest_placed",
+		GOLD_CHEST_PLACED = register(ProbablyChests.id("gold_chest_placed"),
 				GOLD_CHEST, PCRarityFilterPlacementModifier.of(chestRarity),  SquarePlacementModifier.of(),
 				PCGroundPlacementModifier.of(Direction.DOWN, BlockPredicate.hasSturdyFace(Direction.UP), BlockPredicate.IS_AIR,
-						20, Heightmap.Type.WORLD_SURFACE_WG, 0));
+						20, Heightmap.Type.WORLD_SURFACE_WG, 64));
 		//------------------------------------------------
-		NORMAL_POT_PLACED = PlacedFeatures.register("normal_pot_placed",
+		NORMAL_POT_PLACED = register(ProbablyChests.id("normal_pot_placed"),
 				NORMAL_POT, PCRarityFilterPlacementModifier.of(potRarity), CountPlacementModifier.of(8),  SquarePlacementModifier.of(),
 				PCGroundPlacementModifier.of(Direction.DOWN, BlockPredicate.hasSturdyFace(Direction.UP), BlockPredicate.IS_AIR,
 						20, Heightmap.Type.WORLD_SURFACE_WG, 300),
 				BiomePlacementModifier.of());
-		LUSH_POT_PLACED = PlacedFeatures.register("lush_pot_placed",
+		LUSH_POT_PLACED = register(ProbablyChests.id("lush_pot_placed"),
 				LUSH_POT, PCRarityFilterPlacementModifier.of(potRarity), CountPlacementModifier.of(8),  SquarePlacementModifier.of(),
 				PCGroundPlacementModifier.of(Direction.DOWN, BlockPredicate.hasSturdyFace(Direction.UP), BlockPredicate.IS_AIR,
 						20, Heightmap.Type.WORLD_SURFACE_WG, 300),
 				BiomePlacementModifier.of());
-		ROCKY_POT_PLACED = PlacedFeatures.register("rocky_pot_placed",
+		ROCKY_POT_PLACED = register(ProbablyChests.id("rocky_pot_placed"),
 				ROCKY_POT, PCRarityFilterPlacementModifier.of(potRarity), CountPlacementModifier.of(8),  SquarePlacementModifier.of(),
 				PCGroundPlacementModifier.of(Direction.DOWN, BlockPredicate.hasSturdyFace(Direction.UP), BlockPredicate.IS_AIR,
 						20, Heightmap.Type.WORLD_SURFACE_WG, 300),
 				BiomePlacementModifier.of());
-		NETHER_POT_PLACED = PlacedFeatures.register("nether_pot_placed",
+		NETHER_POT_PLACED = register(ProbablyChests.id("nether_pot_placed"),
 				Nether_POT, PCRarityFilterPlacementModifier.of(potRarity), CountPlacementModifier.of(8),  SquarePlacementModifier.of(),
 				PCGroundPlacementModifier.of(Direction.DOWN, BlockPredicate.hasSturdyFace(Direction.UP), BlockPredicate.IS_AIR,
 						20, Heightmap.Type.WORLD_SURFACE_WG, 300),
 				BiomePlacementModifier.of());
 		//-------------------
-		Registry.register(Registry.FEATURE, new Identifier(ProbablyChests.MOD_ID, "pc_lush_chest"), LUSH_CHEST_FEATURE);
-		Registry.register(Registry.FEATURE, new Identifier(ProbablyChests.MOD_ID, "pc_normal_chest"), NORMAL_CHEST_FEATURE);
-		Registry.register(Registry.FEATURE, new Identifier(ProbablyChests.MOD_ID, "pc_rocky_chest"), ROCKY_CHEST_FEATURE);
-		Registry.register(Registry.FEATURE, new Identifier(ProbablyChests.MOD_ID, "pc_lush_chest_surface"), LUSH_CHEST_SURFACE_FEATURE);
-		Registry.register(Registry.FEATURE, new Identifier(ProbablyChests.MOD_ID, "pc_normal_chest_surface"), NORMAL_CHEST_SURFACE_FEATURE);
-		Registry.register(Registry.FEATURE, new Identifier(ProbablyChests.MOD_ID, "pc_rocky_chest_surface"), ROCKY_CHEST_SURFACE_FEATURE);
-		Registry.register(Registry.FEATURE, new Identifier(ProbablyChests.MOD_ID, "pc_stone_chest"), STONE_CHEST_FEATURE);
-		Registry.register(Registry.FEATURE, new Identifier(ProbablyChests.MOD_ID, "pc_gold_chest"), GOLD_CHEST_FEATURE);
-		Registry.register(Registry.FEATURE, new Identifier(ProbablyChests.MOD_ID, "pc_normal_pot"), NORMAL_POT_FEATURE);
-		Registry.register(Registry.FEATURE, new Identifier(ProbablyChests.MOD_ID, "pc_lush_pot"), LUSH_POT_FEATURE);
-		Registry.register(Registry.FEATURE, new Identifier(ProbablyChests.MOD_ID, "pc_rocky_pot"), ROCKY_POT_FEATURE);
-		Registry.register(Registry.FEATURE, new Identifier(ProbablyChests.MOD_ID, "pc_nether_pot"), NETHER_POT_FEATURE);
+		Registry.register(Registry.FEATURE, ProbablyChests.id("pc_lush_chest"), LUSH_CHEST_FEATURE);
+		Registry.register(Registry.FEATURE, ProbablyChests.id("pc_normal_chest"), NORMAL_CHEST_FEATURE);
+		Registry.register(Registry.FEATURE, ProbablyChests.id("pc_rocky_chest"), ROCKY_CHEST_FEATURE);
+		Registry.register(Registry.FEATURE, ProbablyChests.id("pc_lush_chest_surface"), LUSH_CHEST_SURFACE_FEATURE);
+		Registry.register(Registry.FEATURE, ProbablyChests.id("pc_normal_chest_surface"), NORMAL_CHEST_SURFACE_FEATURE);
+		Registry.register(Registry.FEATURE, ProbablyChests.id("pc_rocky_chest_surface"), ROCKY_CHEST_SURFACE_FEATURE);
+		Registry.register(Registry.FEATURE, ProbablyChests.id("pc_stone_chest"), STONE_CHEST_FEATURE);
+		Registry.register(Registry.FEATURE, ProbablyChests.id("pc_gold_chest"), GOLD_CHEST_FEATURE);
+		Registry.register(Registry.FEATURE, ProbablyChests.id("pc_normal_pot"), NORMAL_POT_FEATURE);
+		Registry.register(Registry.FEATURE, ProbablyChests.id("pc_lush_pot"), LUSH_POT_FEATURE);
+		Registry.register(Registry.FEATURE, ProbablyChests.id("pc_rocky_pot"), ROCKY_POT_FEATURE);
+		Registry.register(Registry.FEATURE, ProbablyChests.id("pc_nether_pot"), NETHER_POT_FEATURE);
+	}
+
+	public static RegistryEntry<PlacedFeature> register(Identifier id, RegistryEntry<? extends ConfiguredFeature<?, ?>> registryEntry, List<PlacementModifier> modifiers) {
+		return BuiltinRegistries.add(BuiltinRegistries.PLACED_FEATURE, id, new PlacedFeature(RegistryEntry.upcast(registryEntry), List.copyOf(modifiers)));
+	}
+
+	public static RegistryEntry<PlacedFeature> register(Identifier id, RegistryEntry<? extends ConfiguredFeature<?, ?>> registryEntry, PlacementModifier... modifiers) {
+		return register(id, registryEntry, List.of(modifiers));
 	}
 }
