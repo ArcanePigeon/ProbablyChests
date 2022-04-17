@@ -71,6 +71,9 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable {
 	see if changing the pitch to match velocity makes the mimic dive and stuff
 	play sound on mimic creation
 	custom sounds
+	add better forced spread of chest locations
+	add minimum position for chests to spawn at in placement modifier
+	only 1 pet mimic at a time
 
 	make mimic core 3d cube eye model?
 	make my mods ARR

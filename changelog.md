@@ -31,3 +31,7 @@ All notable changes to this project will be documented in this file.
 - Config options for rarity are now a percent float value
 - New snazzy icon
 - The proper chest types now mine faster with right tools
+
+## [0.3.1] - 4/17/2022
+### Fixed
+- Fixed aether crash
