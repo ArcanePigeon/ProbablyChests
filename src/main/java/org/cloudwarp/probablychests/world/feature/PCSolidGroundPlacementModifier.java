@@ -2,10 +2,8 @@ package org.cloudwarp.probablychests.world.feature;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.blockpredicate.BlockPredicate;
 import net.minecraft.world.gen.feature.FeaturePlacementContext;
@@ -20,12 +18,11 @@ public class PCSolidGroundPlacementModifier extends PlacementModifier {
 
 	public static final Codec<PCSolidGroundPlacementModifier> MODIFIER_CODEC = RecordCodecBuilder.create((instance) -> instance.group(
 					(BlockPredicate.BASE_CODEC.fieldOf("target_condition")).forGetter(PCSolidGroundPlacementModifier -> PCSolidGroundPlacementModifier.targetPredicate)
-					)
+			)
 			.apply(instance, PCSolidGroundPlacementModifier::new));
 	//---------------------------------------------------
 
 	private final BlockPredicate targetPredicate;
-
 
 
 	private PCSolidGroundPlacementModifier (BlockPredicate targetPredicate) {

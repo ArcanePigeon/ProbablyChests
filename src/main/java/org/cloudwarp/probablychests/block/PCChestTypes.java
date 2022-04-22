@@ -1,13 +1,11 @@
 package org.cloudwarp.probablychests.block;
 
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
@@ -15,7 +13,10 @@ import net.minecraft.util.math.BlockPos;
 import org.cloudwarp.probablychests.ProbablyChests;
 import org.cloudwarp.probablychests.block.entity.PCChestBlockEntity;
 import org.cloudwarp.probablychests.entity.PCChestMimic;
-import org.cloudwarp.probablychests.registry.*;
+import org.cloudwarp.probablychests.registry.PCBlockEntities;
+import org.cloudwarp.probablychests.registry.PCEntities;
+import org.cloudwarp.probablychests.registry.PCLootTables;
+import org.cloudwarp.probablychests.registry.PCScreenHandlerType;
 import org.cloudwarp.probablychests.screenhandlers.PCScreenHandler;
 
 public enum PCChestTypes {
@@ -39,8 +40,8 @@ public enum PCChestTypes {
 		this.name = name;
 	}
 
-	public EntityType<PCChestMimic> getMimicType(){
-		return switch(this){
+	public EntityType<PCChestMimic> getMimicType () {
+		return switch (this) {
 			case LUSH -> PCEntities.LUSH_CHEST_MIMIC;
 			case ROCKY -> PCEntities.ROCKY_CHEST_MIMIC;
 			case NORMAL -> PCEntities.NORMAL_CHEST_MIMIC;
@@ -50,8 +51,8 @@ public enum PCChestTypes {
 		};
 	}
 
-	public Identifier getLootTable(){
-		return switch(this){
+	public Identifier getLootTable () {
+		return switch (this) {
 			case LUSH -> PCLootTables.LUSH_CHEST;
 			case ROCKY -> PCLootTables.ROCKY_CHEST;
 			case NORMAL -> PCLootTables.NORMAL_CHEST;
@@ -77,7 +78,7 @@ public enum PCChestTypes {
 		};
 	}
 
-	public PCChestBlockEntity makeEntity(BlockPos pos, BlockState state) {
+	public PCChestBlockEntity makeEntity (BlockPos pos, BlockState state) {
 		return switch (this) {
 			case LUSH -> PCBlockEntities.LUSH_CHEST_BLOCK_ENTITY.instantiate(pos, state);
 			case NORMAL -> PCBlockEntities.NORMAL_CHEST_BLOCK_ENTITY.instantiate(pos, state);
@@ -93,7 +94,8 @@ public enum PCChestTypes {
 			default -> PCScreenHandlerType.PC_CHEST;
 		};
 	}
-	public FabricBlockSettings setting() {
+
+	public FabricBlockSettings setting () {
 		return switch (this) {
 			case LUSH, NORMAL -> FabricBlockSettings.of(Material.WOOD)
 					.hardness(2.0F)
@@ -108,6 +110,17 @@ public enum PCChestTypes {
 					.resistance(10.0F)
 					.sounds(BlockSoundGroup.METAL);
 			default -> FabricBlockSettings.of(Material.WOOD);
+		};
+	}
+
+	public EntityType<? extends TameableEntity> getPetMimicType () {
+		return switch (this) {
+			case LUSH -> PCEntities.LUSH_CHEST_MIMIC_PET;
+			case ROCKY -> PCEntities.ROCKY_CHEST_MIMIC_PET;
+			case NORMAL -> PCEntities.NORMAL_CHEST_MIMIC_PET;
+			case STONE -> PCEntities.STONE_CHEST_MIMIC_PET;
+			case GOLD -> PCEntities.GOLD_CHEST_MIMIC_PET;
+			default -> PCEntities.NORMAL_CHEST_MIMIC_PET;
 		};
 	}
 }

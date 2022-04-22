@@ -12,6 +12,15 @@
   "entity.probablychests.lush_chest_mimic": "Lush Mimic",
   "entity.probablychests.normal_chest_mimic": "Mimic",
   "entity.probablychests.rocky_chest_mimic": "Rocky Mimic",
+  "entity.probablychests.stone_chest_mimic": "Stone Mimic",
+  "entity.probablychests.gold_chest_mimic": "Gold Mimic",
+  "entity.probablychests.lush_chest_mimic_pet": "Pet Lush Mimic",
+  "entity.probablychests.normal_chest_mimic_pet": "Pet Mimic",
+  "entity.probablychests.rocky_chest_mimic_pet": "Pet Rocky Mimic",
+  "entity.probablychests.stone_chest_mimic_pet": "Pet Stone Mimic",
+  "entity.probablychests.gold_chest_mimic_pet": "Pet Gold Mimic",
   "item.probablychests.mimic_key": "Mimic Key",
-  "item.probablychests.mimic_key_fragment": "Key Fragment"
+  "item.probablychests.mimic_key_fragment": "Key Fragment",
+  "item.probablychests.mimic_core": "Mimic Core",
+  "item.probablychests.pet_mimic_key": "Pet Mimic Key"
 }

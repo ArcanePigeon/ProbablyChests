@@ -55,11 +55,11 @@ public class PCGroundPlacementModifier extends PlacementModifier {
 		int k = context.getTopY(this.heightmap, mutableTarget.getX(), mutableTarget.getZ());
 		// get which is lower
 		k = Math.min(this.maxHeight, k);
-		if(context.getBottomY() >= k-1){
+		if (context.getBottomY() >= k - 1) {
 			return Stream.of(new BlockPos[0]);
 		}
 		//k - (1 + random.nextInt(Math.abs(context.getBottomY() - k)))
-		mutableTarget.set(mutableTarget.getX(),random.nextInt(context.getBottomY(),k-1),mutableTarget.getZ());
+		mutableTarget.set(mutableTarget.getX(), random.nextInt(context.getBottomY(), k - 1), mutableTarget.getZ());
 		BlockPos.Mutable mutableDirection = mutableTarget.mutableCopy();
 		mutableDirection.move(Direction.DOWN);
 		StructureWorldAccess structureWorldAccess = context.getWorld();

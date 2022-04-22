@@ -19,6 +19,12 @@ public class PCBlockEntities {
 	public static void init () {
 		BLOCK_ENTITY_TYPES.keySet().forEach(blockEntityType -> Registry.register(Registry.BLOCK_ENTITY_TYPE, BLOCK_ENTITY_TYPES.get(blockEntityType), blockEntityType));
 	}
+
+	private static <T extends BlockEntity> BlockEntityType<T> register (String name, BlockEntityType<T> type) {
+		BLOCK_ENTITY_TYPES.put(type, new Identifier(ProbablyChests.MOD_ID, name));
+		return type;
+	}
+
 	//--------------------------------------------------------------
 	public static final BlockEntityType<LushChestBlockEntity> LUSH_CHEST_BLOCK_ENTITY = register("lush_chest_block_entity", FabricBlockEntityTypeBuilder.create(LushChestBlockEntity::new, LUSH_CHEST).build(null));
 	public static final BlockEntityType<NormalChestBlockEntity> NORMAL_CHEST_BLOCK_ENTITY = register("normal_chest_block_entity", FabricBlockEntityTypeBuilder.create(NormalChestBlockEntity::new, NORMAL_CHEST).build(null));
@@ -26,9 +32,5 @@ public class PCBlockEntities {
 	public static final BlockEntityType<StoneChestBlockEntity> STONE_CHEST_BLOCK_ENTITY = register("stone_chest_block_entity", FabricBlockEntityTypeBuilder.create(StoneChestBlockEntity::new, STONE_CHEST).build(null));
 	public static final BlockEntityType<GoldChestBlockEntity> GOLD_CHEST_BLOCK_ENTITY = register("gold_chest_block_entity", FabricBlockEntityTypeBuilder.create(GoldChestBlockEntity::new, GOLD_CHEST).build(null));
 
-	private static <T extends BlockEntity> BlockEntityType<T> register (String name, BlockEntityType<T> type) {
-		BLOCK_ENTITY_TYPES.put(type, new Identifier(ProbablyChests.MOD_ID, name));
-		return type;
-	}
 
 }

@@ -35,3 +35,13 @@ All notable changes to this project will be documented in this file.
 ## [0.3.1] - 4/17/2022
 ### Fixed
 - Fixed aether crash
+
+## [0.3.2] - 4/21/2022
+### Added
+- Pet Mimics
+- Pet Mimic Key
+- Mimic Core
+### Changed
+- When a chest becomes a mimic or pet mimic its inventory will be stored in the entity instead of dropping
+### Fixed
+- Fixed crash when setting any spawn chance in the config to 0

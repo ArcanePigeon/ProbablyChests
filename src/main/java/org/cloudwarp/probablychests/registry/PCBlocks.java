@@ -6,7 +6,10 @@ import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.cloudwarp.probablychests.ProbablyChests;
-import org.cloudwarp.probablychests.block.*;
+import org.cloudwarp.probablychests.block.PCChestBlock;
+import org.cloudwarp.probablychests.block.PCChestTypes;
+import org.cloudwarp.probablychests.block.PCPot;
+import org.cloudwarp.probablychests.block.PCPotTypes;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -14,6 +17,7 @@ import java.util.Map;
 public class PCBlocks {
 	private static final Map<Block, Identifier> BLOCKS = new LinkedHashMap<>();
 	private static final Map<Item, Identifier> ITEMS = new LinkedHashMap<>();
+	//---------------------------
 	public static final Block LUSH_CHEST = create("lush_chest", new PCChestBlock(PCChestTypes.LUSH.setting(), PCChestTypes.LUSH), true);
 	public static final Block NORMAL_CHEST = create("normal_chest", new PCChestBlock(PCChestTypes.NORMAL.setting(), PCChestTypes.NORMAL), true);
 	public static final Block ROCKY_CHEST = create("rocky_chest", new PCChestBlock(PCChestTypes.ROCKY.setting(), PCChestTypes.ROCKY), true);

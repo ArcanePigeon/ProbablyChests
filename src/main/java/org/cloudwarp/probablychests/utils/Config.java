@@ -45,16 +45,19 @@ public class Config {
 		return result;
 	}
 
-	public float getPotSpawnChance (){
+	public float getPotSpawnChance () {
 		return configData.getFloat("pot_spawn_chance");
 	}
-	public float getChestSpawnChance (){
+
+	public float getChestSpawnChance () {
 		return configData.getFloat("chest_spawn_chance");
 	}
-	public float getSurfaceChestSpawnChance (){
+
+	public float getSurfaceChestSpawnChance () {
 		return configData.getFloat("surface_chest_spawn_chance");
 	}
-	public float getMimicChance (){
+
+	public float getMimicChance () {
 		return configData.getFloat("mimic_chance");
 	}
 

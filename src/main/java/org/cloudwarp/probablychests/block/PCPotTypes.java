@@ -19,7 +19,8 @@ public enum PCPotTypes {
 		this.texture = texture;
 
 	}
-	public FabricBlockSettings setting() {
+
+	public FabricBlockSettings setting () {
 		return switch (this) {
 			case LUSH, NORMAL -> FabricBlockSettings.of(Material.GLASS)
 					.hardness(1.0F)

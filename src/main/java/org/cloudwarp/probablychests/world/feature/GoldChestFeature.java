@@ -23,7 +23,7 @@ public class GoldChestFeature extends Feature<PCChestFeatureConfig> {
 		PCChestFeatureConfig config = context.getConfig();
 		structureWorldAccess.setBlockState(pos, PCBlocks.GOLD_CHEST.getDefaultState(), 3);
 		PCChestBlockEntity chest = (PCChestBlockEntity) structureWorldAccess.getBlockEntity(pos);
-		if(chest != null) {
+		if (chest != null) {
 			chest.isNatural = true;
 		}
 		//structureWorldAccess.setBlockState(pos, Blocks.GLOWSTONE.getDefaultState(), 3);
