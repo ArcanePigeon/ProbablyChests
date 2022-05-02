@@ -61,6 +61,19 @@ public class Config {
 		return configData.getFloat("mimic_chance");
 	}
 
+	public boolean getEasierMimics () {
+		return configData.getBoolean("easier_mimics");
+	}
+
+	public boolean getDoSpawnNaturalMimics () {
+		return configData.getBoolean("spawn_natural_mimics");
+	}
+
+	public float getNaturalMimicSpawnRate () {
+		return configData.getFloat("natural_mimic_spawn_rate_modifier");
+	}
+
+
 	public int getIntOrDefault (NbtCompound getFrom, String key, NbtCompound defaults) {
 		if (getFrom.contains(key)) {
 			return getFrom.getInt(key);
@@ -166,7 +179,11 @@ public class Config {
 		defaultConfig.putFloat("pot_spawn_chance", 0.4f);
 		defaultConfig.putFloat("chest_spawn_chance", 0.20f);
 		defaultConfig.putFloat("surface_chest_spawn_chance", 0.02f);
-		defaultConfig.putFloat("mimic_chance", 0.45f);
+		defaultConfig.putFloat("mimic_chance", 0.35f);
+		defaultConfig.putBoolean("easier_mimics", false);
+		defaultConfig.putBoolean("spawn_natural_mimics", true);
+		defaultConfig.putFloat("natural_mimic_spawn_rate_modifier", 0.3f);
+		//defaultConfig.putInt("max_pet_mimics", 2);
 
 		return defaultConfig;
 	}
@@ -180,6 +197,11 @@ public class Config {
 		json.addProperty("chest_spawn_chance", getFloatOrDefault(tag, "chest_spawn_chance", defaults));
 		json.addProperty("surface_chest_spawn_chance", getFloatOrDefault(tag, "surface_chest_spawn_chance", defaults));
 		json.addProperty("mimic_chance", getFloatOrDefault(tag, "mimic_chance", defaults));
+		json.addProperty("easier_mimics", getBooleanOrDefault(tag, "easier_mimics", defaults));
+		json.addProperty("spawn_natural_mimics", getBooleanOrDefault(tag, "spawn_natural_mimics", defaults));
+		json.addProperty("natural_mimic_spawn_rate_modifier", getFloatOrDefault(tag, "natural_mimic_spawn_rate_modifier", defaults));
+
+		//json.addProperty("max_pet_mimics", getIntOrDefault(tag, "max_pet_mimics", defaults));
 
 		createFile(json, difference > 0);
 		difference = 0;
@@ -195,6 +217,10 @@ public class Config {
 		tag.putFloat("chest_spawn_chance", getFloatOrDefault(json, "chest_spawn_chance", defaults));
 		tag.putFloat("surface_chest_spawn_chance", getFloatOrDefault(json, "surface_chest_spawn_chance", defaults));
 		tag.putFloat("mimic_chance", getFloatOrDefault(json, "mimic_chance", defaults));
+		tag.putBoolean("easier_mimics", getBooleanOrDefault(json, "easier_mimics", defaults));
+		tag.putBoolean("spawn_natural_mimics", getBooleanOrDefault(json, "spawn_natural_mimics", defaults));
+		tag.putFloat("natural_mimic_spawn_rate_modifier", getFloatOrDefault(json, "natural_mimic_spawn_rate_modifier", defaults));
+		//tag.putInt("max_pet_mimics", getIntOrDefault(json, "max_pet_mimics", defaults));
 
 		createFile(toJson(tag), difference > 0);
 		difference = 0;

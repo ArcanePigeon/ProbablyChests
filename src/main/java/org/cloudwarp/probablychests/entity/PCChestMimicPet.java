@@ -114,7 +114,6 @@ public class PCChestMimicPet extends TameableEntity implements IAnimatable, Tame
 	fix attacking through shield
 	new loot tables
 	fix item drop for explosion and set resistance back to 2
-	add survival way to make pet mimic using mimic core mixed with mimic key to make friendly? mimic key
 	see if changing the pitch to match velocity makes the mimic dive and stuff
 	play sound on mimic creation
 	custom sounds
@@ -174,6 +173,7 @@ public class PCChestMimicPet extends TameableEntity implements IAnimatable, Tame
 				if(player.isSneaking()) {
 					if (this.isOwner(player)) {
 						this.setSitting(! this.isSitting());
+						this.setIsSleeping(this.isSitting());
 						this.jumping = false;
 						this.navigation.stop();
 						this.setTarget((LivingEntity) null);
@@ -182,10 +182,10 @@ public class PCChestMimicPet extends TameableEntity implements IAnimatable, Tame
 
 					return actionResult;
 				}else{
-					if (this.isGrounded() &&  this.canMoveVoluntarily()) {
+					if (this.isGrounded() &&  this.canMoveVoluntarily() && !this.world.isClient) {
 						this.openGui(player);
-						return ActionResult.success(this.world.isClient());
 					}
+					return ActionResult.success(this.world.isClient());
 				}
 			}
 		} else if (itemStack.isOf(PCItems.MIMIC_KEY)) {
@@ -198,14 +198,16 @@ public class PCChestMimicPet extends TameableEntity implements IAnimatable, Tame
 				this.navigation.stop();
 				this.setTarget((LivingEntity) null);
 				this.setSitting(true);
+				this.setIsSleeping(this.isSitting());
 				this.world.sendEntityStatus(this, (byte) 7);
 			} else {
 				this.world.sendEntityStatus(this, (byte) 6);
 			}
 
 			return ActionResult.SUCCESS;
+		}else{
+			return super.interactMob(player, hand);
 		}
-		return super.interactMob(player, hand);
 	}
 
 	@Override
@@ -284,7 +286,7 @@ public class PCChestMimicPet extends TameableEntity implements IAnimatable, Tame
 			this.isJumpAnimationFinished = false;
 			this.isJumpAnimationPlaying = false;
 			animationEvent.getController().setAnimation(SLEEPING);
-		} else if (this.isIdle()) {
+		} else if (!this.isSleeping()) {
 			this.isJumpAnimationFinished = false;
 			this.isJumpAnimationPlaying = false;
 			animationEvent.getController().setAnimation(IDLE);
@@ -392,17 +394,6 @@ public class PCChestMimicPet extends TameableEntity implements IAnimatable, Tame
 			this.setIsGrounded(true);
 			if (this.onGroundLastTick) {
 				this.setIsJumping(false);
-				if (! this.isSleeping() && ! this.isIdle()) {
-					timeUntilSleep = 150;
-					this.setIsIdle(true);
-				}
-				if (this.isIdle()) {
-					timeUntilSleep -= 1;
-					if (timeUntilSleep <= 0) {
-						this.setIsIdle(false);
-						this.setIsSleeping(true);
-					}
-				}
 			} else {
 				this.playSound(this.getLandingSound(), this.getSoundVolume(),
 						((this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F) / 0.8F);
@@ -411,8 +402,6 @@ public class PCChestMimicPet extends TameableEntity implements IAnimatable, Tame
 			if (spawnWaitTimer > 0) {
 				spawnWaitTimer -= 1;
 			} else {
-				this.setIsSleeping(false);
-				this.setIsIdle(false);
 				this.setIsGrounded(false);
 				this.setIsFlying(true);
 			}
@@ -423,7 +412,7 @@ public class PCChestMimicPet extends TameableEntity implements IAnimatable, Tame
 	}
 
 	protected boolean isDisallowedInPeaceful () {
-		return true;
+		return false;
 	}
 
 	public void writeCustomDataToNbt (NbtCompound nbt) {
@@ -764,6 +753,11 @@ public class PCChestMimicPet extends TameableEntity implements IAnimatable, Tame
 
 			((PCChestMimicPet.MimicMoveControl) this.mimic.getMoveControl()).move(4.2D);
 		}
+	}
+
+	@Override
+	public boolean canBreatheInWater() {
+		return true;
 	}
 
 }

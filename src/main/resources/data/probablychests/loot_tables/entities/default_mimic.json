@@ -7,12 +7,17 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "weight": 25,
+          "weight": 30,
           "name": "probablychests:mimic_core"
         },
         {
+          "type": "minecraft:item",
+          "weight": 30,
+          "name": "probablychests:mimic_key_fragment"
+        },
+        {
           "type": "minecraft:empty",
-          "weight": 75
+          "weight": 40
         }
       ]
     }

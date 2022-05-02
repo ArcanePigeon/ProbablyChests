@@ -149,32 +149,18 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 		}
 		//------------------------
 		if (chest != null) {
-			if (player.getMainHandStack().isOf(PCItems.PET_MIMIC_KEY)) {
+			ItemStack itemStack = player.getStackInHand(hand);
+			if (itemStack.isOf(PCItems.PET_MIMIC_KEY)) {
 				createPetMimic(world,pos,state,player);
 				if (! player.isCreative()) {
-					player.getMainHandStack().decrement(1);
+					itemStack.decrement(1);
 				}
 				return ActionResult.PASS;
 			}
-			if (player.getOffHandStack().isOf(PCItems.PET_MIMIC_KEY)) {
-				createPetMimic(world,pos,state,player);
-				if (! player.isCreative()) {
-					player.getOffHandStack().decrement(1);
-				}
-				return ActionResult.PASS;
-			}
-			// TODO: add check for empty inventory before making mimic
-			if (player.getMainHandStack().isOf(PCItems.MIMIC_KEY) && ! chest.isMimic) {
+			if (itemStack.isOf(PCItems.MIMIC_KEY) && ! chest.isMimic) {
 				chest.isMimic = true;
 				if (! player.isCreative()) {
-					player.getMainHandStack().decrement(1);
-				}
-				return ActionResult.PASS;
-			}
-			if (player.getOffHandStack().isOf(PCItems.MIMIC_KEY) && ! chest.isMimic) {
-				chest.isMimic = true;
-				if (! player.isCreative()) {
-					player.getOffHandStack().decrement(1);
+					itemStack.decrement(1);
 				}
 				return ActionResult.PASS;
 			}

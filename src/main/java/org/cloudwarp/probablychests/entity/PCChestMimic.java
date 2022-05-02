@@ -1,5 +1,6 @@
 package org.cloudwarp.probablychests.entity;
 
+import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
@@ -26,6 +27,9 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
+import org.cloudwarp.probablychests.registry.PCEntities;
+import org.cloudwarp.probablychests.utils.Config;
 import software.bernie.geckolib3.core.AnimationState;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
@@ -52,7 +56,9 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable {
 	private static final TrackedData<Boolean> IS_SLEEPING;
 	private static final TrackedData<Boolean> IS_GROUNDED;
 	private static final TrackedData<Boolean> IS_FLYING;
-	private static final double moveSpeed = 1.5D;
+	private static double moveSpeed = 1.5D;
+	private static int maxHealth = 50;
+	private static int maxDamage = 5;
 
 	static {
 		IS_JUMPING = DataTracker.registerData(PCChestMimic.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -71,6 +77,8 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable {
 	private int spawnWaitTimer = 5;
 	public SimpleInventory inventory = new SimpleInventory(54);
 
+	private static EntityType<? extends PathAwareEntity> mimicType;
+
 	/*
 	TODO:
 	make not drown
@@ -86,6 +94,10 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable {
 	add better forced spread of chest locations
 	add minimum position for chests to spawn at in placement modifier
 	only 1 pet mimic at a time
+	Add open and close sounds for pet mimic
+	add open, close, and sitting animations for pet mimic
+
+	idle will be partially open, sitting will be closed
 
 	make mimic core 3d cube eye model?
 	make my mods ARR
@@ -96,15 +108,22 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable {
 	public PCChestMimic (EntityType<? extends PathAwareEntity> entityType, World world) {
 		super(entityType, world);
 		this.ignoreCameraFrustum = true;
+		mimicType = entityType;
 		this.moveControl = new PCChestMimic.MimicMoveControl(this);
 	}
 
 	public static DefaultAttributeContainer.Builder createMobAttributes () {
+		Config config = Config.getInstance();
+		if(config.getEasierMimics()){
+			maxHealth = 30;
+			maxDamage = 3;
+			moveSpeed = 1D;
+		}
 		return LivingEntity.createLivingAttributes().add(EntityAttributes.GENERIC_FOLLOW_RANGE, 20.0D)
 				.add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 2)
-				.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 5)
+				.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, maxDamage)
 				.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 1)
-				.add(EntityAttributes.GENERIC_MAX_HEALTH, 50)
+				.add(EntityAttributes.GENERIC_MAX_HEALTH, maxHealth)
 				.add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.5D);
 	}
 
@@ -549,6 +568,17 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable {
 		public void tick () {
 
 		}
+	}
+
+	@Override
+	public boolean canSpawn(WorldView world) {
+		Config config = Config.getInstance();
+		return ((World)world).getRandom().nextFloat() < config.getNaturalMimicSpawnRate();
+	}
+
+	@Override
+	public boolean canBreatheInWater() {
+		return true;
 	}
 
 }
