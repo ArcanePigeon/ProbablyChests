@@ -760,4 +760,9 @@ public class PCChestMimicPet extends TameableEntity implements IAnimatable, Tame
 		return true;
 	}
 
+	@Override
+	public boolean canFreeze() {
+		return false;
+	}
+
 }

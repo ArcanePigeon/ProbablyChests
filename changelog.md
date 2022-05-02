@@ -61,3 +61,9 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - Fixed issue where opening a mimic with a bow would cause bow to fire when the gui was closed
 - Fixed pet mimics were not allowed in peaceful
+
+## [0.4.1] - 5/2/2022
+### Fixed
+- Fixed issue with mimics spawning too frequently
+- Fixed issue with mimics spawning in oceans
+- Fixed issue where mimics did not spawn in their proper biomes

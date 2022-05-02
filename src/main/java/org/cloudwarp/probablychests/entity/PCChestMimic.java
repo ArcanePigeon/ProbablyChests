@@ -1,10 +1,7 @@
 package org.cloudwarp.probablychests.entity;
 
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.*;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
@@ -16,6 +13,8 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.mob.HostileEntity;
+import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.SimpleInventory;
@@ -24,10 +23,10 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldView;
+import net.minecraft.world.*;
 import org.cloudwarp.probablychests.registry.PCEntities;
 import org.cloudwarp.probablychests.utils.Config;
 import software.bernie.geckolib3.core.AnimationState;
@@ -40,8 +39,9 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 import java.util.EnumSet;
+import java.util.Random;
 
-public class PCChestMimic extends PathAwareEntity implements IAnimatable {
+public class PCChestMimic extends PathAwareEntity implements IAnimatable, Monster {
 	// Animations
 	public static final AnimationBuilder IDLE = new AnimationBuilder().addAnimation("idle", true)
 			.addAnimation("flying", true);
@@ -110,6 +110,7 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable {
 		this.ignoreCameraFrustum = true;
 		mimicType = entityType;
 		this.moveControl = new PCChestMimic.MimicMoveControl(this);
+		this.experiencePoints = 5;
 	}
 
 	public static DefaultAttributeContainer.Builder createMobAttributes () {
@@ -571,14 +572,42 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable {
 	}
 
 	@Override
-	public boolean canSpawn(WorldView world) {
+	public boolean canSpawn(WorldAccess world, SpawnReason spawnReason) {
 		Config config = Config.getInstance();
-		return ((World)world).getRandom().nextFloat() < config.getNaturalMimicSpawnRate();
+		return this.getPathfindingFavor(this.getBlockPos(), world) >= 0.0F && world.getRandom().nextFloat() < config.getNaturalMimicSpawnRate();
+	}
+
+	public boolean cannotDespawn() {
+		return this.hasVehicle() || !this.inventory.isEmpty();
 	}
 
 	@Override
 	public boolean canBreatheInWater() {
 		return true;
+	}
+
+	@Override
+	public boolean canFreeze() {
+		return false;
+	}
+
+	public static boolean isSpawnDark(ServerWorldAccess world, BlockPos pos, Random random) {
+		if (world.getLightLevel(LightType.SKY, pos) > random.nextInt(32)) {
+			return false;
+		} else if (world.getLightLevel(LightType.BLOCK, pos) > 0) {
+			return false;
+		} else {
+			int i = world.toServerWorld().isThundering() ? world.getLightLevel(pos, 10) : world.getLightLevel(pos);
+			return i <= random.nextInt(8);
+		}
+	}
+
+	public static boolean canSpawnInDark(EntityType<? extends HostileEntity> type, ServerWorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
+		return world.getDifficulty() != Difficulty.PEACEFUL && isSpawnDark(world, pos, random) && canMobSpawn(type, world, spawnReason, pos, random);
+	}
+
+	public static boolean canSpawnIgnoreLightLevel(EntityType<? extends HostileEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
+		return world.getDifficulty() != Difficulty.PEACEFUL && canMobSpawn(type, world, spawnReason, pos, random);
 	}
 
 }
