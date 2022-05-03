@@ -67,3 +67,12 @@ All notable changes to this project will be documented in this file.
 - Fixed issue with mimics spawning too frequently
 - Fixed issue with mimics spawning in oceans
 - Fixed issue where mimics did not spawn in their proper biomes
+
+## [0.4.2] - 5/3/2022
+### Added
+- Config option to disable the creation of pet mimics
+### Changed
+- Sneaking while using a mimic key or pet mimic key will not use the key
+### Fixed
+- Fixed issue where using a pet mimic key on a chest that was marked as a mimic already would create 1 mimic and 1 pet mimic
+- Fixed issue with pet mimic animations and sitting state not updating correctly upon creation

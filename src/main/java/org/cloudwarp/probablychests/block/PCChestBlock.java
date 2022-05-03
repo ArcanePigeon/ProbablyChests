@@ -84,13 +84,14 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 		if (world.getBlockEntity(pos) instanceof PCChestBlockEntity) {
 			chest = (PCChestBlockEntity) world.getBlockEntity(pos);
 		}
-		Config config = Config.getInstance();
 		if (chest != null) {
-			if (! chest.hasBeenOpened && chest.isNatural) {
+			Config config = Config.getInstance();
+			if (! chest.hasBeenOpened && chest.isNatural && !chest.hasMadeMimic) {
 				chest.hasBeenOpened = true;
 				chest.isMimic = world.getRandom().nextFloat() < config.getMimicChance();
 				if (! chest.isMimic) {
 					LootableContainerBlockEntity.setLootTable(world, world.getRandom(), pos, this.type.getLootTable());
+					return false;
 				}
 			}
 			if (world.getDifficulty() != Difficulty.PEACEFUL && chest.isMimic && ! chest.hasMadeMimic) {
@@ -120,12 +121,24 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 			chest = (PCChestBlockEntity) world.getBlockEntity(pos);
 		}
 		if (chest != null) {
+			Config config = Config.getInstance();
+			if (! chest.hasBeenOpened && chest.isNatural) {
+				chest.hasBeenOpened = true;
+				chest.isMimic = world.getRandom().nextFloat() < config.getMimicChance();
+				if (! chest.isMimic) {
+					LootableContainerBlockEntity.setLootTable(world, world.getRandom(), pos, this.type.getLootTable());
+				}
+			}
 			PCChestMimicPet mimic = new PCChestMimicPet(this.type.getPetMimicType(), world);
 			mimic.setPos(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D);
 			mimic.setYaw(state.get(FACING).asRotation());
 			mimic.headYaw = mimic.getYaw();
 			mimic.bodyYaw = mimic.getYaw();
 			mimic.setOwner(player);
+			mimic.setTarget((LivingEntity) null);
+			mimic.setSitting(true);
+			mimic.setIsSleeping(mimic.isSitting());
+			mimic.world.sendEntityStatus(mimic, (byte) 7);
 			for(int i = 0; i < type.size; i++){
 				mimic.inventory.setStack(i,chest.getStack(i));
 				chest.setStack(i,ItemStack.EMPTY);
@@ -147,25 +160,27 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 		if (world.getBlockEntity(pos) instanceof PCChestBlockEntity) {
 			chest = (PCChestBlockEntity) world.getBlockEntity(pos);
 		}
+		Config config = Config.getInstance();
 		//------------------------
 		if (chest != null) {
 			ItemStack itemStack = player.getStackInHand(hand);
-			if (itemStack.isOf(PCItems.PET_MIMIC_KEY)) {
+			if (itemStack.isOf(PCItems.PET_MIMIC_KEY) && config.getAllowPetMimics() && !player.isSneaking()) {
+				chest.hasMadeMimic = true;
 				createPetMimic(world,pos,state,player);
 				if (! player.isCreative()) {
 					itemStack.decrement(1);
 				}
-				return ActionResult.PASS;
-			}
-			if (itemStack.isOf(PCItems.MIMIC_KEY) && ! chest.isMimic) {
+				return ActionResult.SUCCESS;
+			}else
+			if (itemStack.isOf(PCItems.MIMIC_KEY) && ! chest.isMimic && !player.isSneaking()) {
 				chest.isMimic = true;
 				if (! player.isCreative()) {
 					itemStack.decrement(1);
 				}
-				return ActionResult.PASS;
-			}
+				return ActionResult.SUCCESS;
+			}else
 			if (createMimic(world, pos, state)) {
-				return ActionResult.PASS;
+				return ActionResult.SUCCESS;
 			}
 		}
 		NamedScreenHandlerFactory namedScreenHandlerFactory = this.createScreenHandlerFactory(state, world, pos);
@@ -198,7 +213,11 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 		}
 
 		BlockEntity blockEntity = world.getBlockEntity(pos);
-		if (! createMimic(world, pos, state)) {
+		PCChestBlockEntity chest = null;
+		if (blockEntity instanceof PCChestBlockEntity) {
+			chest = (PCChestBlockEntity) blockEntity;
+		}
+		if (! createMimic(world, pos, state) || chest.hasMadeMimic) {
 			if (blockEntity instanceof Inventory) {
 				ItemScatterer.spawn(world, pos, (Inventory) ((Object) blockEntity));
 				world.updateComparators(pos, this);

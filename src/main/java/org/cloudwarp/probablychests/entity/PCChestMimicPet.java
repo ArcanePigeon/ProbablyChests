@@ -188,21 +188,16 @@ public class PCChestMimicPet extends TameableEntity implements IAnimatable, Tame
 					return ActionResult.success(this.world.isClient());
 				}
 			}
-		} else if (itemStack.isOf(PCItems.MIMIC_KEY)) {
+		} else if (itemStack.isOf(PCItems.PET_MIMIC_KEY)) {
 			if (! player.getAbilities().creativeMode) {
 				itemStack.decrement(1);
 			}
-
-			if (true) {
-				this.setOwner(player);
-				this.navigation.stop();
-				this.setTarget((LivingEntity) null);
-				this.setSitting(true);
-				this.setIsSleeping(this.isSitting());
-				this.world.sendEntityStatus(this, (byte) 7);
-			} else {
-				this.world.sendEntityStatus(this, (byte) 6);
-			}
+			this.setOwner(player);
+			this.navigation.stop();
+			this.setTarget((LivingEntity) null);
+			this.setSitting(true);
+			this.setIsSleeping(this.isSitting());
+			this.world.sendEntityStatus(this, (byte) 7);
 
 			return ActionResult.SUCCESS;
 		}else{

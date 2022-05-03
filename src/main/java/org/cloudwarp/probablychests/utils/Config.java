@@ -73,6 +73,10 @@ public class Config {
 		return configData.getFloat("natural_mimic_spawn_rate_modifier");
 	}
 
+	public boolean getAllowPetMimics () {
+		return configData.getBoolean("allow_pet_mimics");
+	}
+
 
 	public int getIntOrDefault (NbtCompound getFrom, String key, NbtCompound defaults) {
 		if (getFrom.contains(key)) {
@@ -183,6 +187,7 @@ public class Config {
 		defaultConfig.putBoolean("easier_mimics", false);
 		defaultConfig.putBoolean("spawn_natural_mimics", true);
 		defaultConfig.putFloat("natural_mimic_spawn_rate_modifier", 0.6f);
+		defaultConfig.putBoolean("allow_pet_mimics", true);
 		//defaultConfig.putInt("max_pet_mimics", 2);
 
 		return defaultConfig;
@@ -200,6 +205,8 @@ public class Config {
 		json.addProperty("easier_mimics", getBooleanOrDefault(tag, "easier_mimics", defaults));
 		json.addProperty("spawn_natural_mimics", getBooleanOrDefault(tag, "spawn_natural_mimics", defaults));
 		json.addProperty("natural_mimic_spawn_rate_modifier", getFloatOrDefault(tag, "natural_mimic_spawn_rate_modifier", defaults));
+		json.addProperty("allow_pet_mimics", getBooleanOrDefault(tag, "allow_pet_mimics", defaults));
+
 
 		//json.addProperty("max_pet_mimics", getIntOrDefault(tag, "max_pet_mimics", defaults));
 
@@ -220,6 +227,7 @@ public class Config {
 		tag.putBoolean("easier_mimics", getBooleanOrDefault(json, "easier_mimics", defaults));
 		tag.putBoolean("spawn_natural_mimics", getBooleanOrDefault(json, "spawn_natural_mimics", defaults));
 		tag.putFloat("natural_mimic_spawn_rate_modifier", getFloatOrDefault(json, "natural_mimic_spawn_rate_modifier", defaults));
+		tag.putBoolean("allow_pet_mimics", getBooleanOrDefault(json, "allow_pet_mimics", defaults));
 		//tag.putInt("max_pet_mimics", getIntOrDefault(json, "max_pet_mimics", defaults));
 
 		createFile(toJson(tag), difference > 0);
