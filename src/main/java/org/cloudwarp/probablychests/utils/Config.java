@@ -186,7 +186,7 @@ public class Config {
 		defaultConfig.putFloat("mimic_chance", 0.35f);
 		defaultConfig.putBoolean("easier_mimics", false);
 		defaultConfig.putBoolean("spawn_natural_mimics", true);
-		defaultConfig.putFloat("natural_mimic_spawn_rate_modifier", 0.6f);
+		defaultConfig.putFloat("natural_mimic_spawn_rate_modifier", 0.95f);
 		defaultConfig.putBoolean("allow_pet_mimics", true);
 		//defaultConfig.putInt("max_pet_mimics", 2);
 

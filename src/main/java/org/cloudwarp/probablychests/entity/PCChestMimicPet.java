@@ -1,6 +1,5 @@
 package org.cloudwarp.probablychests.entity;
 
-import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.entity.*;
@@ -15,7 +14,6 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -25,37 +23,25 @@ import net.minecraft.inventory.InventoryChangedListener;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerContext;
-import net.minecraft.screen.ScreenHandlerFactory;
-import net.minecraft.server.ServerConfigHandler;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Util;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
 import org.cloudwarp.probablychests.block.PCChestTypes;
 import org.cloudwarp.probablychests.registry.PCItems;
 import org.cloudwarp.probablychests.screenhandlers.PCMimicScreenHandler;
-import org.cloudwarp.probablychests.screenhandlers.PCScreenHandler;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib3.core.AnimationState;
 import software.bernie.geckolib3.core.IAnimatable;
@@ -67,8 +53,6 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 import java.util.EnumSet;
-import java.util.Optional;
-import java.util.UUID;
 
 public class PCChestMimicPet extends TameableEntity implements IAnimatable, Tameable, InventoryChangedListener {
 	// Animations
@@ -95,38 +79,16 @@ public class PCChestMimicPet extends TameableEntity implements IAnimatable, Tame
 		IS_FLYING = DataTracker.registerData(PCChestMimicPet.class, TrackedDataHandlerRegistry.BOOLEAN);
 	}
 
+	public SimpleInventory inventory = new SimpleInventory(54);
+	public boolean interacting;
+	PCChestTypes type;
 	private AnimationFactory factory = new AnimationFactory(this);
 	private boolean onGroundLastTick;
-	private int timeUntilSleep = 0;
 	private int jumpEndTimer = 10;
 	private boolean isJumpAnimationPlaying = false;
 	private boolean isJumpAnimationFinished = false;
 	private int spawnWaitTimer = 5;
-	public SimpleInventory inventory = new SimpleInventory(54);
-	PCChestTypes type;
-	public boolean interacting;
 
-	/*
-	TODO:
-	make not drown
-	make fire resistant
-	add locking to block pos to be like a normal chest
-	fix attacking through shield
-	new loot tables
-	fix item drop for explosion and set resistance back to 2
-	see if changing the pitch to match velocity makes the mimic dive and stuff
-	play sound on mimic creation
-	custom sounds
-	add better forced spread of chest locations
-	add minimum position for chests to spawn at in placement modifier
-	only 1 pet mimic at a time
-
-	make mimic core 3d cube eye model?
-	make my mods ARR
-	change icons for mods
-	change name in mod credits
-	make chests spawn with random rotations
-	 */
 	public PCChestMimicPet (EntityType<? extends TameableEntity> entityType, World world) {
 		super(entityType, world);
 		this.type = PCChestTypes.NORMAL;
@@ -168,9 +130,9 @@ public class PCChestMimicPet extends TameableEntity implements IAnimatable, Tame
 				this.heal((float) item.getFoodComponent().getHunger());
 				this.emitGameEvent(GameEvent.MOB_INTERACT, this.getCameraBlockPos());
 				return ActionResult.SUCCESS;
-			}else{
+			} else {
 				ActionResult actionResult = super.interactMob(player, hand);
-				if(player.isSneaking()) {
+				if (player.isSneaking()) {
 					if (this.isOwner(player)) {
 						this.setSitting(! this.isSitting());
 						this.setIsSleeping(this.isSitting());
@@ -181,8 +143,8 @@ public class PCChestMimicPet extends TameableEntity implements IAnimatable, Tame
 					}
 
 					return actionResult;
-				}else{
-					if (this.isGrounded() &&  this.canMoveVoluntarily() && !this.world.isClient) {
+				} else {
+					if (this.isGrounded() && this.canMoveVoluntarily() && ! this.world.isClient) {
 						this.openGui(player);
 					}
 					return ActionResult.success(this.world.isClient());
@@ -200,7 +162,7 @@ public class PCChestMimicPet extends TameableEntity implements IAnimatable, Tame
 			this.world.sendEntityStatus(this, (byte) 7);
 
 			return ActionResult.SUCCESS;
-		}else{
+		} else {
 			return super.interactMob(player, hand);
 		}
 	}
@@ -209,37 +171,18 @@ public class PCChestMimicPet extends TameableEntity implements IAnimatable, Tame
 	public void onInventoryChanged (Inventory sender) {
 	}
 
-
-	private class MimicScreenHandlerFactory implements NamedScreenHandlerFactory {
-		private PCChestMimicPet mimic() {
-			return PCChestMimicPet.this;
-		}
-
-		@Override
-		public Text getDisplayName() {
-			return this.mimic().getDisplayName();
-		}
-
-		@Override
-		public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-			var mimicInv = this.mimic().inventory;
-			return new PCMimicScreenHandler(type.getScreenHandlerType(), type, syncId, inv, mimicInv);
-		}
-	}
-
-	public void openGui(PlayerEntity player) {
-		if (player.world != null && !this.world.isClient()) {
+	public void openGui (PlayerEntity player) {
+		if (player.world != null && ! this.world.isClient()) {
 			this.interacting = true;
 			player.openHandledScreen(new MimicScreenHandlerFactory());
 		}
 	}
 
-
 	@Override
-	protected void dropEquipment(DamageSource source, int lootingMultiplier, boolean allowDrops) {
-		for (int i = 0; i < this.inventory.size(); ++i) {
+	protected void dropEquipment (DamageSource source, int lootingMultiplier, boolean allowDrops) {
+		for (int i = 0; i < this.inventory.size(); ++ i) {
 			ItemStack itemstack = this.inventory.getStack(i);
-			if (!itemstack.isEmpty()){
+			if (! itemstack.isEmpty()) {
 				this.dropStack(itemstack);
 			}
 		}
@@ -281,7 +224,7 @@ public class PCChestMimicPet extends TameableEntity implements IAnimatable, Tame
 			this.isJumpAnimationFinished = false;
 			this.isJumpAnimationPlaying = false;
 			animationEvent.getController().setAnimation(SLEEPING);
-		} else if (!this.isSleeping()) {
+		} else if (! this.isSleeping()) {
 			this.isJumpAnimationFinished = false;
 			this.isJumpAnimationPlaying = false;
 			animationEvent.getController().setAnimation(IDLE);
@@ -295,7 +238,6 @@ public class PCChestMimicPet extends TameableEntity implements IAnimatable, Tame
 		}
 		return PlayState.CONTINUE;
 	}
-
 
 	@Override
 	public void registerControllers (AnimationData animationData) {
@@ -349,33 +291,8 @@ public class PCChestMimicPet extends TameableEntity implements IAnimatable, Tame
 	protected float getActiveEyeHeight (EntityPose pose, EntityDimensions dimensions) {
 		return 0.625F * dimensions.height;
 	}
-	/*
-	protected boolean canAttack () {
-		return true;
-	}
 
-	protected float getDamageAmount () {
-		return (float) this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-	}
-
-	public void onPlayerCollision (PlayerEntity player) {
-		if (this.canAttack()) {
-			this.damage(player);
-		}
-
-	}
-
-	protected void damage (LivingEntity target) {
-		if (this.isAlive()) {
-			if (this.squaredDistanceTo(target) < 1.5D && this.canSee(target) && target.damage(DamageSource.mob(this), this.getDamageAmount())) {
-				this.playSound(SoundEvents.BLOCK_CHEST_CLOSE, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
-				this.applyDamageEffects(this, target);
-			}
-		}
-	}
-	*/
 	protected int getTicksUntilNextJump () {
-		//return this.random.nextInt(20) + 5;
 		return 10;
 	}
 
@@ -419,7 +336,7 @@ public class PCChestMimicPet extends TameableEntity implements IAnimatable, Tame
 		nbt.putBoolean("flying", this.isFlying());
 		nbt.putBoolean("sleeping", this.isSleeping());
 		NbtList listnbt = new NbtList();
-		for (int i = 0; i < this.inventory.size(); ++i) {
+		for (int i = 0; i < this.inventory.size(); ++ i) {
 			ItemStack itemstack = this.inventory.getStack(i);
 			NbtCompound compoundnbt = new NbtCompound();
 			compoundnbt.putByte("Slot", (byte) i);
@@ -439,7 +356,7 @@ public class PCChestMimicPet extends TameableEntity implements IAnimatable, Tame
 		this.setIsFlying(nbt.getBoolean("flying"));
 		this.setIsSleeping(nbt.getBoolean("sleeping"));
 		NbtList listnbt = nbt.getList("Inventory", 10);
-		for (int i = 0; i < listnbt.size(); ++i) {
+		for (int i = 0; i < listnbt.size(); ++ i) {
 			NbtCompound compoundnbt = listnbt.getCompound(i);
 			int j = compoundnbt.getByte("Slot") & 255;
 			this.inventory.setStack(j, ItemStack.fromNbt(compoundnbt));
@@ -502,6 +419,15 @@ public class PCChestMimicPet extends TameableEntity implements IAnimatable, Tame
 		super.initDataTracker();
 	}
 
+	@Override
+	public boolean canBreatheInWater () {
+		return true;
+	}
+
+	@Override
+	public boolean canFreeze () {
+		return false;
+	}
 
 	private static class MimicMoveControl extends MoveControl {
 		private final PCChestMimicPet mimic;
@@ -669,7 +595,7 @@ public class PCChestMimicPet extends TameableEntity implements IAnimatable, Tame
 				if (! this.mimic.isLeashed() && ! this.mimic.hasVehicle()) {
 					if (this.mimic.squaredDistanceTo(this.owner) >= 184.0D) {
 						this.tryTeleport();
-					}else{
+					} else {
 						((PCChestMimicPet.MimicMoveControl) this.mimic.getMoveControl()).move(moveSpeed);
 					}
 				}
@@ -723,7 +649,6 @@ public class PCChestMimicPet extends TameableEntity implements IAnimatable, Tame
 		}
 	}
 
-
 	static class SwimmingGoal extends Goal {
 		private final PCChestMimicPet mimic;
 
@@ -750,14 +675,21 @@ public class PCChestMimicPet extends TameableEntity implements IAnimatable, Tame
 		}
 	}
 
-	@Override
-	public boolean canBreatheInWater() {
-		return true;
-	}
+	private class MimicScreenHandlerFactory implements NamedScreenHandlerFactory {
+		private PCChestMimicPet mimic () {
+			return PCChestMimicPet.this;
+		}
 
-	@Override
-	public boolean canFreeze() {
-		return false;
+		@Override
+		public Text getDisplayName () {
+			return this.mimic().getDisplayName();
+		}
+
+		@Override
+		public ScreenHandler createMenu (int syncId, PlayerInventory inv, PlayerEntity player) {
+			var mimicInv = this.mimic().inventory;
+			return new PCMimicScreenHandler(type.getScreenHandlerType(), type, syncId, inv, mimicInv);
+		}
 	}
 
 }

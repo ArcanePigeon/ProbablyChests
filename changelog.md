@@ -76,3 +76,9 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - Fixed issue where using a pet mimic key on a chest that was marked as a mimic already would create 1 mimic and 1 pet mimic
 - Fixed issue with pet mimic animations and sitting state not updating correctly upon creation
+
+## [0.4.3] - 5/9/2022
+### Fixed
+- Fixed issue where mimics spawn in biomes they shouldn't
+- Fixed issue where mimics spawn in the air
+- fixed issue where mimics spawn way too frequently

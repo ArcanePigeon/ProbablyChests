@@ -19,9 +19,9 @@ public class PCEntitySpawns {
 	public static void init(){
 		Config config = Config.getInstance();
 		if(config.getDoSpawnNaturalMimics()) {
-			BiomeModifications.addSpawn(SurfaceChestGeneration.NormalChestSurfaceBiomeSelector, SpawnGroup.MONSTER, PCEntities.NORMAL_CHEST_MIMIC, 1, 1, 1);
-			BiomeModifications.addSpawn(SurfaceChestGeneration.RockyChestSurfaceBiomeSelector, SpawnGroup.MONSTER, PCEntities.ROCKY_CHEST_MIMIC, 1, 1, 1);
-			BiomeModifications.addSpawn(SurfaceChestGeneration.LushChestSurfaceBiomeSelector, SpawnGroup.MONSTER, PCEntities.LUSH_CHEST_MIMIC, 1, 1, 1);
+			BiomeModifications.addSpawn(BiomeSelectors.spawnsOneOf(EntityType.ZOMBIE), SpawnGroup.MONSTER, PCEntities.NORMAL_CHEST_MIMIC, 1, 1, 1);
+			BiomeModifications.addSpawn(BiomeSelectors.spawnsOneOf(EntityType.ZOMBIE), SpawnGroup.MONSTER, PCEntities.ROCKY_CHEST_MIMIC, 1, 1, 1);
+			BiomeModifications.addSpawn(BiomeSelectors.spawnsOneOf(EntityType.ZOMBIE), SpawnGroup.MONSTER, PCEntities.LUSH_CHEST_MIMIC, 1, 1, 1);
 			BiomeModifications.addSpawn(BiomeSelectors.spawnsOneOf(EntityType.ZOMBIE), SpawnGroup.MONSTER, PCEntities.GOLD_CHEST_MIMIC, 1, 1, 1);
 			BiomeModifications.addSpawn(BiomeSelectors.spawnsOneOf(EntityType.ZOMBIE), SpawnGroup.MONSTER, PCEntities.STONE_CHEST_MIMIC, 1, 1, 1);
 		}

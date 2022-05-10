@@ -1,6 +1,5 @@
 package org.cloudwarp.probablychests.entity;
 
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
@@ -23,11 +22,11 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.*;
-import org.cloudwarp.probablychests.registry.PCEntities;
 import org.cloudwarp.probablychests.utils.Config;
 import software.bernie.geckolib3.core.AnimationState;
 import software.bernie.geckolib3.core.IAnimatable;
@@ -68,6 +67,7 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable, Monste
 		IS_FLYING = DataTracker.registerData(PCChestMimic.class, TrackedDataHandlerRegistry.BOOLEAN);
 	}
 
+	public SimpleInventory inventory = new SimpleInventory(54);
 	private AnimationFactory factory = new AnimationFactory(this);
 	private boolean onGroundLastTick;
 	private int timeUntilSleep = 0;
@@ -75,47 +75,24 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable, Monste
 	private boolean isJumpAnimationPlaying = false;
 	private boolean isJumpAnimationFinished = false;
 	private int spawnWaitTimer = 5;
-	public SimpleInventory inventory = new SimpleInventory(54);
-
-	private static EntityType<? extends PathAwareEntity> mimicType;
 
 	/*
 	TODO:
-	make not drown
 	make fire resistant
-	add locking to block pos to be like a normal chest
 	fix attacking through shield
-	new loot tables
 	fix item drop for explosion and set resistance back to 2
-	add survival way to make pet mimic using mimic core mixed with mimic key to make friendly? mimic key
-	see if changing the pitch to match velocity makes the mimic dive and stuff
-	play sound on mimic creation
-	custom sounds
-	add better forced spread of chest locations
 	add minimum position for chests to spawn at in placement modifier
-	only 1 pet mimic at a time
-	Add open and close sounds for pet mimic
-	add open, close, and sitting animations for pet mimic
-
-	idle will be partially open, sitting will be closed
-
-	make mimic core 3d cube eye model?
-	make my mods ARR
-	change icons for mods
-	change name in mod credits
-	make chests spawn with random rotations
 	 */
 	public PCChestMimic (EntityType<? extends PathAwareEntity> entityType, World world) {
 		super(entityType, world);
 		this.ignoreCameraFrustum = true;
-		mimicType = entityType;
 		this.moveControl = new PCChestMimic.MimicMoveControl(this);
 		this.experiencePoints = 5;
 	}
 
 	public static DefaultAttributeContainer.Builder createMobAttributes () {
 		Config config = Config.getInstance();
-		if(config.getEasierMimics()){
+		if (config.getEasierMimics()) {
 			maxHealth = 30;
 			maxDamage = 3;
 			moveSpeed = 1D;
@@ -128,6 +105,17 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable, Monste
 				.add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.5D);
 	}
 
+	public static boolean isSpawnDark (ServerWorldAccess world, BlockPos pos, Random random) {
+		if (world.getLightLevel(LightType.SKY, pos) > random.nextInt(32)) {
+			return false;
+		} else if (world.getLightLevel(LightType.BLOCK, pos) > 0) {
+			return false;
+		} else {
+			int i = world.toServerWorld().isThundering() ? world.getLightLevel(pos, 10) : world.getLightLevel(pos);
+			return i <= random.nextInt(8);
+		}
+	}
+
 	protected void initGoals () {
 		this.goalSelector.add(2, new PCChestMimic.FaceTowardTargetGoal(this));
 		this.goalSelector.add(7, new PCChestMimic.IdleGoal(this));
@@ -137,10 +125,10 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable, Monste
 	}
 
 	@Override
-	protected void dropEquipment(DamageSource source, int lootingMultiplier, boolean allowDrops) {
-		for (int i = 0; i < this.inventory.size(); ++i) {
+	protected void dropEquipment (DamageSource source, int lootingMultiplier, boolean allowDrops) {
+		for (int i = 0; i < this.inventory.size(); ++ i) {
 			ItemStack itemstack = this.inventory.getStack(i);
-			if (!itemstack.isEmpty()){
+			if (! itemstack.isEmpty()) {
 				this.dropStack(itemstack);
 			}
 		}
@@ -197,7 +185,6 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable, Monste
 		return PlayState.CONTINUE;
 	}
 
-
 	@Override
 	public void registerControllers (AnimationData animationData) {
 		animationData.addAnimationController(new AnimationController(this, CONTROLLER_NAME, 0, this::devMovement));
@@ -238,7 +225,6 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable, Monste
 			jumpStrength = livingEntity.getY() - this.getY();
 			jumpStrength = jumpStrength <= 0 ? 1D : jumpStrength / 2.5D + 1.0D;
 		}
-		//moveSpeed = this.world.random.nextDouble(1.5D,2.1D);
 		this.setVelocity(vec3d.x, (double) this.getJumpVelocity() * jumpStrength, vec3d.z);
 		this.velocityDirty = true;
 		if (this.isGrounded() && this.jumpEndTimer <= 0) {
@@ -332,7 +318,7 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable, Monste
 		nbt.putBoolean("flying", this.isFlying());
 		nbt.putBoolean("sleeping", this.isSleeping());
 		NbtList listnbt = new NbtList();
-		for (int i = 0; i < this.inventory.size(); ++i) {
+		for (int i = 0; i < this.inventory.size(); ++ i) {
 			ItemStack itemstack = this.inventory.getStack(i);
 			NbtCompound compoundnbt = new NbtCompound();
 			compoundnbt.putByte("Slot", (byte) i);
@@ -352,7 +338,7 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable, Monste
 		this.setIsFlying(nbt.getBoolean("flying"));
 		this.setIsSleeping(nbt.getBoolean("sleeping"));
 		NbtList listnbt = nbt.getList("Inventory", 10);
-		for (int i = 0; i < listnbt.size(); ++i) {
+		for (int i = 0; i < listnbt.size(); ++ i) {
 			NbtCompound compoundnbt = listnbt.getCompound(i);
 			int j = compoundnbt.getByte("Slot") & 255;
 			this.inventory.setStack(j, ItemStack.fromNbt(compoundnbt));
@@ -407,6 +393,28 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable, Monste
 		this.dataTracker.startTracking(IS_IDLE, false);
 		this.dataTracker.startTracking(IS_SLEEPING, true);
 		super.initDataTracker();
+	}
+
+	public boolean cannotDespawn () {
+		return this.hasVehicle() || ! this.inventory.isEmpty();
+	}
+
+	@Override
+	public boolean canBreatheInWater () {
+		return true;
+	}
+
+	@Override
+	public boolean canFreeze () {
+		return false;
+	}
+
+	public static boolean canSpawn (EntityType<PCChestMimic> pcChestMimicEntityType, ServerWorldAccess serverWorldAccess, SpawnReason spawnReason, BlockPos blockPos, Random random) {
+		if(serverWorldAccess.isSkyVisible(blockPos)){
+			return false;
+		}
+		Config config = Config.getInstance();
+		return serverWorldAccess.getRandom().nextFloat() < config.getNaturalMimicSpawnRate();
 	}
 
 	private static class MimicMoveControl extends MoveControl {
@@ -569,45 +577,6 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable, Monste
 		public void tick () {
 
 		}
-	}
-
-	@Override
-	public boolean canSpawn(WorldAccess world, SpawnReason spawnReason) {
-		Config config = Config.getInstance();
-		return this.getPathfindingFavor(this.getBlockPos(), world) >= 0.0F && world.getRandom().nextFloat() < config.getNaturalMimicSpawnRate();
-	}
-
-	public boolean cannotDespawn() {
-		return this.hasVehicle() || !this.inventory.isEmpty();
-	}
-
-	@Override
-	public boolean canBreatheInWater() {
-		return true;
-	}
-
-	@Override
-	public boolean canFreeze() {
-		return false;
-	}
-
-	public static boolean isSpawnDark(ServerWorldAccess world, BlockPos pos, Random random) {
-		if (world.getLightLevel(LightType.SKY, pos) > random.nextInt(32)) {
-			return false;
-		} else if (world.getLightLevel(LightType.BLOCK, pos) > 0) {
-			return false;
-		} else {
-			int i = world.toServerWorld().isThundering() ? world.getLightLevel(pos, 10) : world.getLightLevel(pos);
-			return i <= random.nextInt(8);
-		}
-	}
-
-	public static boolean canSpawnInDark(EntityType<? extends HostileEntity> type, ServerWorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-		return world.getDifficulty() != Difficulty.PEACEFUL && isSpawnDark(world, pos, random) && canMobSpawn(type, world, spawnReason, pos, random);
-	}
-
-	public static boolean canSpawnIgnoreLightLevel(EntityType<? extends HostileEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-		return world.getDifficulty() != Difficulty.PEACEFUL && canMobSpawn(type, world, spawnReason, pos, random);
 	}
 
 }
