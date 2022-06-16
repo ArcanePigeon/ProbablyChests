@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '0.11-SNAPSHOT'
+    id 'fabric-loom' version '0.12-SNAPSHOT'
     id 'maven-publish'
     id "com.matthewprenger.cursegradle" version "1.4.0"
 }
@@ -38,10 +38,9 @@ dependencies {
 
     // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
     // You may need to force-disable transitiveness on them.
-    modImplementation "io.github.cottonmc:LibGui:5.3.2+1.18.2"
-    include "io.github.cottonmc:LibGui:5.3.2+1.18.2"
+    modImplementation include("io.github.cottonmc:LibGui:6.0.0-beta.5+1.19-pre1")
 
-    modImplementation 'software.bernie.geckolib:geckolib-fabric-1.18:3.0.36'
+    modImplementation 'software.bernie.geckolib:geckolib-fabric-1.19:3.1.2'
 }
 
 processResources {
@@ -104,7 +103,7 @@ curseforge {
     project {
         id = "601735"
         releaseType = "release"
-        addGameVersion "1.18.2"
+        addGameVersion "1.19"
         addGameVersion "Java 17"
         addGameVersion "Fabric"
         changelogType = "markdown"

@@ -10,7 +10,7 @@ import net.minecraft.world.gen.feature.FeaturePlacementContext;
 import net.minecraft.world.gen.placementmodifier.PlacementModifier;
 import net.minecraft.world.gen.placementmodifier.PlacementModifierType;
 
-import java.util.Random;
+import net.minecraft.util.math.random.Random;;
 import java.util.stream.Stream;
 
 public class PCSolidGroundPlacementModifier extends PlacementModifier {

@@ -2,13 +2,13 @@ package org.cloudwarp.probablychests.world.feature;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 import org.cloudwarp.probablychests.block.entity.PCChestBlockEntity;
 import org.cloudwarp.probablychests.registry.PCBlocks;
 
-import java.util.Random;
 
 public class GoldChestFeature extends Feature<PCChestFeatureConfig> {
 	public GoldChestFeature (Codec<PCChestFeatureConfig> configCodec) {

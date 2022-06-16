@@ -6,7 +6,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import org.apache.logging.log4j.Logger;
 import org.cloudwarp.probablychests.ProbablyChests;
 
@@ -311,7 +311,7 @@ public class Config {
 					q.add(value.getAsJsonObject());
 					continue;
 				}
-				player.sendMessage(new LiteralText("§6[§e" + key + "§6] §3 " + value), false);
+				player.sendMessage(Text.literal("§6[§e" + key + "§6] §3 " + value), false);
 			}
 		}
 	}

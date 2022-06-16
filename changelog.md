@@ -82,3 +82,14 @@ All notable changes to this project will be documented in this file.
 - Fixed issue where mimics spawn in biomes they shouldn't
 - Fixed issue where mimics spawn in the air
 - fixed issue where mimics spawn way too frequently
+
+## [0.4.4] - 6/16/2022
+### Updated
+- Now on 1.19!
+### Added
+- Added 1.19 items to loot tables
+### Changed
+- Added a limit to mimic jump height
+- Reduced aggro range of mimics
+- Updated item textures
+- Changed item group icon

@@ -12,7 +12,7 @@ import net.minecraft.world.gen.feature.FeaturePlacementContext;
 import net.minecraft.world.gen.placementmodifier.PlacementModifier;
 import net.minecraft.world.gen.placementmodifier.PlacementModifierType;
 
-import java.util.Random;
+import net.minecraft.util.math.random.Random;;
 import java.util.stream.Stream;
 
 public class PCGroundPlacementModifier extends PlacementModifier {
@@ -59,7 +59,7 @@ public class PCGroundPlacementModifier extends PlacementModifier {
 			return Stream.of(new BlockPos[0]);
 		}
 		//k - (1 + random.nextInt(Math.abs(context.getBottomY() - k)))
-		mutableTarget.set(mutableTarget.getX(), random.nextInt(context.getBottomY(), k - 1), mutableTarget.getZ());
+		mutableTarget.set(mutableTarget.getX(), random.nextBetween(context.getBottomY(), k - 1), mutableTarget.getZ());
 		BlockPos.Mutable mutableDirection = mutableTarget.mutableCopy();
 		mutableDirection.move(Direction.DOWN);
 		StructureWorldAccess structureWorldAccess = context.getWorld();
@@ -69,7 +69,7 @@ public class PCGroundPlacementModifier extends PlacementModifier {
 		for (int i = 0; i < this.maxSteps; ++ i) {
 			if (this.targetPredicate.test(structureWorldAccess, mutableTarget) &&
 					this.directionPredicate.test(structureWorldAccess, mutableDirection) &&
-					! BlockPredicate.matchingBlock(Blocks.BEDROCK, BlockPos.ORIGIN).test(structureWorldAccess, mutableDirection)) {
+					! BlockPredicate.matchingBlocks(BlockPos.ORIGIN, Blocks.BEDROCK).test(structureWorldAccess, mutableDirection)) {
 				return Stream.of(mutableTarget);
 			}
 			mutableTarget.move(this.direction);
@@ -80,7 +80,7 @@ public class PCGroundPlacementModifier extends PlacementModifier {
 		}
 		if (this.targetPredicate.test(structureWorldAccess, mutableTarget) &&
 				this.directionPredicate.test(structureWorldAccess, mutableDirection) &&
-				! BlockPredicate.matchingBlock(Blocks.BEDROCK, BlockPos.ORIGIN).test(structureWorldAccess, mutableDirection)) {
+				! BlockPredicate.matchingBlocks(BlockPos.ORIGIN, Blocks.BEDROCK).test(structureWorldAccess, mutableDirection)) {
 			return Stream.of(mutableTarget);
 		}
 		return Stream.of(new BlockPos[0]);

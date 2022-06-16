@@ -7,7 +7,7 @@ import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 import org.cloudwarp.probablychests.registry.PCBlocks;
 
-import java.util.Random;
+import net.minecraft.util.math.random.Random;;
 
 public class RockyPotFeature extends Feature<PCPotFeatureConfig> {
 	public RockyPotFeature (Codec<PCPotFeatureConfig> configCodec) {

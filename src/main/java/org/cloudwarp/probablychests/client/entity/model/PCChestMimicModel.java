@@ -9,24 +9,24 @@ public class PCChestMimicModel extends AnimatedGeoModel<PCChestMimic> {
 
 	private static final Identifier MODEL_IDENTIFIER = new Identifier(ProbablyChests.MOD_ID, "geo/pc_chest_mimic.json");
 	private static final Identifier ANIMATION_IDENTIFIER = new Identifier(ProbablyChests.MOD_ID, "animations/pc_chest_mimic.animation.json");
-	private Identifier TEXTURE_IDENTIFIER;
+	private final Identifier TEXTURE_IDENTIFIER;
 
 	public PCChestMimicModel (String texture) {
 		TEXTURE_IDENTIFIER = new Identifier(ProbablyChests.MOD_ID, "textures/entity/" + texture + ".png");
 	}
 
 	@Override
-	public Identifier getTextureLocation (PCChestMimic entity) {
+	public Identifier getTextureResource (PCChestMimic entity) {
 		return TEXTURE_IDENTIFIER;
 	}
 
 	@Override
-	public Identifier getModelLocation (PCChestMimic entity) {
+	public Identifier getModelResource (PCChestMimic entity) {
 		return MODEL_IDENTIFIER;
 	}
 
 	@Override
-	public Identifier getAnimationFileLocation (PCChestMimic entity) {
+	public Identifier getAnimationResource (PCChestMimic entity) {
 		return ANIMATION_IDENTIFIER;
 	}
 }

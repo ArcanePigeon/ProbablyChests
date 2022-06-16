@@ -134,22 +134,6 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 5,
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 3.0,
-                "max": 8.0
-              },
-              "add": false
-            }
-          ],
-          "name": "minecraft:clay_ball"
-        },
-        {
-          "type": "minecraft:item",
           "weight": 20,
           "functions": [
             {

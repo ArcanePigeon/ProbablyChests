@@ -7,7 +7,7 @@ import net.minecraft.world.gen.feature.FeaturePlacementContext;
 import net.minecraft.world.gen.placementmodifier.AbstractConditionalPlacementModifier;
 import net.minecraft.world.gen.placementmodifier.PlacementModifierType;
 
-import java.util.Random;
+import net.minecraft.util.math.random.Random;;
 
 public class PCRarityFilterPlacementModifier extends AbstractConditionalPlacementModifier {
 	public static final Codec<PCRarityFilterPlacementModifier> MODIFIER_CODEC;

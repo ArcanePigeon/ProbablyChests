@@ -18,7 +18,7 @@ import software.bernie.geckolib3.GeckoLib;
 public class ProbablyChests implements ModInitializer {
 	public static final Logger LOGGER = LogManager.getLogger();
 	public static final String MOD_ID = "probablychests";
-	public static final ItemGroup PROBABLY_CHESTS_GROUP = FabricItemGroupBuilder.build(new Identifier(MOD_ID, MOD_ID), () -> new ItemStack(PCBlocks.LUSH_CHEST));
+	public static final ItemGroup PROBABLY_CHESTS_GROUP = FabricItemGroupBuilder.build(new Identifier(MOD_ID, MOD_ID), () -> new ItemStack(PCBlocks.NORMAL_CHEST));
 	public static Config config;
 
 	public static Identifier id (String path) {

@@ -128,7 +128,6 @@ public class PCChestMimicPet extends TameableEntity implements IAnimatable, Tame
 					itemStack.decrement(1);
 				}
 				this.heal((float) item.getFoodComponent().getHunger());
-				this.emitGameEvent(GameEvent.MOB_INTERACT, this.getCameraBlockPos());
 				return ActionResult.SUCCESS;
 			} else {
 				ActionResult actionResult = super.interactMob(player, hand);

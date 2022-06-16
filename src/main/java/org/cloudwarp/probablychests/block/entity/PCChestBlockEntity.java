@@ -18,7 +18,6 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
@@ -44,10 +43,6 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 	public static final EnumProperty<PCChestState> CHEST_STATE = PCProperties.PC_CHEST_STATE;
 	private static final String CONTROLLER_NAME = "chestController";
 	private final AnimationFactory factory = new AnimationFactory(this);
-	public boolean isMimic = false;
-	public boolean isNatural = false;
-	public boolean hasBeenOpened = false;
-	public boolean hasMadeMimic = false;
 	private final ViewerCountManager stateManager = new ViewerCountManager() {
 
 		@Override
@@ -74,6 +69,10 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 			return false;
 		}
 	};
+	public boolean isMimic = false;
+	public boolean isNatural = false;
+	public boolean hasBeenOpened = false;
+	public boolean hasMadeMimic = false;
 	PCChestTypes type;
 	private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(54, ItemStack.EMPTY);
 
@@ -235,7 +234,7 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 
 	@Override
 	protected Text getContainerName () {
-		return new TranslatableText(getCachedState().getBlock().getTranslationKey());
+		return Text.translatable(getCachedState().getBlock().getTranslationKey());
 	}
 
 	@Override

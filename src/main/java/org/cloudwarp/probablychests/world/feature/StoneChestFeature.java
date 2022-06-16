@@ -8,7 +8,7 @@ import net.minecraft.world.gen.feature.util.FeatureContext;
 import org.cloudwarp.probablychests.block.entity.PCChestBlockEntity;
 import org.cloudwarp.probablychests.registry.PCBlocks;
 
-import java.util.Random;
+import net.minecraft.util.math.random.Random;;
 
 public class StoneChestFeature extends Feature<PCChestFeatureConfig> {
 	public StoneChestFeature (Codec<PCChestFeatureConfig> configCodec) {

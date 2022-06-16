@@ -30,6 +30,7 @@ import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.Difficulty;
@@ -43,7 +44,6 @@ import org.cloudwarp.probablychests.registry.PCProperties;
 import org.cloudwarp.probablychests.utils.Config;
 import org.cloudwarp.probablychests.utils.PCChestState;
 
-import java.util.Random;
 
 public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> implements Waterloggable {
 
