@@ -87,7 +87,7 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable, Monste
 		super(entityType, world);
 		this.ignoreCameraFrustum = true;
 		this.moveControl = new PCChestMimic.MimicMoveControl(this);
-		this.experiencePoints = 5;
+		this.experiencePoints = 10;
 	}
 
 	public static DefaultAttributeContainer.Builder createMobAttributes () {
@@ -97,7 +97,7 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable, Monste
 			maxDamage = 3;
 			moveSpeed = 1D;
 		}
-		return LivingEntity.createLivingAttributes().add(EntityAttributes.GENERIC_FOLLOW_RANGE, 20.0D)
+		return LivingEntity.createLivingAttributes().add(EntityAttributes.GENERIC_FOLLOW_RANGE, 12.0D)
 				.add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 2)
 				.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, maxDamage)
 				.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 1)
@@ -223,7 +223,7 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable, Monste
 			jumpStrength = 1D;
 		} else {
 			jumpStrength = livingEntity.getY() - this.getY();
-			jumpStrength = jumpStrength <= 0 ? 1D : jumpStrength / 2.5D + 1.0D;
+			jumpStrength = jumpStrength <= 0 ? 1D : Math.min(jumpStrength / 2.5D + 1.0D, 2.5D);
 		}
 		this.setVelocity(vec3d.x, (double) this.getJumpVelocity() * jumpStrength, vec3d.z);
 		this.velocityDirty = true;
@@ -410,7 +410,7 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable, Monste
 	}
 
 	public static boolean canSpawn (EntityType<PCChestMimic> pcChestMimicEntityType, ServerWorldAccess serverWorldAccess, SpawnReason spawnReason, BlockPos blockPos, Random random) {
-		if(serverWorldAccess.isSkyVisible(blockPos)){
+		if(serverWorldAccess.isSkyVisible(blockPos) || serverWorldAccess.getLightLevel(LightType.BLOCK, blockPos) > 0){
 			return false;
 		}
 		Config config = Config.getInstance();
