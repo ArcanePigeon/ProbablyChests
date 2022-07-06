@@ -4,6 +4,9 @@ plugins {
     id "com.matthewprenger.cursegradle" version "1.4.0"
 }
 
+def localProperties = new Properties()
+localProperties.load(new FileInputStream(rootProject.file("local.properties")))
+
 sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
 
@@ -99,7 +102,7 @@ publishing {
 }
 
 curseforge {
-    apiKey = "9c3797f7-4850-46af-899f-bb7af3c05c9c"
+    apiKey = localProperties['ArcanePigeon']
     project {
         id = "601735"
         releaseType = "release"
