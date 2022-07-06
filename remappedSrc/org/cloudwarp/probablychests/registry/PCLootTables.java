@@ -10,6 +10,10 @@ public class PCLootTables {
 	private static final Set<Identifier> PC_LOOT_TABLES = Sets.newHashSet();
 
 	public static Identifier LUSH_CHEST;
+	public static Identifier NORMAL_CHEST;
+	public static Identifier ROCKY_CHEST;
+	public static Identifier STONE_CHEST;
+	public static Identifier GOLD_CHEST;
 
 	private static Identifier register (String id) {
 		return PCLootTables.registerLootTable(new Identifier(id));
@@ -23,6 +27,10 @@ public class PCLootTables {
 	}
 
 	public static void init () {
-		LUSH_CHEST = PCLootTables.register("probablychests:chests/default_pc_chests");
+		LUSH_CHEST = PCLootTables.register("probablychests:chests/lush_pc_chests");
+		NORMAL_CHEST = PCLootTables.register("probablychests:chests/normal_pc_chests");
+		ROCKY_CHEST = PCLootTables.register("probablychests:chests/rocky_pc_chests");
+		//STONE_CHEST = PCLootTables.register("probablychests:chests/normal_pc_chests");
+		//GOLD_CHEST = PCLootTables.register("probablychests:chests/normal_pc_chests");
 	}
 }

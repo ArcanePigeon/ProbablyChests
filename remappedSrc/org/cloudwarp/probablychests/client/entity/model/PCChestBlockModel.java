@@ -7,22 +7,26 @@ import software.bernie.geckolib3.model.AnimatedGeoModel;
 
 public class PCChestBlockModel extends AnimatedGeoModel<PCChestBlockEntity> {
 
-	private static final Identifier TEXTURE_IDENTIFIER = new Identifier(ProbablyChests.MOD_ID, "textures/block/lush_chest.png");
 	private static final Identifier MODEL_IDENTIFIER = new Identifier(ProbablyChests.MOD_ID, "geo/pc_chest_block.json");
 	private static final Identifier ANIMATION_IDENTIFIER = new Identifier(ProbablyChests.MOD_ID, "animations/pc_chest_block.animation.json");
+	private Identifier TEXTURE_IDENTIFIER;
+
+	public PCChestBlockModel (String texture) {
+		TEXTURE_IDENTIFIER = new Identifier(ProbablyChests.MOD_ID, "textures/block/" + texture + ".png");
+	}
 
 	@Override
-	public Identifier getTextureLocation(PCChestBlockEntity entity) {
+	public Identifier getTextureLocation (PCChestBlockEntity entity) {
 		return TEXTURE_IDENTIFIER;
 	}
 
 	@Override
-	public Identifier getModelLocation(PCChestBlockEntity entity) {
+	public Identifier getModelLocation (PCChestBlockEntity entity) {
 		return MODEL_IDENTIFIER;
 	}
 
 	@Override
-	public Identifier getAnimationFileLocation(PCChestBlockEntity entity) {
+	public Identifier getAnimationFileLocation (PCChestBlockEntity entity) {
 		return ANIMATION_IDENTIFIER;
 	}
 }

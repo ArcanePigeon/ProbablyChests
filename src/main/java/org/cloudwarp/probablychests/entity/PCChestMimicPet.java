@@ -25,6 +25,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.world.ServerWorld;
@@ -688,7 +689,7 @@ public class PCChestMimicPet extends TameableEntity implements IAnimatable, Tame
 		@Override
 		public ScreenHandler createMenu (int syncId, PlayerInventory inv, PlayerEntity player) {
 			var mimicInv = this.mimic().inventory;
-			return new PCMimicScreenHandler(type.getScreenHandlerType(), type, syncId, inv, mimicInv);
+			return GenericContainerScreenHandler.createGeneric9x6(syncId, inv, mimicInv);
 		}
 	}
 

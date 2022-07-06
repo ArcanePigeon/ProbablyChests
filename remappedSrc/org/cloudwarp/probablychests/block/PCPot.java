@@ -18,11 +18,12 @@ import java.util.Map;
 public class PCPot extends HorizontalFacingBlock {
 	public static final DirectionProperty FACING;
 	private static VoxelShape SHAPE;
-	private Map<Direction, VoxelShape> shapes;
 
 	static {
 		FACING = HorizontalFacingBlock.FACING;
 	}
+
+	private Map<Direction, VoxelShape> shapes;
 
 	public PCPot (Settings settings, VoxelShape voxelShape) {
 		super(settings);
@@ -52,15 +53,15 @@ public class PCPot extends HorizontalFacingBlock {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
-		if (direction == Direction.DOWN && !state.canPlaceAt(world, pos)) {
+	public BlockState getStateForNeighborUpdate (BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+		if (direction == Direction.DOWN && ! state.canPlaceAt(world, pos)) {
 			return Blocks.AIR.getDefaultState();
 		}
 		return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+	public boolean canPlaceAt (BlockState state, WorldView world, BlockPos pos) {
 		return TorchBlock.sideCoversSmallSquare(world, pos.down(), Direction.UP);
 	}
 

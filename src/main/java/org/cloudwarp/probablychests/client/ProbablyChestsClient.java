@@ -1,6 +1,5 @@
 package org.cloudwarp.probablychests.client;
 
-import io.github.cottonmc.cotton.gui.client.CottonInventoryScreen;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -8,14 +7,21 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
+import net.fabricmc.fabric.impl.client.container.ScreenProviderRegistryImpl;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.screen.ScreenHandlerType;
+import net.minecraft.util.registry.Registry;
 import org.cloudwarp.probablychests.ProbablyChests;
 import org.cloudwarp.probablychests.block.PCChestTypes;
 import org.cloudwarp.probablychests.registry.PCBlockEntities;
 import org.cloudwarp.probablychests.registry.PCEntities;
 import org.cloudwarp.probablychests.registry.PCScreenHandlerType;
+import org.cloudwarp.probablychests.screen.PCChestScreen;
+import org.cloudwarp.probablychests.screen.PCMimicScreen;
 import org.cloudwarp.probablychests.screenhandlers.PCMimicScreenHandler;
 import org.cloudwarp.probablychests.screenhandlers.PCScreenHandler;
 import software.bernie.example.GeckoLibMod;
@@ -29,9 +35,9 @@ public class ProbablyChestsClient implements ClientModInitializer {
 			client.execute(() -> ProbablyChests.loadedConfig = ProbablyChests.nbtToConfig(tag));
 		});
 		GeckoLibMod.DISABLE_IN_DEV = true;
-		// The IDE is lying to you the type casting is necessary
-		ScreenRegistry.<PCScreenHandler, CottonInventoryScreen<PCScreenHandler>>register(PCScreenHandlerType.PC_CHEST, (desc, inventory, title) -> new CottonInventoryScreen<>(desc, inventory.player, title));
-		ScreenRegistry.<PCMimicScreenHandler, CottonInventoryScreen<PCMimicScreenHandler>>register(PCScreenHandlerType.PC_CHEST_MIMIC, (desc, inventory, title) -> new CottonInventoryScreen<>(desc, inventory.player, title));
+		HandledScreens.register(PCScreenHandlerType.PC_CHEST, PCChestScreen::new);
+		HandledScreens.register(PCScreenHandlerType.PC_CHEST_MIMIC, PCMimicScreen::new);
+
 
 		BlockEntityRendererRegistry.register(PCBlockEntities.LUSH_CHEST_BLOCK_ENTITY, (BlockEntityRendererFactory.Context rendererDispatcherIn) -> new PCChestRenderer(PCChestTypes.LUSH.name));
 		BlockEntityRendererRegistry.register(PCBlockEntities.NORMAL_CHEST_BLOCK_ENTITY, (BlockEntityRendererFactory.Context rendererDispatcherIn) -> new PCChestRenderer(PCChestTypes.NORMAL.name));

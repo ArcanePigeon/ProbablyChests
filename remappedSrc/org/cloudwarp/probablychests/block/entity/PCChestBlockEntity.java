@@ -11,6 +11,7 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.sound.SoundCategory;
@@ -44,6 +45,10 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 	public static final EnumProperty<PCChestState> CHEST_STATE = PCProperties.PC_CHEST_STATE;
 	private static final String CONTROLLER_NAME = "chestController";
 	private final AnimationFactory factory = new AnimationFactory(this);
+	public boolean isMimic = false;
+	public boolean isNatural = false;
+	public boolean hasBeenOpened = false;
+	public boolean hasMadeMimic = false;
 	private final ViewerCountManager stateManager = new ViewerCountManager() {
 
 		@Override
@@ -109,6 +114,10 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 		if (! this.deserializeLootTable(nbt)) {
 			Inventories.readNbt(nbt, this.inventory);
 		}
+		this.isMimic = nbt.getBoolean("isMimic");
+		this.isNatural = nbt.getBoolean("isNatural");
+		this.hasBeenOpened = nbt.getBoolean("hasBeenOpened");
+		this.hasMadeMimic = nbt.getBoolean("hasMadeMimic");
 	}
 
 	@Override
@@ -117,6 +126,10 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 		if (! this.serializeLootTable(nbt)) {
 			Inventories.writeNbt(nbt, this.inventory);
 		}
+		nbt.putBoolean("isMimic", this.isMimic);
+		nbt.putBoolean("isNatural", this.isNatural);
+		nbt.putBoolean("hasBeenOpened", this.hasBeenOpened);
+		nbt.putBoolean("hasMadeMimic", this.hasMadeMimic);
 	}
 
 	@Override
@@ -213,12 +226,12 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 
 	@Override
 	public ScreenHandler createMenu (int syncId, PlayerInventory inventory, PlayerEntity player) {
-		return new PCScreenHandler(type.getScreenHandlerType(), type, syncId, inventory, ScreenHandlerContext.create(world, pos));
+		return GenericContainerScreenHandler.createGeneric9x6(syncId, inventory, this);
 	}
 
 	@Override
 	protected ScreenHandler createScreenHandler (int syncId, PlayerInventory inventory) {
-		return new PCScreenHandler(type.getScreenHandlerType(), type, syncId, inventory, ScreenHandlerContext.create(world, pos));
+		return GenericContainerScreenHandler.createGeneric9x6(syncId, inventory, this);
 	}
 
 	@Override
