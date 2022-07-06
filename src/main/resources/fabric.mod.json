@@ -23,6 +23,9 @@
     ],
     "client": [
       "org.cloudwarp.probablychests.client.ProbablyChestsClient"
+    ],
+    "modmenu": [
+      "org.cloudwarp.probablychests.utils.PCModMenu"
     ]
   },
   "mixins": [

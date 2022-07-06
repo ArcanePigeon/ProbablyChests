@@ -13,6 +13,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.world.ServerWorld;
@@ -35,12 +36,13 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import org.cloudwarp.probablychests.ProbablyChests;
 import org.cloudwarp.probablychests.block.entity.PCChestBlockEntity;
 import org.cloudwarp.probablychests.entity.PCChestMimic;
 import org.cloudwarp.probablychests.entity.PCChestMimicPet;
 import org.cloudwarp.probablychests.registry.PCItems;
 import org.cloudwarp.probablychests.registry.PCProperties;
-import org.cloudwarp.probablychests.utils.Config;
+import org.cloudwarp.probablychests.utils.PCConfig;
 import org.cloudwarp.probablychests.utils.PCChestState;
 
 import java.util.Random;
@@ -85,10 +87,10 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 			chest = (PCChestBlockEntity) world.getBlockEntity(pos);
 		}
 		if (chest != null) {
-			Config config = Config.getInstance();
+			PCConfig config = ProbablyChests.loadedConfig;
 			if (! chest.hasBeenOpened && chest.isNatural && !chest.hasMadeMimic) {
 				chest.hasBeenOpened = true;
-				chest.isMimic = world.getRandom().nextFloat() < config.getMimicChance();
+				chest.isMimic = world.getRandom().nextFloat() < config.worldGen.secretMimicChance;
 				if (! chest.isMimic) {
 					LootableContainerBlockEntity.setLootTable(world, world.getRandom(), pos, this.type.getLootTable());
 					return false;
@@ -121,10 +123,10 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 			chest = (PCChestBlockEntity) world.getBlockEntity(pos);
 		}
 		if (chest != null) {
-			Config config = Config.getInstance();
+			PCConfig config = ProbablyChests.loadedConfig;
 			if (! chest.hasBeenOpened && chest.isNatural) {
 				chest.hasBeenOpened = true;
-				chest.isMimic = world.getRandom().nextFloat() < config.getMimicChance();
+				chest.isMimic = world.getRandom().nextFloat() < config.worldGen.secretMimicChance;
 				if (! chest.isMimic) {
 					LootableContainerBlockEntity.setLootTable(world, world.getRandom(), pos, this.type.getLootTable());
 				}
@@ -160,11 +162,11 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 		if (world.getBlockEntity(pos) instanceof PCChestBlockEntity) {
 			chest = (PCChestBlockEntity) world.getBlockEntity(pos);
 		}
-		Config config = Config.getInstance();
+		PCConfig config = ProbablyChests.loadedConfig;
 		//------------------------
 		if (chest != null) {
 			ItemStack itemStack = player.getStackInHand(hand);
-			if (itemStack.isOf(PCItems.PET_MIMIC_KEY) && config.getAllowPetMimics() && !player.isSneaking()) {
+			if (itemStack.isOf(PCItems.PET_MIMIC_KEY) && config.mimicSettings.allowPetMimics && !player.isSneaking()) {
 				chest.hasMadeMimic = true;
 				createPetMimic(world,pos,state,player);
 				if (! player.isCreative()) {

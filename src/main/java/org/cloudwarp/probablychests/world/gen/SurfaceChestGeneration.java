@@ -7,7 +7,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.gen.GenerationStep;
 import org.cloudwarp.probablychests.ProbablyChests;
-import org.cloudwarp.probablychests.utils.Config;
+import org.cloudwarp.probablychests.utils.PCConfig;
 import org.cloudwarp.probablychests.world.feature.PCFeatures;
 
 import java.util.List;
@@ -33,8 +33,8 @@ public class SurfaceChestGeneration {
 	});
 
 	public static void generateChest () {
-		Config config = ProbablyChests.config;
-		float surfaceChestRarity = config.getSurfaceChestSpawnChance();
+		PCConfig config = ProbablyChests.loadedConfig;
+		float surfaceChestRarity = config.worldGen.surfaceChestSpawnChance;
 		if (surfaceChestRarity > 0) {
 			BiomeModifications.addFeature(LushChestSurfaceBiomeSelector, GenerationStep.Feature.SURFACE_STRUCTURES, PCFeatures.LUSH_CHEST_PLACED_SURFACE.getKey().get());
 			//---------------------------------------------------
