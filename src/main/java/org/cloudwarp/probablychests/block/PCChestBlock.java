@@ -90,7 +90,8 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 			PCConfig config = ProbablyChests.loadedConfig;
 			if (! chest.hasBeenOpened && chest.isNatural && !chest.hasMadeMimic) {
 				chest.hasBeenOpened = true;
-				chest.isMimic = world.getRandom().nextFloat() < config.worldGen.secretMimicChance;
+				float mimicRandom = world.getRandom().nextFloat();
+				chest.isMimic = mimicRandom < config.worldGen.secretMimicChance;
 				if (! chest.isMimic) {
 					LootableContainerBlockEntity.setLootTable(world, world.getRandom(), pos, this.type.getLootTable());
 					return false;

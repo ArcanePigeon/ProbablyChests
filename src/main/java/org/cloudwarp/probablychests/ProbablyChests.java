@@ -63,7 +63,7 @@ public class ProbablyChests implements ModInitializer {
 		nbt.putFloat("chest_spawn_chance", config.worldGen.chestSpawnChance);
 		nbt.putFloat("surface_chest_spawn_chance", config.worldGen.surfaceChestSpawnChance);
 		nbt.putFloat("secret_mimic_chance", config.worldGen.secretMimicChance);
-		nbt.putBoolean("secret_mimic_chance", config.mimicSettings.easierMimics);
+		nbt.putBoolean("easier_mimics", config.mimicSettings.easierMimics);
 		nbt.putBoolean("spawn_natural_mimics", config.mimicSettings.spawnNaturalMimics);
 		nbt.putFloat("natural_mimic_spawn_rate", config.mimicSettings.naturalMimicSpawnRate);
 		nbt.putBoolean("allow_pet_mimics", config.mimicSettings.allowPetMimics);
@@ -78,7 +78,7 @@ public class ProbablyChests implements ModInitializer {
 		config.worldGen.chestSpawnChance = nbt.getFloat("chest_spawn_chance");
 		config.worldGen.surfaceChestSpawnChance = nbt.getFloat("surface_chest_spawn_chance");
 		config.worldGen.secretMimicChance = nbt.getFloat("secret_mimic_chance");
-		config.mimicSettings.easierMimics = nbt.getBoolean("secret_mimic_chance");
+		config.mimicSettings.easierMimics = nbt.getBoolean("easier_mimics");
 		config.mimicSettings.spawnNaturalMimics = nbt.getBoolean("spawn_natural_mimics");
 		config.mimicSettings.naturalMimicSpawnRate = nbt.getFloat("natural_mimic_spawn_rate");
 		config.mimicSettings.allowPetMimics = nbt.getBoolean("allow_pet_mimics");
