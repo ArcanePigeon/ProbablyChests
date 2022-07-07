@@ -12,7 +12,6 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -22,12 +21,12 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.*;
-import org.cloudwarp.probablychests.utils.Config;
+import org.cloudwarp.probablychests.ProbablyChests;
+import org.cloudwarp.probablychests.utils.PCConfig;
 import software.bernie.geckolib3.core.AnimationState;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
@@ -91,8 +90,8 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable, Monste
 	}
 
 	public static DefaultAttributeContainer.Builder createMobAttributes () {
-		Config config = Config.getInstance();
-		if (config.getEasierMimics()) {
+		PCConfig config = ProbablyChests.loadedConfig;
+		if (config.mimicSettings.easierMimics) {
 			maxHealth = 30;
 			maxDamage = 3;
 			moveSpeed = 1D;
@@ -413,8 +412,8 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable, Monste
 		if(serverWorldAccess.isSkyVisible(blockPos) || serverWorldAccess.getLightLevel(LightType.BLOCK, blockPos) > 0){
 			return false;
 		}
-		Config config = Config.getInstance();
-		return serverWorldAccess.getRandom().nextFloat() < config.getNaturalMimicSpawnRate();
+		PCConfig config = ProbablyChests.loadedConfig;
+		return serverWorldAccess.getRandom().nextFloat() < config.mimicSettings.naturalMimicSpawnRate;
 	}
 
 	private static class MimicMoveControl extends MoveControl {

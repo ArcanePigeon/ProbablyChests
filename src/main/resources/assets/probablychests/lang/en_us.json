@@ -22,5 +22,27 @@
   "item.probablychests.mimic_key": "Mimic Key",
   "item.probablychests.mimic_key_fragment": "Key Fragment",
   "item.probablychests.mimic_core": "Mimic Core",
-  "item.probablychests.pet_mimic_key": "Pet Mimic Key"
+  "item.probablychests.pet_mimic_key": "Pet Mimic Key",
+
+  "text.autoconfig.probablychests.title": "Probably Chests",
+
+  "text.autoconfig.probablychests.option.mimicSettings": "Mimic Settings",
+  "text.autoconfig.probablychests.option.mimicSettings.easierMimics": "Enable easier mimics",
+  "text.autoconfig.probablychests.option.mimicSettings.easierMimics.@Tooltip": "Reduces health, damage, and speed",
+  "text.autoconfig.probablychests.option.mimicSettings.spawnNaturalMimics": "Enable natural mimic spawns",
+  "text.autoconfig.probablychests.option.mimicSettings.spawnNaturalMimics.@Tooltip": "Makes mimics spawn like regular mobs in dark areas (does not affect secret mimic system)",
+  "text.autoconfig.probablychests.option.mimicSettings.naturalMimicSpawnRate": "Natural mimic spawn rate",
+  "text.autoconfig.probablychests.option.mimicSettings.naturalMimicSpawnRate.@Tooltip": "0 means no natural mimics spawn while 1 means mimics spawn more often (still rare)",
+  "text.autoconfig.probablychests.option.mimicSettings.allowPetMimics": "Enable pet mimics",
+  "text.autoconfig.probablychests.option.mimicSettings.allowPetMimics.@Tooltip": "Allows players to use pet mimic keys to create pets",
+
+  "text.autoconfig.probablychests.option.worldGen": "World Generation",
+  "text.autoconfig.probablychests.option.worldGen.potSpawnChance": "Pot spawn rate",
+  "text.autoconfig.probablychests.option.worldGen.potSpawnChance.@Tooltip": "0 means pots will not generate while 1 means they will generate often",
+  "text.autoconfig.probablychests.option.worldGen.chestSpawnChance": "Chest spawn rate",
+  "text.autoconfig.probablychests.option.worldGen.chestSpawnChance.@Tooltip": "0 means chests will not generate while 1 means they will generate more often (still rare)",
+  "text.autoconfig.probablychests.option.worldGen.surfaceChestSpawnChance": "Surface chest spawn rate",
+  "text.autoconfig.probablychests.option.worldGen.surfaceChestSpawnChance.@Tooltip": "0 means surface chests will not generate while 1 means they will generate more often",
+  "text.autoconfig.probablychests.option.worldGen.secretMimicChance": "Secret mimic chance",
+  "text.autoconfig.probablychests.option.worldGen.secretMimicChance.@Tooltip": "0 means chests will never be mimics while 1 means they will always be mimics"
 }

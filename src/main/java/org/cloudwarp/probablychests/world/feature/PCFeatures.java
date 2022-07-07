@@ -14,7 +14,7 @@ import net.minecraft.world.gen.placementmodifier.CountPlacementModifier;
 import net.minecraft.world.gen.placementmodifier.PlacementModifier;
 import net.minecraft.world.gen.placementmodifier.SquarePlacementModifier;
 import org.cloudwarp.probablychests.ProbablyChests;
-import org.cloudwarp.probablychests.utils.Config;
+import org.cloudwarp.probablychests.utils.PCConfig;
 
 import java.util.List;
 
@@ -87,10 +87,10 @@ public class PCFeatures {
 	//---------------------------------------------------------------------------
 
 	public static void init () {
-		Config config = ProbablyChests.config;
-		float chestRarity = config.getChestSpawnChance();
-		float potRarity = config.getPotSpawnChance();
-		float surfaceChestRarity = config.getSurfaceChestSpawnChance();
+		PCConfig config = ProbablyChests.loadedConfig;
+		float chestRarity = config.worldGen.chestSpawnChance;
+		float potRarity = config.worldGen.potSpawnChance;
+		float surfaceChestRarity = config.worldGen.surfaceChestSpawnChance;
 		//-----------------------------------
 		LUSH_CHEST_PLACED = register(ProbablyChests.id("lush_chest_placed"),
 				LUSH_CHEST, PCRarityFilterPlacementModifier.of(chestRarity), SquarePlacementModifier.of(),

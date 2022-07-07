@@ -11,6 +11,7 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.sound.SoundCategory;
@@ -225,12 +226,12 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 
 	@Override
 	public ScreenHandler createMenu (int syncId, PlayerInventory inventory, PlayerEntity player) {
-		return new PCScreenHandler(type.getScreenHandlerType(), type, syncId, inventory, ScreenHandlerContext.create(world, pos));
+		return GenericContainerScreenHandler.createGeneric9x6(syncId, inventory, this);
 	}
 
 	@Override
 	protected ScreenHandler createScreenHandler (int syncId, PlayerInventory inventory) {
-		return new PCScreenHandler(type.getScreenHandlerType(), type, syncId, inventory, ScreenHandlerContext.create(world, pos));
+		return GenericContainerScreenHandler.createGeneric9x6(syncId, inventory, this);
 	}
 
 	@Override
