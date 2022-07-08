@@ -1,10 +1,10 @@
 package org.cloudwarp.probablychests.block;
 
+import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import net.minecraft.block.*;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.entity.ChestBlockEntity;
-import net.minecraft.block.entity.LootableContainerBlockEntity;
+import net.minecraft.block.entity.*;
+import net.minecraft.block.enums.ChestType;
+import net.minecraft.client.block.ChestAnimationProgress;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -13,7 +13,6 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.world.ServerWorld;
@@ -40,19 +39,22 @@ import org.cloudwarp.probablychests.ProbablyChests;
 import org.cloudwarp.probablychests.block.entity.PCChestBlockEntity;
 import org.cloudwarp.probablychests.entity.PCChestMimic;
 import org.cloudwarp.probablychests.entity.PCChestMimicPet;
+import org.cloudwarp.probablychests.entity.PCTameablePetWithInventory;
 import org.cloudwarp.probablychests.registry.PCItems;
 import org.cloudwarp.probablychests.registry.PCProperties;
 import org.cloudwarp.probablychests.utils.PCConfig;
 import org.cloudwarp.probablychests.utils.PCChestState;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
+import java.util.function.BiPredicate;
 
 public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> implements Waterloggable {
 
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	public static final EnumProperty<PCChestState> CHEST_STATE = PCProperties.PC_CHEST_STATE;
-	protected static final VoxelShape SHAPE = Block.createCuboidShape(1.0D, 0.0D, 1.0D, 15.0D, 14.0D, 15.0D);
+	protected static final VoxelShape SHAPE = Block.createCuboidShape(1.0D, 0.0D, 1.5D, 14.0D, 14.0D, 13.0D);
 	private final PCChestTypes type;
 
 
@@ -82,107 +84,110 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 	}
 
 	private boolean createMimic (World world, BlockPos pos, BlockState state) {
-		PCChestBlockEntity chest = null;
-		if (world.getBlockEntity(pos) instanceof PCChestBlockEntity) {
-			chest = (PCChestBlockEntity) world.getBlockEntity(pos);
-		}
+		PCChestBlockEntity chest = getChestBlockFromWorld(world, pos);
 		if (chest != null) {
-			PCConfig config = ProbablyChests.loadedConfig;
-			if (! chest.hasBeenOpened && chest.isNatural && !chest.hasMadeMimic) {
-				chest.hasBeenOpened = true;
-				float mimicRandom = world.getRandom().nextFloat();
-				chest.isMimic = mimicRandom < config.worldGen.secretMimicChance;
-				if (! chest.isMimic) {
-					LootableContainerBlockEntity.setLootTable(world, world.getRandom(), pos, this.type.getLootTable());
-					return false;
-				}
+			boolean wasSecretMimic = checkForSecretMimic(chest, world, pos);
+			if (!wasSecretMimic){
+				return false;
 			}
-			if (world.getDifficulty() != Difficulty.PEACEFUL && chest.isMimic && ! chest.hasMadeMimic) {
-				chest.hasMadeMimic = true;
-				PCChestMimic mimic = new PCChestMimic(this.type.getMimicType(), world);
-				mimic.setPos(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D);
-				mimic.setYaw(state.get(FACING).asRotation());
-				//mimic.refreshPositionAndAngles((double) pos.getX() + 0.5D, (double) pos.getY(), (double) pos.getZ() + 0.5D, MathHelper.wrapDegrees(state.get(FACING).asRotation()), 0.0F);
-				mimic.headYaw = mimic.getYaw();
-				mimic.bodyYaw = mimic.getYaw();
-				for(int i = 0; i < type.size; i++){
-					mimic.inventory.setStack(i,chest.getStack(i));
-					chest.setStack(i,ItemStack.EMPTY);
-				}
-				world.spawnEntity(mimic);
-				boolean waterlogged = state.get(WATERLOGGED);
-				world.setBlockState(pos, waterlogged ? Blocks.WATER.getDefaultState() : Blocks.AIR.getDefaultState());
+			if (world.getDifficulty() != Difficulty.PEACEFUL && chest.isMimic) {
+				createMimic(false,pos,state,world,chest, null);
 				return true;
 			}
 		}
 		return false;
 	}
-
-	private boolean createPetMimic (World world, BlockPos pos, BlockState state, PlayerEntity player) {
-		PCChestBlockEntity chest = null;
-		if (world.getBlockEntity(pos) instanceof PCChestBlockEntity) {
-			chest = (PCChestBlockEntity) world.getBlockEntity(pos);
+	public void createMimic(boolean isPetMimic, BlockPos pos, BlockState state, World world, PCChestBlockEntity chest, PlayerEntity player){
+		if(chest.hasMadeMimic){
+			return;
 		}
-		if (chest != null) {
-			PCConfig config = ProbablyChests.loadedConfig;
-			if (! chest.hasBeenOpened && chest.isNatural) {
-				chest.hasBeenOpened = true;
-				chest.isMimic = world.getRandom().nextFloat() < config.worldGen.secretMimicChance;
-				if (! chest.isMimic) {
-					LootableContainerBlockEntity.setLootTable(world, world.getRandom(), pos, this.type.getLootTable());
-				}
-			}
-			PCChestMimicPet mimic = new PCChestMimicPet(this.type.getPetMimicType(), world);
-			mimic.setPos(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D);
-			mimic.setYaw(state.get(FACING).asRotation());
-			mimic.headYaw = mimic.getYaw();
-			mimic.bodyYaw = mimic.getYaw();
+		chest.hasMadeMimic = true;
+		PCTameablePetWithInventory mimic;
+		if(isPetMimic){
+			mimic = new PCChestMimicPet(this.type.getPetMimicType(), world);
 			mimic.setOwner(player);
 			mimic.setTarget((LivingEntity) null);
 			mimic.setSitting(true);
-			mimic.setIsSleeping(mimic.isSitting());
+		}else{
+			mimic = new PCChestMimic(this.type.getMimicType(), world);
+		}
+		mimic.setPos(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D);
+		mimic.setYaw(state.get(FACING).asRotation());
+		mimic.headYaw = mimic.getYaw();
+		mimic.bodyYaw = mimic.getYaw();
+		for (int i = 0; i < type.size; i++) {
+			mimic.inventory.setStack(i, chest.getStack(i));
+			chest.setStack(i, ItemStack.EMPTY);
+		}
+		world.spawnEntity(mimic);
+		if(isPetMimic){
 			mimic.world.sendEntityStatus(mimic, (byte) 7);
-			for(int i = 0; i < type.size; i++){
-				mimic.inventory.setStack(i,chest.getStack(i));
-				chest.setStack(i,ItemStack.EMPTY);
+		}
+		boolean waterlogged = state.get(WATERLOGGED);
+		world.setBlockState(pos, waterlogged ? Blocks.WATER.getDefaultState() : Blocks.AIR.getDefaultState());
+	}
+	public boolean checkForSecretMimic (PCChestBlockEntity chest, World world, BlockPos pos) {
+		PCConfig config = ProbablyChests.loadedConfig;
+		if(chest.isMimic){
+			return true;
+		}
+		if (! chest.hasBeenOpened && chest.isNatural) {
+			chest.hasBeenOpened = true;
+			float mimicRandom = world.getRandom().nextFloat();
+			chest.isMimic = mimicRandom < config.worldGen.secretMimicChance;
+			if (chest.isMimic) {
+				return true;
 			}
-			world.spawnEntity(mimic);
-			boolean waterlogged = state.get(WATERLOGGED);
-			world.setBlockState(pos, waterlogged ? Blocks.WATER.getDefaultState() : Blocks.AIR.getDefaultState());
+			LootableContainerBlockEntity.setLootTable(world, world.getRandom(), pos, this.type.getLootTable());
+		}
+		return false;
+	}
+
+	private boolean createPetMimic (World world, BlockPos pos, BlockState state, PlayerEntity player) {
+		PCChestBlockEntity chest = getChestBlockFromWorld(world, pos);
+		if (chest != null) {
+			boolean wasSecretMimic = checkForSecretMimic(chest, world, pos);
+			if(wasSecretMimic){
+				return false;
+			}
+			createMimic(true,pos,state,world,chest, player);
 			return true;
 		}
 		return false;
 	}
+
+	public PCChestBlockEntity getChestBlockFromWorld (World world, BlockPos pos) {
+		PCChestBlockEntity chest = null;
+		if (world.getBlockEntity(pos) instanceof PCChestBlockEntity) {
+			chest = (PCChestBlockEntity) world.getBlockEntity(pos);
+		}
+		return chest;
+	}
+
 
 	@Override
 	public ActionResult onUse (BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		}
-		PCChestBlockEntity chest = null;
-		if (world.getBlockEntity(pos) instanceof PCChestBlockEntity) {
-			chest = (PCChestBlockEntity) world.getBlockEntity(pos);
-		}
+		PCChestBlockEntity chest = getChestBlockFromWorld(world, pos);
 		PCConfig config = ProbablyChests.loadedConfig;
 		//------------------------
 		if (chest != null) {
 			ItemStack itemStack = player.getStackInHand(hand);
-			if (itemStack.isOf(PCItems.PET_MIMIC_KEY) && config.mimicSettings.allowPetMimics && !player.isSneaking()) {
-				chest.hasMadeMimic = true;
-				createPetMimic(world,pos,state,player);
+			if (itemStack.isOf(PCItems.PET_MIMIC_KEY) && config.mimicSettings.allowPetMimics && ! player.isSneaking()) {
+				createPetMimic(world, pos, state, player);
 				if (! player.isCreative()) {
 					itemStack.decrement(1);
 				}
-				return ActionResult.SUCCESS;
-			}else
-			if (itemStack.isOf(PCItems.MIMIC_KEY) && ! chest.isMimic && !player.isSneaking()) {
+				return ActionResult.CONSUME;
+			} else if (itemStack.isOf(PCItems.MIMIC_KEY) && ! chest.isMimic && ! player.isSneaking()) {
 				chest.isMimic = true;
 				if (! player.isCreative()) {
 					itemStack.decrement(1);
 				}
-				return ActionResult.SUCCESS;
-			}else
-			if (createMimic(world, pos, state)) {
+				return ActionResult.CONSUME;
+			} else if (createMimic(world, pos, state)) {
 				return ActionResult.SUCCESS;
 			}
 		}
@@ -208,7 +213,6 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 		return ScreenHandler.calculateComparatorOutput(world.getBlockEntity(pos));
 	}
 
-
 	@Override
 	public void onStateReplaced (BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
 		if (state.isOf(newState.getBlock())) {
@@ -216,11 +220,7 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 		}
 
 		BlockEntity blockEntity = world.getBlockEntity(pos);
-		PCChestBlockEntity chest = null;
-		if (blockEntity instanceof PCChestBlockEntity) {
-			chest = (PCChestBlockEntity) blockEntity;
-		}
-		if (! createMimic(world, pos, state) || chest.hasMadeMimic) {
+		if (! createMimic(world, pos, state)) {
 			if (blockEntity instanceof Inventory) {
 				ItemScatterer.spawn(world, pos, (Inventory) ((Object) blockEntity));
 				world.updateComparators(pos, this);
@@ -231,23 +231,26 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 
 	@Override
 	public void onPlaced (World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
-		BlockEntity blockEntity;
-		if (itemStack.hasCustomName() && (blockEntity = world.getBlockEntity(pos)) instanceof ChestBlockEntity) {
-			((ChestBlockEntity) blockEntity).setCustomName(itemStack.getName());
+		PCChestBlockEntity chest = getChestBlockFromWorld(world,pos);
+		if (chest != null && itemStack.hasCustomName()) {
+			chest.setCustomName(itemStack.getName());
 		}
 	}
+
 
 	@Override
 	public VoxelShape getOutlineShape (BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return SHAPE;
 	}
 
+
 	public BlockEntity createBlockEntity (BlockPos pos, BlockState state) {
 		return this.type.makeEntity(pos, state);
 	}
 
+
 	@Override
-	public BlockRenderType getRenderType (BlockState state) {
+	public BlockRenderType getRenderType(BlockState state) {
 		return BlockRenderType.ENTITYBLOCK_ANIMATED;
 	}
 
@@ -289,8 +292,14 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 		return this.entityTypeRetriever.get();
 	}
 
+	public static Direction getFacing(BlockState state) {
+		return state.get(FACING);
+	}
+
+
 	@Override
 	public DoubleBlockProperties.PropertySource<? extends ChestBlockEntity> getBlockEntitySource (BlockState state, World world, BlockPos pos, boolean ignoreBlocked) {
 		return DoubleBlockProperties.PropertyRetriever::getFallback;
 	}
+
 }

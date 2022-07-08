@@ -6,24 +6,18 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
-import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
-import net.fabricmc.fabric.impl.client.container.ScreenProviderRegistryImpl;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.util.registry.Registry;
 import org.cloudwarp.probablychests.ProbablyChests;
 import org.cloudwarp.probablychests.block.PCChestTypes;
+import org.cloudwarp.probablychests.client.entity.PCChestRenderer;
 import org.cloudwarp.probablychests.registry.PCBlockEntities;
 import org.cloudwarp.probablychests.registry.PCEntities;
 import org.cloudwarp.probablychests.registry.PCScreenHandlerType;
 import org.cloudwarp.probablychests.screen.PCChestScreen;
 import org.cloudwarp.probablychests.screen.PCMimicScreen;
-import org.cloudwarp.probablychests.screenhandlers.PCMimicScreenHandler;
-import org.cloudwarp.probablychests.screenhandlers.PCScreenHandler;
 import software.bernie.example.GeckoLibMod;
 
 @Environment(EnvType.CLIENT)
@@ -36,7 +30,7 @@ public class ProbablyChestsClient implements ClientModInitializer {
 		});
 		GeckoLibMod.DISABLE_IN_DEV = true;
 		HandledScreens.register(PCScreenHandlerType.PC_CHEST, PCChestScreen::new);
-		HandledScreens.register(PCScreenHandlerType.PC_CHEST_MIMIC, PCMimicScreen::new);
+		//HandledScreens.register(PCScreenHandlerType.PC_CHEST_MIMIC, PCMimicScreen::new);
 
 
 		BlockEntityRendererRegistry.register(PCBlockEntities.LUSH_CHEST_BLOCK_ENTITY, (BlockEntityRendererFactory.Context rendererDispatcherIn) -> new PCChestRenderer(PCChestTypes.LUSH.name));

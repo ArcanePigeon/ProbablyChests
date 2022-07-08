@@ -1,29 +1,19 @@
 package org.cloudwarp.probablychests.utils;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
-import org.apache.logging.log4j.Logger;
 import org.cloudwarp.probablychests.ProbablyChests;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.util.LinkedList;
-import java.util.Scanner;
+
 @Config(name = ProbablyChests.MOD_ID)
 public class PCConfig implements ConfigData {
 
 
-	@ConfigEntry.Gui.CollapsibleObject public MimicSettings mimicSettings = new MimicSettings();
-	@ConfigEntry.Gui.CollapsibleObject public WorldGen worldGen = new WorldGen();
+	@ConfigEntry.Gui.CollapsibleObject
+	public MimicSettings mimicSettings = new MimicSettings();
+	@ConfigEntry.Gui.CollapsibleObject
+	public WorldGen worldGen = new WorldGen();
 
 	public static class MimicSettings {
 		@ConfigEntry.Gui.Tooltip()

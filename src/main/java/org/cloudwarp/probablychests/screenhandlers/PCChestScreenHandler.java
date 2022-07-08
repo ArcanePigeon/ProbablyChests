@@ -8,54 +8,41 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
-import org.cloudwarp.probablychests.block.PCChestTypes;
 import org.cloudwarp.probablychests.registry.PCScreenHandlerType;
-import org.lwjgl.system.CallbackI;
 
-public class PCScreenHandler extends ScreenHandler {
+public class PCChestScreenHandler extends ScreenHandler {
 	private static final int columns = 9;
 	private final Inventory inventory;
-	private final int rows;
-	public PCScreenHandler(int syncId, PlayerInventory playerInventory){
-		this(syncId,playerInventory,new SimpleInventory(54), 6);
-	}
-	public PCScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory, int rows){
-		super(PCScreenHandlerType.PC_CHEST, syncId);
-		checkSize(inventory,54);
-		this.inventory = inventory;
-		this.rows = rows;
-		inventory.onOpen(playerInventory.player);
-		createXRows(syncId, playerInventory, inventory, rows);
+	private final int rows = 6;
+	public PCChestScreenHandler (int syncId, PlayerInventory playerInventory){
+		this(PCScreenHandlerType.PC_CHEST,syncId,playerInventory,new SimpleInventory(54));
 	}
 
 
-	public static PCScreenHandler createXRows(int syncId, PlayerInventory playerInventory, Inventory inventory, int rows) {
-		return new PCScreenHandler(PCScreenHandlerType.PC_CHEST, syncId, playerInventory, inventory, rows);
+	public static PCChestScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory) {
+		return new PCChestScreenHandler(PCScreenHandlerType.PC_CHEST, syncId, playerInventory, inventory);
 	}
 
-	public PCScreenHandler(ScreenHandlerType<?> type, int syncId, PlayerInventory playerInventory, Inventory inventory, int rows) {
+	public PCChestScreenHandler (ScreenHandlerType<?> type, int syncId, PlayerInventory playerInventory, Inventory inventory) {
 		super(type, syncId);
+		int k;
+		int j;
 		checkSize(inventory, rows * columns);
 		this.inventory = inventory;
-		this.rows = rows;
 		inventory.onOpen(playerInventory.player);
 		int i = (this.rows - 4) * 18;
 
-		int j;
-		int k;
-		for(j = 0; j < this.rows; ++j) {
-			for(k = 0; k < 9; ++k) {
+		for (j = 0; j < this.rows; ++j) {
+			for (k = 0; k < 9; ++k) {
 				this.addSlot(new Slot(inventory, k + j * 9, 8 + k * 18, 18 + j * 18));
 			}
 		}
-
-		for(j = 0; j < 3; ++j) {
-			for(k = 0; k < 9; ++k) {
+		for (j = 0; j < 3; ++j) {
+			for (k = 0; k < 9; ++k) {
 				this.addSlot(new Slot(playerInventory, k + j * 9 + 9, 8 + k * 18, 103 + j * 18 + i));
 			}
 		}
-
-		for(j = 0; j < 9; ++j) {
+		for (j = 0; j < 9; ++j) {
 			this.addSlot(new Slot(playerInventory, j, 8 + j * 18, 161 + i));
 		}
 
@@ -101,4 +88,5 @@ public class PCScreenHandler extends ScreenHandler {
 	public int getRows() {
 		return this.rows;
 	}
+
 }

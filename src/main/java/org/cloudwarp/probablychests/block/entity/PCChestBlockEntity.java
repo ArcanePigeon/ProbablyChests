@@ -2,9 +2,7 @@ package org.cloudwarp.probablychests.block.entity;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.LootableContainerBlockEntity;
-import net.minecraft.block.entity.ViewerCountManager;
+import net.minecraft.block.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
@@ -13,7 +11,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -26,21 +23,21 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.cloudwarp.probablychests.block.PCChestTypes;
 import org.cloudwarp.probablychests.registry.PCProperties;
-import org.cloudwarp.probablychests.screenhandlers.PCScreenHandler;
+import org.cloudwarp.probablychests.screenhandlers.PCChestScreenHandler;
 import org.cloudwarp.probablychests.utils.PCChestState;
-import software.bernie.geckolib3.core.AnimationState;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
 import software.bernie.geckolib3.core.controller.AnimationController;
+import software.bernie.geckolib3.core.easing.EasingType;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 public class PCChestBlockEntity extends LootableContainerBlockEntity implements IAnimatable {
 
 	public static final AnimationBuilder CLOSED = new AnimationBuilder().addAnimation("closed", false);
-	public static final AnimationBuilder CLOSE = new AnimationBuilder().addAnimation("close", false);
-	public static final AnimationBuilder OPEN = new AnimationBuilder().addAnimation("open", false);
+	public static final AnimationBuilder CLOSE = new AnimationBuilder().addAnimation("close", false).addAnimation("closed",true);
+	public static final AnimationBuilder OPEN = new AnimationBuilder().addAnimation("open", false).addAnimation("opened",true);
 	public static final AnimationBuilder OPENED = new AnimationBuilder().addAnimation("opened", false);
 	public static final EnumProperty<PCChestState> CHEST_STATE = PCProperties.PC_CHEST_STATE;
 	private static final String CONTROLLER_NAME = "chestController";
@@ -68,8 +65,8 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 
 		@Override
 		protected boolean isPlayerViewing (PlayerEntity player) {
-			if (player.currentScreenHandler instanceof PCScreenHandler) {
-				Inventory inventory = ((PCScreenHandler) player.currentScreenHandler).getInventory();
+			if (player.currentScreenHandler instanceof PCChestScreenHandler) {
+				Inventory inventory = ((PCChestScreenHandler) player.currentScreenHandler).getInventory();
 				return inventory == PCChestBlockEntity.this;
 			}
 			return false;
@@ -133,15 +130,15 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 	}
 
 	@Override
-	public void onOpen (PlayerEntity player) {
-		if (! this.removed && ! player.isSpectator()) {
+	public void onOpen(PlayerEntity player) {
+		if (!this.removed && !player.isSpectator()) {
 			this.stateManager.openContainer(player, this.getWorld(), this.getPos(), this.getCachedState());
 		}
 	}
 
 	@Override
-	public void onClose (PlayerEntity player) {
-		if (! this.removed && ! player.isSpectator()) {
+	public void onClose(PlayerEntity player) {
+		if (!this.removed && !player.isSpectator()) {
 			this.stateManager.closeContainer(player, this.getWorld(), this.getPos(), this.getCachedState());
 		}
 	}
@@ -162,16 +159,24 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 		}
 	}
 
+
+
 	protected void onInvOpenOrClose (World world, BlockPos pos, BlockState state, int oldViewerCount, int newViewerCount) {
 		Block block = state.getBlock();
 		world.addSyncedBlockEvent(pos, block, 1, newViewerCount);
-		world.setBlockState(pos, state.with(CHEST_STATE, newViewerCount > 0 ?
-				(state.get(CHEST_STATE).equals(PCChestState.OPENED) ? PCChestState.OPENED : PCChestState.OPEN) :
-				(state.get(CHEST_STATE).equals(PCChestState.CLOSED) ? PCChestState.CLOSED : PCChestState.CLOSE)));
+		if(oldViewerCount != newViewerCount){
+			if(newViewerCount > 0){
+				world.setBlockState(pos,state.with(CHEST_STATE,PCChestState.OPENED));
+			}else{
+				world.setBlockState(pos,state.with(CHEST_STATE,PCChestState.CLOSED));
+			}
+		}
 	}
 
+
+
 	@Override
-	public boolean onSyncedBlockEvent (int type, int data) {
+	public boolean onSyncedBlockEvent(int type, int data) {
 		if (type == 1) {
 			return true;
 		}
@@ -186,30 +191,25 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 		this.getWorld().setBlockState(this.getPos(), this.getCachedState().with(CHEST_STATE, state));
 	}
 
+
+	@Override
+	public ScreenHandler createMenu (int syncId, PlayerInventory inventory, PlayerEntity player) {
+		return PCChestScreenHandler.createScreenHandler(syncId, inventory, this);
+	}
+
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Override
 	public void registerControllers (AnimationData data) {
-		AnimationController controller = new AnimationController(this, CONTROLLER_NAME, 0, animationEvent -> {
+		AnimationController controller = new AnimationController(this, CONTROLLER_NAME, 7, animationEvent -> {
+
 			switch (getChestState()) {
-				case CLOSE:
-					if (animationEvent.getController().getAnimationState() == AnimationState.Stopped) {
-						setChestState(PCChestState.CLOSED);
-						animationEvent.getController().setAnimation(CLOSED);
-						break;
-					}
-					if (animationEvent.getController().getCurrentAnimation() != null && ! animationEvent.getController().getCurrentAnimation().animationName.equals(CLOSED.getRawAnimationList().get(0).animationName)) {
-						animationEvent.getController().setAnimation(CLOSE);
-					}
+				case CLOSED:
+					animationEvent.getController().easingType = EasingType.EaseOutSine;
+					animationEvent.getController().setAnimation(CLOSED);
 					break;
-				case OPEN:
-					if (animationEvent.getController().getAnimationState() == AnimationState.Stopped) {
-						setChestState(PCChestState.OPENED);
-						animationEvent.getController().setAnimation(OPENED);
-						break;
-					}
-					if (animationEvent.getController().getCurrentAnimation() != null && ! animationEvent.getController().getCurrentAnimation().animationName.equals(OPENED.getRawAnimationList().get(0).animationName)) {
-						animationEvent.getController().setAnimation(OPEN);
-					}
+				case OPENED:
+					animationEvent.getController().easingType = EasingType.Linear;
+					animationEvent.getController().setAnimation(OPENED);
 					break;
 				default:
 					break;
@@ -224,10 +224,6 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 		return factory;
 	}
 
-	@Override
-	public ScreenHandler createMenu (int syncId, PlayerInventory inventory, PlayerEntity player) {
-		return GenericContainerScreenHandler.createGeneric9x6(syncId, inventory, this);
-	}
 
 	@Override
 	protected ScreenHandler createScreenHandler (int syncId, PlayerInventory inventory) {

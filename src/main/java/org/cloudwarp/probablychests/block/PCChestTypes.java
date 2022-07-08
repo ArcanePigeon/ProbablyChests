@@ -5,7 +5,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
@@ -13,11 +12,12 @@ import net.minecraft.util.math.BlockPos;
 import org.cloudwarp.probablychests.ProbablyChests;
 import org.cloudwarp.probablychests.block.entity.PCChestBlockEntity;
 import org.cloudwarp.probablychests.entity.PCChestMimic;
+import org.cloudwarp.probablychests.entity.PCTameablePetWithInventory;
 import org.cloudwarp.probablychests.registry.PCBlockEntities;
 import org.cloudwarp.probablychests.registry.PCEntities;
 import org.cloudwarp.probablychests.registry.PCLootTables;
 import org.cloudwarp.probablychests.registry.PCScreenHandlerType;
-import org.cloudwarp.probablychests.screenhandlers.PCScreenHandler;
+import org.cloudwarp.probablychests.screenhandlers.PCChestScreenHandler;
 
 public enum PCChestTypes {
 
@@ -89,7 +89,7 @@ public enum PCChestTypes {
 		};
 	}
 
-	public ScreenHandlerType<PCScreenHandler> getScreenHandlerType () {
+	public ScreenHandlerType<PCChestScreenHandler> getScreenHandlerType () {
 		return switch (this) {
 			default -> PCScreenHandlerType.PC_CHEST;
 		};
@@ -113,7 +113,7 @@ public enum PCChestTypes {
 		};
 	}
 
-	public EntityType<? extends TameableEntity> getPetMimicType () {
+	public EntityType<? extends PCTameablePetWithInventory> getPetMimicType () {
 		return switch (this) {
 			case LUSH -> PCEntities.LUSH_CHEST_MIMIC_PET;
 			case ROCKY -> PCEntities.ROCKY_CHEST_MIMIC_PET;

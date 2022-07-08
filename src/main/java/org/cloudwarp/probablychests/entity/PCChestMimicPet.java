@@ -8,43 +8,25 @@ import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.pathing.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.passive.PassiveEntity;
-import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.InventoryChangedListener;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.screen.GenericContainerScreenHandler;
-import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
-import net.minecraft.world.event.GameEvent;
 import org.cloudwarp.probablychests.block.PCChestTypes;
-import org.cloudwarp.probablychests.registry.PCItems;
-import org.cloudwarp.probablychests.screenhandlers.PCMimicScreenHandler;
 import org.jetbrains.annotations.Nullable;
-import software.bernie.geckolib3.core.AnimationState;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
@@ -55,42 +37,27 @@ import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 import java.util.EnumSet;
 
-public class PCChestMimicPet extends TameableEntity implements IAnimatable, Tameable, InventoryChangedListener {
+public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnimatable {
 	// Animations
-	public static final AnimationBuilder IDLE = new AnimationBuilder().addAnimation("idle", true)
-			.addAnimation("flying", true);
-	public static final AnimationBuilder JUMP = new AnimationBuilder().addAnimation("jump", false);
-	public static final AnimationBuilder CLOSE = new AnimationBuilder().addAnimation("close", false).addAnimation("idle", true);
-	public static final AnimationBuilder SLEEPING = new AnimationBuilder().addAnimation("sleeping", true);
+	public static final AnimationBuilder IDLE = new AnimationBuilder().addAnimation("idle", true);
+	public static final AnimationBuilder JUMP = new AnimationBuilder().addAnimation("jump", false).addAnimation("flying", true);
+	public static final AnimationBuilder CLOSE = new AnimationBuilder().addAnimation("close", false).addAnimation("sleeping", true);
+	public static final AnimationBuilder SITTING = new AnimationBuilder().addAnimation("sleeping", true);
 	public static final AnimationBuilder FLYING = new AnimationBuilder().addAnimation("flying", true);
 	private static final String CONTROLLER_NAME = "mimicController";
-	// Mimic States
-	private static final TrackedData<Boolean> IS_JUMPING;
-	private static final TrackedData<Boolean> IS_IDLE;
-	private static final TrackedData<Boolean> IS_SLEEPING;
-	private static final TrackedData<Boolean> IS_GROUNDED;
-	private static final TrackedData<Boolean> IS_FLYING;
+
+
 	private static final double moveSpeed = 1.0D;
 
-	static {
-		IS_JUMPING = DataTracker.registerData(PCChestMimicPet.class, TrackedDataHandlerRegistry.BOOLEAN);
-		IS_IDLE = DataTracker.registerData(PCChestMimicPet.class, TrackedDataHandlerRegistry.BOOLEAN);
-		IS_SLEEPING = DataTracker.registerData(PCChestMimicPet.class, TrackedDataHandlerRegistry.BOOLEAN);
-		IS_GROUNDED = DataTracker.registerData(PCChestMimicPet.class, TrackedDataHandlerRegistry.BOOLEAN);
-		IS_FLYING = DataTracker.registerData(PCChestMimicPet.class, TrackedDataHandlerRegistry.BOOLEAN);
-	}
 
 	public SimpleInventory inventory = new SimpleInventory(54);
-	public boolean interacting;
 	PCChestTypes type;
 	private AnimationFactory factory = new AnimationFactory(this);
 	private boolean onGroundLastTick;
 	private int jumpEndTimer = 10;
-	private boolean isJumpAnimationPlaying = false;
-	private boolean isJumpAnimationFinished = false;
 	private int spawnWaitTimer = 5;
 
-	public PCChestMimicPet (EntityType<? extends TameableEntity> entityType, World world) {
+	public PCChestMimicPet (EntityType<? extends PCTameablePetWithInventory> entityType, World world) {
 		super(entityType, world);
 		this.type = PCChestTypes.NORMAL;
 		this.ignoreCameraFrustum = true;
@@ -120,129 +87,49 @@ public class PCChestMimicPet extends TameableEntity implements IAnimatable, Tame
 	}
 
 	public ActionResult interactMob (PlayerEntity player, Hand hand) {
-		ItemStack itemStack = player.getStackInHand(hand);
-		Item item = itemStack.getItem();
-
-		if (this.isTamed()) {
-			if (this.isBreedingItem(itemStack) && this.getHealth() < this.getMaxHealth()) {
-				if (! player.getAbilities().creativeMode) {
-					itemStack.decrement(1);
-				}
-				this.heal((float) item.getFoodComponent().getHunger());
-				this.emitGameEvent(GameEvent.MOB_INTERACT, this.getCameraBlockPos());
-				return ActionResult.SUCCESS;
-			} else {
-				ActionResult actionResult = super.interactMob(player, hand);
-				if (player.isSneaking()) {
-					if (this.isOwner(player)) {
-						this.setSitting(! this.isSitting());
-						this.setIsSleeping(this.isSitting());
-						this.jumping = false;
-						this.navigation.stop();
-						this.setTarget((LivingEntity) null);
-						return ActionResult.SUCCESS;
-					}
-
-					return actionResult;
-				} else {
-					if (this.isGrounded() && this.canMoveVoluntarily() && ! this.world.isClient) {
-						this.openGui(player);
-					}
-					return ActionResult.success(this.world.isClient());
-				}
-			}
-		} else if (itemStack.isOf(PCItems.PET_MIMIC_KEY)) {
-			if (! player.getAbilities().creativeMode) {
-				itemStack.decrement(1);
-			}
-			this.setOwner(player);
-			this.navigation.stop();
-			this.setTarget((LivingEntity) null);
-			this.setSitting(true);
-			this.setIsSleeping(this.isSitting());
-			this.world.sendEntityStatus(this, (byte) 7);
-
-			return ActionResult.SUCCESS;
-		} else {
-			return super.interactMob(player, hand);
-		}
+		return super.interactMob(player, hand);
 	}
 
-	@Override
-	public void onInventoryChanged (Inventory sender) {
-	}
-
-	public void openGui (PlayerEntity player) {
-		if (player.world != null && ! this.world.isClient()) {
-			this.interacting = true;
-			player.openHandledScreen(new MimicScreenHandlerFactory());
-		}
-	}
-
-	@Override
-	protected void dropEquipment (DamageSource source, int lootingMultiplier, boolean allowDrops) {
-		for (int i = 0; i < this.inventory.size(); ++ i) {
-			ItemStack itemstack = this.inventory.getStack(i);
-			if (! itemstack.isEmpty()) {
-				this.dropStack(itemstack);
-			}
-		}
-	}
-
-	@Override
-	public int getSafeFallDistance () {
-		return 20;
-	}
-
-	@Override
-	protected int computeFallDamage (float fallDistance, float damageMultiplier) {
-		StatusEffectInstance statusEffectInstance = this.getStatusEffect(StatusEffects.JUMP_BOOST);
-		float f = statusEffectInstance == null ? 0.0F : (float) (statusEffectInstance.getAmplifier() + 1);
-		return MathHelper.ceil((fallDistance - 20.0F - f) * damageMultiplier);
-	}
-
-	public void printStates () {
-		System.out.println(isJumping() + "  " + isFlying() + "  " + isSleeping() + "  " + isGrounded() + "  " + isIdle());
-	}
 
 	private <E extends IAnimatable> PlayState devMovement (AnimationEvent<E> animationEvent) {
-		//printStates();
-		if (isJumping() && ! this.isJumpAnimationFinished) {
-			if (! this.isJumpAnimationPlaying) {
+		int state = this.getMimicState();
+		animationEvent.getController().setAnimationSpeed(1D);
+		switch (state) {
+			case IS_SLEEPING:
+				System.out.println("D");
+				animationEvent.getController().setAnimation(SITTING);
+				break;
+			case IS_IN_AIR:
+				System.out.println("E");
+				animationEvent.getController().setAnimation(FLYING);
+				break;
+			case IS_CLOSED:
+				System.out.println("F");
+				animationEvent.getController().setAnimation(CLOSE);
+				break;
+			case IS_IDLE:
+				System.out.println("G");
+				animationEvent.getController().setAnimation(IDLE);
+				break;
+			case IS_JUMPING:
+				System.out.println("H");
 				animationEvent.getController().setAnimationSpeed(2D);
 				animationEvent.getController().setAnimation(JUMP);
-				this.isJumpAnimationPlaying = true;
-			} else {
-				if (animationEvent.getController().getAnimationState() == AnimationState.Stopped) {
-					animationEvent.getController().setAnimationSpeed(1D);
-					this.isJumpAnimationPlaying = false;
-					this.isJumpAnimationFinished = true;
-				}
-			}
-		} else if (this.isFlying()) {
-			animationEvent.getController().setAnimation(FLYING);
-		} else if (this.isSleeping()) {
-			this.isJumpAnimationFinished = false;
-			this.isJumpAnimationPlaying = false;
-			animationEvent.getController().setAnimation(SLEEPING);
-		} else if (! this.isSleeping()) {
-			this.isJumpAnimationFinished = false;
-			this.isJumpAnimationPlaying = false;
-			animationEvent.getController().setAnimation(IDLE);
-		} else if (this.isGrounded()) {
-			this.isJumpAnimationFinished = false;
-			this.isJumpAnimationPlaying = false;
-			animationEvent.getController().setAnimation(CLOSE);
-		}
-		if (animationEvent.getController().getCurrentAnimation() == null) {
-			animationEvent.getController().setAnimation(SLEEPING);
+				break;
+			case IS_OPENED:
+				System.out.println("I");
+				animationEvent.getController().setAnimation(IDLE);
+				break;
+			default:
+				System.out.println(state);
+				break;
 		}
 		return PlayState.CONTINUE;
 	}
 
 	@Override
 	public void registerControllers (AnimationData animationData) {
-		animationData.addAnimationController(new AnimationController(this, CONTROLLER_NAME, 0, this::devMovement));
+		animationData.addAnimationController(new AnimationController(this, CONTROLLER_NAME, 3, this::devMovement));
 	}
 
 	@Override
@@ -250,25 +137,6 @@ public class PCChestMimicPet extends TameableEntity implements IAnimatable, Tame
 		return this.factory;
 	}
 
-	float getJumpSoundPitch () {
-		return ((this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
-	}
-
-	protected SoundEvent getJumpSound () {
-		return SoundEvents.BLOCK_CHEST_OPEN;
-	}
-
-	protected SoundEvent getHurtSound (DamageSource source) {
-		return SoundEvents.ENTITY_ZOMBIE_ATTACK_WOODEN_DOOR;
-	}
-
-	protected SoundEvent getDeathSound () {
-		return SoundEvents.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR;
-	}
-
-	protected SoundEvent getLandingSound () {
-		return SoundEvents.BLOCK_CHEST_CLOSE;
-	}
 
 	protected void jump () {
 		Vec3d vec3d = this.getVelocity();
@@ -283,15 +151,12 @@ public class PCChestMimicPet extends TameableEntity implements IAnimatable, Tame
 		//moveSpeed = this.world.random.nextDouble(1.5D,2.1D);
 		this.setVelocity(vec3d.x, (double) this.getJumpVelocity() * jumpStrength, vec3d.z);
 		this.velocityDirty = true;
-		if (this.isGrounded() && this.jumpEndTimer <= 0) {
+		if (this.isOnGround() && this.jumpEndTimer <= 0) {
 			this.jumpEndTimer = 10;
-			this.setIsJumping(true);
+			this.setMimicState(IS_JUMPING);
 		}
 	}
 
-	protected float getActiveEyeHeight (EntityPose pose, EntityDimensions dimensions) {
-		return 0.625F * dimensions.height;
-	}
 
 	protected int getTicksUntilNextJump () {
 		return 10;
@@ -303,23 +168,27 @@ public class PCChestMimicPet extends TameableEntity implements IAnimatable, Tame
 			jumpEndTimer -= 1;
 		}
 		if (this.onGround) {
-			this.setIsFlying(false);
-			this.setIsGrounded(true);
-			if (this.onGroundLastTick) {
-				this.setIsJumping(false);
-			} else {
+			if (! this.onGroundLastTick) {
+				System.out.println("B");
+				this.setMimicState(IS_SLEEPING);
 				this.playSound(this.getLandingSound(), this.getSoundVolume(),
 						((this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F) / 0.8F);
+			}else{
+				if (this.isSitting() && this.getMimicState() != IS_CLOSED && this.getMimicState() != IS_OPENED) {
+					System.out.println("A");
+					this.setMimicState(IS_CLOSED);
+				}
 			}
 		} else {
-			if (spawnWaitTimer > 0) {
-				spawnWaitTimer -= 1;
-			} else {
-				this.setIsGrounded(false);
-				this.setIsFlying(true);
+			if (this.getMimicState() != IS_JUMPING) {
+				if (spawnWaitTimer > 0) {
+					spawnWaitTimer -= 1;
+				} else {
+					this.setMimicState(IS_IN_AIR);
+				}
 			}
-
 		}
+
 
 		this.onGroundLastTick = this.onGround;
 	}
@@ -331,11 +200,7 @@ public class PCChestMimicPet extends TameableEntity implements IAnimatable, Tame
 	public void writeCustomDataToNbt (NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
 		nbt.putBoolean("wasOnGround", this.onGroundLastTick);
-		nbt.putBoolean("grounded", this.isOnGround());
-		nbt.putBoolean("jumping", this.isJumping());
-		nbt.putBoolean("idle", this.isIdle());
-		nbt.putBoolean("flying", this.isFlying());
-		nbt.putBoolean("sleeping", this.isSleeping());
+
 		NbtList listnbt = new NbtList();
 		for (int i = 0; i < this.inventory.size(); ++ i) {
 			ItemStack itemstack = this.inventory.getStack(i);
@@ -351,11 +216,7 @@ public class PCChestMimicPet extends TameableEntity implements IAnimatable, Tame
 	public void readCustomDataFromNbt (NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
 		this.onGroundLastTick = nbt.getBoolean("wasOnGround");
-		this.setIsGrounded(nbt.getBoolean("grounded"));
-		this.setIsJumping(nbt.getBoolean("jumping"));
-		this.setIsIdle(nbt.getBoolean("idle"));
-		this.setIsFlying(nbt.getBoolean("flying"));
-		this.setIsSleeping(nbt.getBoolean("sleeping"));
+
 		NbtList listnbt = nbt.getList("Inventory", 10);
 		for (int i = 0; i < listnbt.size(); ++ i) {
 			NbtCompound compoundnbt = listnbt.getCompound(i);
@@ -364,45 +225,6 @@ public class PCChestMimicPet extends TameableEntity implements IAnimatable, Tame
 		}
 	}
 
-	public void setIsJumping (boolean jumping) {
-		this.dataTracker.set(IS_JUMPING, jumping);
-	}
-
-	public boolean isJumping () {
-		return this.dataTracker.get(IS_JUMPING);
-	}
-
-	public void setIsFlying (boolean flying) {
-		this.dataTracker.set(IS_FLYING, flying);
-	}
-
-	public boolean isFlying () {
-		return this.dataTracker.get(IS_FLYING);
-	}
-
-	public void setIsGrounded (boolean grounded) {
-		this.dataTracker.set(IS_GROUNDED, grounded);
-	}
-
-	public boolean isGrounded () {
-		return this.dataTracker.get(IS_GROUNDED);
-	}
-
-	public void setIsIdle (boolean idle) {
-		this.dataTracker.set(IS_IDLE, idle);
-	}
-
-	public boolean isIdle () {
-		return this.dataTracker.get(IS_IDLE);
-	}
-
-	public void setIsSleeping (boolean sleeping) {
-		this.dataTracker.set(IS_SLEEPING, sleeping);
-	}
-
-	public boolean isSleeping () {
-		return this.dataTracker.get(IS_SLEEPING);
-	}
 
 	@Nullable
 	@Override
@@ -412,23 +234,9 @@ public class PCChestMimicPet extends TameableEntity implements IAnimatable, Tame
 
 	@Override
 	protected void initDataTracker () {
-		this.dataTracker.startTracking(IS_GROUNDED, true);
-		this.dataTracker.startTracking(IS_JUMPING, false);
-		this.dataTracker.startTracking(IS_FLYING, false);
-		this.dataTracker.startTracking(IS_IDLE, false);
-		this.dataTracker.startTracking(IS_SLEEPING, true);
 		super.initDataTracker();
 	}
 
-	@Override
-	public boolean canBreatheInWater () {
-		return true;
-	}
-
-	@Override
-	public boolean canFreeze () {
-		return false;
-	}
 
 	private static class MimicMoveControl extends MoveControl {
 		private final PCChestMimicPet mimic;
@@ -673,23 +481,6 @@ public class PCChestMimicPet extends TameableEntity implements IAnimatable, Tame
 			}
 
 			((PCChestMimicPet.MimicMoveControl) this.mimic.getMoveControl()).move(4.2D);
-		}
-	}
-
-	private class MimicScreenHandlerFactory implements NamedScreenHandlerFactory {
-		private PCChestMimicPet mimic () {
-			return PCChestMimicPet.this;
-		}
-
-		@Override
-		public Text getDisplayName () {
-			return this.mimic().getDisplayName();
-		}
-
-		@Override
-		public ScreenHandler createMenu (int syncId, PlayerInventory inv, PlayerEntity player) {
-			var mimicInv = this.mimic().inventory;
-			return GenericContainerScreenHandler.createGeneric9x6(syncId, inv, mimicInv);
 		}
 	}
 

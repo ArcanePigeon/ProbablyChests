@@ -1,4 +1,4 @@
-package org.cloudwarp.probablychests.client;
+package org.cloudwarp.probablychests.client.entity;
 
 
 import net.minecraft.client.render.RenderLayer;
