@@ -10,8 +10,13 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.mob.Angerable;
+import net.minecraft.entity.mob.CreeperEntity;
+import net.minecraft.entity.mob.GhastEntity;
+import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.TameableEntity;
+import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.InventoryChangedListener;
@@ -27,8 +32,10 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.TimeHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import org.cloudwarp.probablychests.block.PCChestTypes;
@@ -37,17 +44,24 @@ import org.cloudwarp.probablychests.registry.PCItems;
 import org.cloudwarp.probablychests.screenhandlers.PCMimicScreenHandler;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class PCTameablePetWithInventory extends TameableEntity implements Tameable, InventoryChangedListener {
+import java.util.UUID;
+
+public abstract class PCTameablePetWithInventory extends TameableEntity implements Tameable, InventoryChangedListener, Angerable {
 
 	public SimpleInventory inventory = new SimpleInventory(54);
 	public boolean interacting;
 	PCChestTypes type;
+	@Nullable
+	private UUID angryAt;
 
 	private static final TrackedData<Integer> MIMIC_STATE;
-	public Integer previousState = 0;
+	private static final TrackedData<Integer> ANGER_TIME;
+	private static final UniformIntProvider ANGER_TIME_RANGE;
 
 	static {
 		MIMIC_STATE = DataTracker.registerData(PCChestMimic.class, TrackedDataHandlerRegistry.INTEGER);
+		ANGER_TIME = DataTracker.registerData(PCChestMimic.class, TrackedDataHandlerRegistry.INTEGER);
+		ANGER_TIME_RANGE = TimeHelper.betweenSeconds(20, 39);
 	}
 
 	// Mimic States
@@ -271,6 +285,7 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 
 		}
 		nbt.put("Inventory", listnbt);
+		this.writeAngerToNbt(nbt);
 	}
 
 	public void readCustomDataFromNbt (NbtCompound nbt) {
@@ -282,6 +297,7 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 			int j = compoundnbt.getByte("Slot") & 255;
 			this.inventory.setStack(j, ItemStack.fromNbt(compoundnbt));
 		}
+		this.readAngerFromNbt(this.world, nbt);
 	}
 
 	public void setMimicState (int state) {
@@ -301,6 +317,7 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 	@Override
 	protected void initDataTracker () {
 		super.initDataTracker();
+		this.dataTracker.startTracking(ANGER_TIME, 0);
 	}
 
 	@Override
@@ -315,6 +332,27 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 
 	public boolean areInventoriesDifferent(Inventory other) {
 		return this.inventory != other;
+	}
+
+	public int getAngerTime() {
+		return (Integer)this.dataTracker.get(ANGER_TIME);
+	}
+
+	public void setAngerTime(int angerTime) {
+		this.dataTracker.set(ANGER_TIME, angerTime);
+	}
+
+	public void chooseRandomAngerTime() {
+		this.setAngerTime(ANGER_TIME_RANGE.get(this.random));
+	}
+
+	@Nullable
+	public UUID getAngryAt() {
+		return this.angryAt;
+	}
+
+	public void setAngryAt(@Nullable UUID angryAt) {
+		this.angryAt = angryAt;
 	}
 
 }

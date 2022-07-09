@@ -4,12 +4,19 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.control.MoveControl;
-import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.ai.pathing.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.mob.Angerable;
+import net.minecraft.entity.mob.GhastEntity;
+import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.passive.PassiveEntity;
+import net.minecraft.entity.passive.TameableEntity;
+import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -24,6 +31,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import org.cloudwarp.probablychests.block.PCChestTypes;
+import org.cloudwarp.probablychests.entity.ai.PCMeleeAttackGoal;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.example.GeckoLibMod;
 import software.bernie.geckolib3.GeckoLib;
@@ -43,7 +51,7 @@ import software.bernie.geckolib3.world.storage.GeckoLibIdTracker;
 
 import java.util.EnumSet;
 
-public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnimatable {
+public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnimatable, Tameable {
 	// Animations
 	public static final AnimationBuilder IDLE = new AnimationBuilder().addAnimation("idle", true);
 	public static final AnimationBuilder JUMP = new AnimationBuilder().addAnimation("jump", false).addAnimation("flying", true);
@@ -86,9 +94,14 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 	}
 
 	protected void initGoals () {
-		this.goalSelector.add(3, new PCChestMimicPet.SwimmingGoal(this));
-		this.goalSelector.add(1, new FollowOwnerGoal(this, 1, 5, 2, false));
+		this.goalSelector.add(1, new PCChestMimicPet.SwimmingGoal(this));
 		this.goalSelector.add(2, new SitGoal(this));
+		this.goalSelector.add(5, new PCMeleeAttackGoal(this, 1.0, true));
+		this.goalSelector.add(6, new FollowOwnerGoal(this, 1, 5, 2, false));
+		this.targetSelector.add(1, new TrackOwnerAttackerGoal(this));
+		this.targetSelector.add(2, new AttackWithOwnerGoal(this));
+		this.targetSelector.add(8, new UniversalAngerGoal<>(this, true));
+		this.targetSelector.add(4, new ActiveTargetGoal<>(this, PlayerEntity.class, 10, true, false, this::shouldAngerAt));
 	}
 
 
@@ -111,8 +124,7 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 				animationEvent.getController().setAnimation(FLYING);
 				break;
 			case IS_CLOSED:
-				// because of issue with dev movement being client based and sit being non tracked properly isSitting is inverted here.
-				if (! this.isSitting()) {
+				if (this.isInSittingPose()) {
 					animationEvent.getController().setAnimation(CLOSE_SITTING);
 				} else {
 					animationEvent.getController().setAnimation(CLOSE_STANDING);
@@ -143,7 +155,6 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 				System.out.println(state);
 				break;
 		}
-		this.previousState = state;
 		return PlayState.CONTINUE;
 	}
 
@@ -181,6 +192,12 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 	protected int getTicksUntilNextJump () {
 		return 10;
 	}
+	public void tickMovement(){
+		super.tickMovement();
+		if (!this.world.isClient) {
+			this.tickAngerLogic((ServerWorld)this.world, true);
+		}
+	}
 
 	public void tick () {
 		super.tick();
@@ -193,7 +210,7 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 						((this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F) / 0.8F);
 			}
 			if(this.getMimicState() != IS_CLOSED && this.getMimicState() != IS_OPENING && this.getMimicState() != IS_OPENED){
-				if(!this.isSitting()){
+				if(this.isInSittingPose()){
 					this.setMimicState(IS_SITTING);
 				}else{
 					this.setMimicState(IS_STANDING);
@@ -202,7 +219,7 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 			if(this.getMimicState() == IS_CLOSED){
 				closeAnimationTimer -= 1;
 				if(closeAnimationTimer <= 0){
-					if(!this.isSitting()){
+					if(this.isInSittingPose()){
 						this.setMimicState(IS_SITTING);
 					}else{
 						this.setMimicState(IS_STANDING);
@@ -257,7 +274,7 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 	}
 
 
-	private static class MimicMoveControl extends MoveControl {
+	public static class MimicMoveControl extends MoveControl {
 		private final PCChestMimicPet mimic;
 		private float targetYaw;
 		private int ticksUntilJump;
@@ -500,6 +517,50 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 			}
 
 			((PCChestMimicPet.MimicMoveControl) this.mimic.getMoveControl()).move(4.2D);
+		}
+	}
+
+	public boolean tryAttack(Entity target) {
+		boolean bl = target.damage(DamageSource.mob(this), (float)((int)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE)));
+		if (bl) {
+			this.playSound(this.getHurtSound(), this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 0.7F);
+			this.applyDamageEffects(this, target);
+		}
+
+		return bl;
+	}
+
+
+	public boolean canAttackWithOwner(LivingEntity target, LivingEntity owner) {
+		if (!(target instanceof GhastEntity)) {
+			if (target instanceof PCChestMimicPet) {
+				PCChestMimicPet mimic = (PCChestMimicPet)target;
+				return !mimic.isTamed() || mimic.getOwner() != owner;
+			} else if (target instanceof PlayerEntity && owner instanceof PlayerEntity && !((PlayerEntity)owner).shouldDamagePlayer((PlayerEntity)target)) {
+				return false;
+			} else {
+				return !(target instanceof TameableEntity) || !((TameableEntity)target).isTamed();
+			}
+		} else {
+			return false;
+		}
+	}
+
+	public boolean damage(DamageSource source, float amount) {
+		if (this.isInvulnerableTo(source)) {
+			return false;
+		} else {
+			Entity entity = source.getAttacker();
+			if (!this.world.isClient) {
+				this.setSitting(false);
+				this.setMimicState(IS_STANDING);
+			}
+
+			if (entity != null && !(entity instanceof PlayerEntity) && !(entity instanceof PersistentProjectileEntity)) {
+				amount = (amount + 1.0F) / 2.0F;
+			}
+
+			return super.damage(source, amount);
 		}
 	}
 
