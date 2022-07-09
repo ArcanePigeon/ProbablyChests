@@ -44,6 +44,7 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 	PCChestTypes type;
 
 	private static final TrackedData<Integer> MIMIC_STATE;
+	public Integer previousState = 0;
 
 	static {
 		MIMIC_STATE = DataTracker.registerData(PCChestMimic.class, TrackedDataHandlerRegistry.INTEGER);
@@ -56,10 +57,15 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 	public static final int IS_IDLE = 3;
 	public static final int IS_JUMPING = 4;
 	public static final int IS_OPENED = 5;
+	public static final int IS_STANDING = 6;
+	public static final int IS_SITTING = 7;
+	public static final int IS_OPENING = 8;
+
 
 	public int viewerCount = 0;
 
-
+	public int closeAnimationTimer = 12;
+	public int openAnimationTimer = 12;
 
 
 	public PCTameablePetWithInventory (EntityType<? extends TameableEntity> entityType, World world) {
@@ -101,6 +107,7 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 				if (player.isSneaking()) {
 					if (this.isOwner(player)) {
 						this.setSitting(! this.isSitting());
+						this.updateSitting(player);
 						this.playSound(this.isSitting() ? this.getSitSound() : this.getStandSound(), this.getSoundVolume(), 0.9F);
 						this.jumping = false;
 						this.navigation.stop();
@@ -124,6 +131,7 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 			this.navigation.stop();
 			this.setTarget((LivingEntity) null);
 			this.setSitting(true);
+			this.updateSitting(player);
 			this.playSound(this.getSitSound(), this.getSoundVolume(), 0.9F);
 			this.world.sendEntityStatus(this, (byte) 7);
 
@@ -132,21 +140,27 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 			return super.interactMob(player, hand);
 		}
 	}
+	public void updateSitting(PlayerEntity player) {}
 
 	@Override
 	protected float getSoundVolume () {
-		return 0.8F;
+		return 0.6F;
 	}
 
 	@Override
 	public void onInventoryChanged (Inventory sender) {
 	}
 
+	public TrackedData<Integer> getMimicStateVariable(){
+		return this.MIMIC_STATE;
+	}
+
 	public void openGui (PlayerEntity player) {
 		if (player.world != null && ! this.world.isClient()) {
 			((PlayerEntityAccess)player).openMimicInventory(this,this.inventory);
 			if(this.viewerCount == 0){
-				this.setMimicState(IS_OPENED);
+				openAnimationTimer = 12;
+				this.setMimicState(IS_OPENING);
 				this.playSound(this.getOpenSound(),this.getSoundVolume(),0.8F);
 			}
 			this.viewerCount += 1;
@@ -156,6 +170,7 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 		if (player.world != null && ! this.world.isClient()) {
 			viewerCount -= 1;
 			if(viewerCount == 0){
+				closeAnimationTimer = 12;
 				this.setMimicState(IS_CLOSED);
 				this.playSound(this.getCloseSound(), this.getSoundVolume(), 0.8F);
 			}
@@ -285,7 +300,6 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 
 	@Override
 	protected void initDataTracker () {
-		this.dataTracker.startTracking(MIMIC_STATE, 0);
 		super.initDataTracker();
 	}
 

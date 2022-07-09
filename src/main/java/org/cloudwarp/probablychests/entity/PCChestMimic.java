@@ -38,34 +38,21 @@ public class PCChestMimic extends PCTameablePetWithInventory implements IAnimata
 	// Animations
 	public static final AnimationBuilder IDLE = new AnimationBuilder().addAnimation("idle", true);
 	public static final AnimationBuilder JUMP = new AnimationBuilder().addAnimation("jump", false).addAnimation("flying", true);
-	public static final AnimationBuilder CLOSE = new AnimationBuilder().addAnimation("close", false).addAnimation("idle", true);
+	public static final AnimationBuilder CLOSE = new AnimationBuilder().addAnimation("land", false).addAnimation("idle", true);
 	public static final AnimationBuilder SLEEPING = new AnimationBuilder().addAnimation("sleeping", true);
 	public static final AnimationBuilder FLYING = new AnimationBuilder().addAnimation("flying", true);
 	private static final String CONTROLLER_NAME = "mimicController";
 
-	private static final TrackedData<Integer> MIMIC_STATE;
 	private static double moveSpeed = 1.5D;
 	private static int maxHealth = 50;
 	private static int maxDamage = 5;
 
-	// Mimic States
-	private static final int IS_SLEEPING = 0;
-	private static final int IS_IN_AIR = 1;
-	private static final int IS_CLOSED = 2;
-	private static final int IS_IDLE = 3;
-	private static final int IS_JUMPING = 4;
-
-
-	static {
-		MIMIC_STATE = DataTracker.registerData(PCChestMimic.class, TrackedDataHandlerRegistry.INTEGER);
-	}
-
-	public SimpleInventory inventory = new SimpleInventory(54);
 	private AnimationFactory factory = new AnimationFactory(this);
 	private boolean onGroundLastTick;
 	private int timeUntilSleep = 0;
 	private int jumpEndTimer = 10;
 	private int spawnWaitTimer = 5;
+	private boolean isAttemptingToSleep = false;
 
 	public PCChestMimic (EntityType<? extends PCTameablePetWithInventory> entityType, World world) {
 		super(entityType, world);
@@ -98,14 +85,6 @@ public class PCChestMimic extends PCTameablePetWithInventory implements IAnimata
 		this.targetSelector.add(1, new ActiveTargetGoal<>(this, PlayerEntity.class, 10, true, false, livingEntity -> Math.abs(livingEntity.getY() - this.getY()) <= 4.0D));
 	}
 
-	/*
-	Mimic States:
-	0 = sleeping
-	1 = in air
-	2 = on ground
-	3 = idle
-	4 = jumping
-	 */
 	private <E extends IAnimatable> PlayState devMovement (AnimationEvent<E> animationEvent) {
 		int state = this.getMimicState();
 		animationEvent.getController().setAnimationSpeed(1D);
@@ -190,14 +169,6 @@ public class PCChestMimic extends PCTameablePetWithInventory implements IAnimata
 		return this.random.nextInt(40) + 5;
 	}
 
-	/*
-	Mimic States:
-	0 = sleeping
-	1 = in air
-	2 = on ground
-	3 = idle
-	4 = jumping
-	 */
 	public void tick () {
 		super.tick();
 		if (jumpEndTimer >= 0) {
@@ -205,22 +176,28 @@ public class PCChestMimic extends PCTameablePetWithInventory implements IAnimata
 		}
 		if (this.onGround) {
 			if (this.onGroundLastTick) {
-				if (! this.isSleeping() && this.getMimicState() != IS_IDLE) {
+				if (this.getMimicState() != IS_SLEEPING  && !isAttemptingToSleep) {
 					timeUntilSleep = 150;
-					this.setMimicState(IS_IDLE);
+					isAttemptingToSleep = true;
+					if(this.getMimicState() != IS_CLOSED) {
+						this.setMimicState(IS_IDLE);
+					}
 				}
-				if (this.getMimicState() == IS_IDLE) {
+				if (isAttemptingToSleep) {
 					timeUntilSleep -= 1;
 					if (timeUntilSleep <= 0) {
+						timeUntilSleep = 0;
 						this.setMimicState(IS_SLEEPING);
 					}
 				}
 			} else {
+				isAttemptingToSleep = false;
 				this.setMimicState(IS_CLOSED);
 				this.playSound(this.getLandingSound(), this.getSoundVolume(),
 						((this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F) / 0.8F);
 			}
 		} else {
+			isAttemptingToSleep = false;
 			if (this.getMimicState() != IS_JUMPING) {
 				if (spawnWaitTimer > 0) {
 					spawnWaitTimer -= 1;
@@ -240,43 +217,16 @@ public class PCChestMimic extends PCTameablePetWithInventory implements IAnimata
 	public void writeCustomDataToNbt (NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
 		nbt.putBoolean("wasOnGround", this.onGroundLastTick);
-		nbt.putInt("state", this.getMimicState());
-		NbtList listnbt = new NbtList();
-		for (int i = 0; i < this.inventory.size(); ++ i) {
-			ItemStack itemstack = this.inventory.getStack(i);
-			NbtCompound compoundnbt = new NbtCompound();
-			compoundnbt.putByte("Slot", (byte) i);
-			itemstack.writeNbt(compoundnbt);
-			listnbt.add(compoundnbt);
-
-		}
-		nbt.put("Inventory", listnbt);
 	}
 
 	public void readCustomDataFromNbt (NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
 		this.onGroundLastTick = nbt.getBoolean("wasOnGround");
-		this.setMimicState(nbt.getInt("state"));
-		NbtList listnbt = nbt.getList("Inventory", 10);
-		for (int i = 0; i < listnbt.size(); ++ i) {
-			NbtCompound compoundnbt = listnbt.getCompound(i);
-			int j = compoundnbt.getByte("Slot") & 255;
-			this.inventory.setStack(j, ItemStack.fromNbt(compoundnbt));
-		}
-	}
-
-
-	public void setMimicState (int state) {
-		this.dataTracker.set(MIMIC_STATE, state);
-	}
-
-	public int getMimicState () {
-		return this.dataTracker.get(MIMIC_STATE);
 	}
 
 	@Override
 	protected void initDataTracker () {
-		this.dataTracker.startTracking(MIMIC_STATE, 0);
+		this.dataTracker.startTracking(getMimicStateVariable(), IS_SLEEPING);
 		super.initDataTracker();
 	}
 

@@ -8,9 +8,6 @@ import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.pathing.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.SimpleInventory;
@@ -22,11 +19,15 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import org.cloudwarp.probablychests.block.PCChestTypes;
 import org.jetbrains.annotations.Nullable;
+import software.bernie.example.GeckoLibMod;
+import software.bernie.geckolib3.GeckoLib;
+import software.bernie.geckolib3.core.AnimationState;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
@@ -34,6 +35,11 @@ import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
+import software.bernie.geckolib3.network.GeckoLibNetwork;
+import software.bernie.geckolib3.network.ISyncable;
+import software.bernie.geckolib3.resource.GeckoLibCache;
+import software.bernie.geckolib3.util.GeckoLibUtil;
+import software.bernie.geckolib3.world.storage.GeckoLibIdTracker;
 
 import java.util.EnumSet;
 
@@ -41,8 +47,12 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 	// Animations
 	public static final AnimationBuilder IDLE = new AnimationBuilder().addAnimation("idle", true);
 	public static final AnimationBuilder JUMP = new AnimationBuilder().addAnimation("jump", false).addAnimation("flying", true);
-	public static final AnimationBuilder CLOSE = new AnimationBuilder().addAnimation("close", false).addAnimation("sleeping", true);
+	public static final AnimationBuilder CLOSE_SITTING = new AnimationBuilder().addAnimation("close", false).addAnimation("sleeping", true);
+	public static final AnimationBuilder CLOSE_STANDING = new AnimationBuilder().addAnimation("close", false).addAnimation("standing", true);
+	public static final AnimationBuilder OPENING = new AnimationBuilder().addAnimation("open", false);
+	public static final AnimationBuilder OPENED = new AnimationBuilder().addAnimation("opened", true);
 	public static final AnimationBuilder SITTING = new AnimationBuilder().addAnimation("sleeping", true);
+	public static final AnimationBuilder STANDING = new AnimationBuilder().addAnimation("standing", true);
 	public static final AnimationBuilder FLYING = new AnimationBuilder().addAnimation("flying", true);
 	private static final String CONTROLLER_NAME = "mimicController";
 
@@ -56,6 +66,7 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 	private boolean onGroundLastTick;
 	private int jumpEndTimer = 10;
 	private int spawnWaitTimer = 5;
+
 
 	public PCChestMimicPet (EntityType<? extends PCTameablePetWithInventory> entityType, World world) {
 		super(entityType, world);
@@ -94,36 +105,45 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 	private <E extends IAnimatable> PlayState devMovement (AnimationEvent<E> animationEvent) {
 		int state = this.getMimicState();
 		animationEvent.getController().setAnimationSpeed(1D);
+		animationEvent.getController().transitionLengthTicks = 1;
 		switch (state) {
-			case IS_SLEEPING:
-				System.out.println("D");
-				animationEvent.getController().setAnimation(SITTING);
-				break;
 			case IS_IN_AIR:
-				System.out.println("E");
 				animationEvent.getController().setAnimation(FLYING);
 				break;
 			case IS_CLOSED:
-				System.out.println("F");
-				animationEvent.getController().setAnimation(CLOSE);
+				// because of issue with dev movement being client based and sit being non tracked properly isSitting is inverted here.
+				if (! this.isSitting()) {
+					animationEvent.getController().setAnimation(CLOSE_SITTING);
+				} else {
+					animationEvent.getController().setAnimation(CLOSE_STANDING);
+				}
 				break;
 			case IS_IDLE:
-				System.out.println("G");
 				animationEvent.getController().setAnimation(IDLE);
 				break;
 			case IS_JUMPING:
-				System.out.println("H");
 				animationEvent.getController().setAnimationSpeed(2D);
 				animationEvent.getController().setAnimation(JUMP);
 				break;
+			case IS_OPENING:
+				//animationEvent.getController().transitionLengthTicks = 6;
+				animationEvent.getController().setAnimation(OPENING);
+				break;
 			case IS_OPENED:
-				System.out.println("I");
-				animationEvent.getController().setAnimation(IDLE);
+				//animationEvent.getController().transitionLengthTicks = 6;
+				animationEvent.getController().setAnimation(OPENED);
+				break;
+			case IS_SITTING:
+				animationEvent.getController().setAnimation(SITTING);
+				break;
+			case IS_STANDING:
+				animationEvent.getController().setAnimation(STANDING);
 				break;
 			default:
 				System.out.println(state);
 				break;
 		}
+		this.previousState = state;
 		return PlayState.CONTINUE;
 	}
 
@@ -169,14 +189,32 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 		}
 		if (this.onGround) {
 			if (! this.onGroundLastTick) {
-				System.out.println("B");
-				this.setMimicState(IS_SLEEPING);
 				this.playSound(this.getLandingSound(), this.getSoundVolume(),
 						((this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F) / 0.8F);
-			}else{
-				if (this.isSitting() && this.getMimicState() != IS_CLOSED && this.getMimicState() != IS_OPENED) {
-					System.out.println("A");
-					this.setMimicState(IS_CLOSED);
+			}
+			if(this.getMimicState() != IS_CLOSED && this.getMimicState() != IS_OPENING && this.getMimicState() != IS_OPENED){
+				if(!this.isSitting()){
+					this.setMimicState(IS_SITTING);
+				}else{
+					this.setMimicState(IS_STANDING);
+				}
+			}
+			if(this.getMimicState() == IS_CLOSED){
+				closeAnimationTimer -= 1;
+				if(closeAnimationTimer <= 0){
+					if(!this.isSitting()){
+						this.setMimicState(IS_SITTING);
+					}else{
+						this.setMimicState(IS_STANDING);
+					}
+					closeAnimationTimer = 12;
+				}
+			}
+			if(this.getMimicState() == IS_OPENING){
+				openAnimationTimer -= 1;
+				if(openAnimationTimer <= 0){
+					this.setMimicState(IS_OPENED);
+					openAnimationTimer = 12;
 				}
 			}
 		} else {
@@ -188,8 +226,6 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 				}
 			}
 		}
-
-
 		this.onGroundLastTick = this.onGround;
 	}
 
@@ -200,29 +236,11 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 	public void writeCustomDataToNbt (NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
 		nbt.putBoolean("wasOnGround", this.onGroundLastTick);
-
-		NbtList listnbt = new NbtList();
-		for (int i = 0; i < this.inventory.size(); ++ i) {
-			ItemStack itemstack = this.inventory.getStack(i);
-			NbtCompound compoundnbt = new NbtCompound();
-			compoundnbt.putByte("Slot", (byte) i);
-			itemstack.writeNbt(compoundnbt);
-			listnbt.add(compoundnbt);
-
-		}
-		nbt.put("Inventory", listnbt);
 	}
 
 	public void readCustomDataFromNbt (NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
 		this.onGroundLastTick = nbt.getBoolean("wasOnGround");
-
-		NbtList listnbt = nbt.getList("Inventory", 10);
-		for (int i = 0; i < listnbt.size(); ++ i) {
-			NbtCompound compoundnbt = listnbt.getCompound(i);
-			int j = compoundnbt.getByte("Slot") & 255;
-			this.inventory.setStack(j, ItemStack.fromNbt(compoundnbt));
-		}
 	}
 
 
@@ -234,6 +252,7 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 
 	@Override
 	protected void initDataTracker () {
+		this.dataTracker.startTracking(getMimicStateVariable(), IS_SITTING);
 		super.initDataTracker();
 	}
 
