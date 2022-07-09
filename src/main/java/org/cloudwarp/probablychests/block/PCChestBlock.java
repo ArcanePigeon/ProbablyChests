@@ -40,6 +40,7 @@ import org.cloudwarp.probablychests.block.entity.PCChestBlockEntity;
 import org.cloudwarp.probablychests.entity.PCChestMimic;
 import org.cloudwarp.probablychests.entity.PCChestMimicPet;
 import org.cloudwarp.probablychests.entity.PCTameablePetWithInventory;
+import org.cloudwarp.probablychests.interfaces.PlayerEntityAccess;
 import org.cloudwarp.probablychests.registry.PCItems;
 import org.cloudwarp.probablychests.registry.PCProperties;
 import org.cloudwarp.probablychests.utils.PCConfig;
@@ -108,6 +109,7 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 			mimic.setOwner(player);
 			mimic.setTarget((LivingEntity) null);
 			mimic.setSitting(true);
+			((PlayerEntityAccess)player).addPetMimic(mimic.getUuid());
 		}else{
 			mimic = new PCChestMimic(this.type.getMimicType(), world);
 		}
@@ -150,6 +152,9 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 			if(wasSecretMimic){
 				return false;
 			}
+			if(((PlayerEntityAccess)player).checkForMimicLimit()){
+				return false;
+			}
 			createMimic(true,pos,state,world,chest, player);
 			return true;
 		}
@@ -176,8 +181,8 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 		if (chest != null) {
 			ItemStack itemStack = player.getStackInHand(hand);
 			if (itemStack.isOf(PCItems.PET_MIMIC_KEY) && config.mimicSettings.allowPetMimics && ! player.isSneaking()) {
-				createPetMimic(world, pos, state, player);
-				if (! player.isCreative()) {
+				boolean creationSuccess = createPetMimic(world, pos, state, player);
+				if (! player.isCreative() && creationSuccess) {
 					itemStack.decrement(1);
 				}
 				return ActionResult.CONSUME;

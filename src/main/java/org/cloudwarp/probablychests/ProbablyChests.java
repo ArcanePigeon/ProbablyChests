@@ -67,6 +67,8 @@ public class ProbablyChests implements ModInitializer {
 		nbt.putBoolean("spawn_natural_mimics", config.mimicSettings.spawnNaturalMimics);
 		nbt.putFloat("natural_mimic_spawn_rate", config.mimicSettings.naturalMimicSpawnRate);
 		nbt.putBoolean("allow_pet_mimics", config.mimicSettings.allowPetMimics);
+		nbt.putBoolean("do_pet_mimic_limit", config.mimicSettings.doPetMimicLimit);
+		nbt.putInt("pet_mimic_limit", config.mimicSettings.petMimicLimit);
 		return nbt;
 	}
 	public static PCConfig nbtToConfig(NbtCompound nbt){
@@ -82,6 +84,8 @@ public class ProbablyChests implements ModInitializer {
 		config.mimicSettings.spawnNaturalMimics = nbt.getBoolean("spawn_natural_mimics");
 		config.mimicSettings.naturalMimicSpawnRate = nbt.getFloat("natural_mimic_spawn_rate");
 		config.mimicSettings.allowPetMimics = nbt.getBoolean("allow_pet_mimics");
+		config.mimicSettings.doPetMimicLimit = nbt.getBoolean("do_pet_mimic_limit");
+		config.mimicSettings.petMimicLimit = nbt.getInt("pet_mimic_limit");
 		return config;
 	}
 }

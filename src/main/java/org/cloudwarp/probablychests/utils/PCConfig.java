@@ -24,6 +24,10 @@ public class PCConfig implements ConfigData {
 		public float naturalMimicSpawnRate = 0.95F;
 		@ConfigEntry.Gui.Tooltip()
 		public boolean allowPetMimics = true;
+		@ConfigEntry.Gui.Tooltip()
+		public boolean doPetMimicLimit = false;
+		@ConfigEntry.Gui.Tooltip()
+		public int petMimicLimit = 2;
 	}
 
 	public static class WorldGen {

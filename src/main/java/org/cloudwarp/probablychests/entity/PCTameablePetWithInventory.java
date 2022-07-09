@@ -38,6 +38,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
+import org.apache.logging.log4j.core.jmx.Server;
 import org.cloudwarp.probablychests.block.PCChestTypes;
 import org.cloudwarp.probablychests.interfaces.PlayerEntityAccess;
 import org.cloudwarp.probablychests.registry.PCItems;
@@ -59,8 +60,8 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 	private static final UniformIntProvider ANGER_TIME_RANGE;
 
 	static {
-		MIMIC_STATE = DataTracker.registerData(PCChestMimic.class, TrackedDataHandlerRegistry.INTEGER);
-		ANGER_TIME = DataTracker.registerData(PCChestMimic.class, TrackedDataHandlerRegistry.INTEGER);
+		MIMIC_STATE = DataTracker.registerData(PCTameablePetWithInventory.class, TrackedDataHandlerRegistry.INTEGER);
+		ANGER_TIME = DataTracker.registerData(PCTameablePetWithInventory.class, TrackedDataHandlerRegistry.INTEGER);
 		ANGER_TIME_RANGE = TimeHelper.betweenSeconds(20, 39);
 	}
 
@@ -98,6 +99,14 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 				.add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.5D);
 	}
 
+
+	@Override
+	public void remove(RemovalReason reason) {
+		super.remove(reason);
+		if(this.getOwner() != null && this.getOwner() instanceof ServerPlayerEntity){
+			((PlayerEntityAccess)this.getOwner()).removePetMimic(this.getUuid());
+		}
+	}
 
 	public boolean isBreedingItem (ItemStack stack) {
 		Item item = stack.getItem();
