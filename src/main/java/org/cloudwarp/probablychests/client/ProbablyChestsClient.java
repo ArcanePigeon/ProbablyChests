@@ -5,10 +5,12 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.render.entity.EntityRendererFactory;
+import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.nbt.NbtCompound;
 import org.cloudwarp.probablychests.ProbablyChests;
 import org.cloudwarp.probablychests.block.PCChestTypes;
@@ -22,6 +24,7 @@ import software.bernie.example.GeckoLibMod;
 
 @Environment(EnvType.CLIENT)
 public class ProbablyChestsClient implements ClientModInitializer {
+	public static final EntityModelLayer GREATER_MIMIC_BELL_LAYER = new EntityModelLayer(ProbablyChests.id("greater_mimic_bell"), "main");
 	@Override
 	public void onInitializeClient () {
 		ClientPlayNetworking.registerGlobalReceiver(ProbablyChests.id("probably_chests_config_update"), (client, networkHandler, data, sender) -> {
@@ -31,7 +34,6 @@ public class ProbablyChestsClient implements ClientModInitializer {
 		GeckoLibMod.DISABLE_IN_DEV = true;
 		HandledScreens.register(PCScreenHandlerType.PC_CHEST, PCChestScreen::new);
 		//HandledScreens.register(PCScreenHandlerType.PC_CHEST_MIMIC, PCMimicScreen::new);
-
 
 		BlockEntityRendererRegistry.register(PCBlockEntities.LUSH_CHEST_BLOCK_ENTITY, (BlockEntityRendererFactory.Context rendererDispatcherIn) -> new PCChestRenderer(PCChestTypes.LUSH.name));
 		BlockEntityRendererRegistry.register(PCBlockEntities.NORMAL_CHEST_BLOCK_ENTITY, (BlockEntityRendererFactory.Context rendererDispatcherIn) -> new PCChestRenderer(PCChestTypes.NORMAL.name));

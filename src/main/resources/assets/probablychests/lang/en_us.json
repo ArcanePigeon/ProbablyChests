@@ -14,15 +14,16 @@
   "entity.probablychests.rocky_chest_mimic": "Rocky Mimic",
   "entity.probablychests.stone_chest_mimic": "Stone Mimic",
   "entity.probablychests.gold_chest_mimic": "Gold Mimic",
-  "entity.probablychests.lush_chest_mimic_pet": "Pet Lush Mimic",
-  "entity.probablychests.normal_chest_mimic_pet": "Pet Mimic",
-  "entity.probablychests.rocky_chest_mimic_pet": "Pet Rocky Mimic",
-  "entity.probablychests.stone_chest_mimic_pet": "Pet Stone Mimic",
-  "entity.probablychests.gold_chest_mimic_pet": "Pet Gold Mimic",
-  "item.probablychests.mimic_key": "Mimic Key",
+  "entity.probablychests.lush_chest_mimic_pet": "Friendly Lush Mimic",
+  "entity.probablychests.normal_chest_mimic_pet": "Friendly Mimic",
+  "entity.probablychests.rocky_chest_mimic_pet": "Friendly Rocky Mimic",
+  "entity.probablychests.stone_chest_mimic_pet": "Friendly Stone Mimic",
+  "entity.probablychests.gold_chest_mimic_pet": "Friendly Gold Mimic",
+  "item.probablychests.mimic_key": "Suspicious Key",
   "item.probablychests.mimic_key_fragment": "Key Fragment",
-  "item.probablychests.mimic_core": "Mimic Core",
-  "item.probablychests.pet_mimic_key": "Pet Mimic Key",
+  "item.probablychests.mimic_core": "Suspicious Eye",
+  "item.probablychests.pet_mimic_key": "Friendly Key",
+  "item.probablychests.mimic_hand_bell": "Mimic Hand Bell",
 
   "text.autoconfig.probablychests.title": "Probably Chests",
 
@@ -48,5 +49,13 @@
   "text.autoconfig.probablychests.option.worldGen.surfaceChestSpawnChance": "Surface chest spawn rate",
   "text.autoconfig.probablychests.option.worldGen.surfaceChestSpawnChance.@Tooltip": "0 means surface chests will not generate while 1 means they will generate more often",
   "text.autoconfig.probablychests.option.worldGen.secretMimicChance": "Secret mimic chance",
-  "text.autoconfig.probablychests.option.worldGen.secretMimicChance.@Tooltip": "0 means chests will never be mimics while 1 means they will always be mimics"
+  "text.autoconfig.probablychests.option.worldGen.secretMimicChance.@Tooltip": "0 means chests will never be mimics while 1 means they will always be mimics",
+
+  "item.probablychests.mimicHandBell.tooltip.shift": "Click and crouch click on a pet mimic to tag and un tag it. [Resets on logout]",
+  "item.probablychests.mimicHandBell.tooltip.shift2": "Click on an amethyst cluster to abandon all untagged mimics.",
+  "item.probablychests.mimicHandBell.tooltip.shift3": "Click on an abandoned mimic to reclaim ownership.",
+  "item.probablychests.shift.tooltip": "Press §eSHIFT§r for more Information",
+  "item.probablychests.mimic_key.tooltip": "Click on a chest to make it secret mimic.",
+  "item.probablychests.pet_mimic_key.tooltip": "Click on a chest to create a pet mimic.",
+  "item.probablychests.mimic_core.tooltip": "It looks like it needs to be combined with something."
 }

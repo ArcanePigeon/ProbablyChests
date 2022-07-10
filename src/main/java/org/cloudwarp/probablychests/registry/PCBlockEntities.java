@@ -32,5 +32,4 @@ public class PCBlockEntities {
 	public static final BlockEntityType<StoneChestBlockEntity> STONE_CHEST_BLOCK_ENTITY = register("stone_chest_block_entity", FabricBlockEntityTypeBuilder.create(StoneChestBlockEntity::new, STONE_CHEST).build(null));
 	public static final BlockEntityType<GoldChestBlockEntity> GOLD_CHEST_BLOCK_ENTITY = register("gold_chest_block_entity", FabricBlockEntityTypeBuilder.create(GoldChestBlockEntity::new, GOLD_CHEST).build(null));
 
-
 }

@@ -187,10 +187,6 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 					itemStack.decrement(1);
 				}
 				return ActionResult.CONSUME;
-			}else if(itemStack.isOf(PCItems.MIMIC_HAND_BELL)){
-				//((PlayerEntityAccess) player).abandonMimics();
-				System.out.println("Abandoning " + ((PlayerEntityAccess) player).abandonMimics() +  "pet mimics");
-				return ActionResult.SUCCESS;
 			}else if (createMimic(world, pos, state)) {
 				return ActionResult.SUCCESS;
 			}
