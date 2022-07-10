@@ -26,16 +26,16 @@ public class PCMeleeAttackGoal extends Goal {
 	private static final long MAX_ATTACK_TIME = 20L;
 	protected final PCChestMimicPet mimic;
 
-	public PCMeleeAttackGoal(PathAwareEntity mob, double speed, boolean pauseWhenMobIdle) {
+	public PCMeleeAttackGoal (PathAwareEntity mob, double speed, boolean pauseWhenMobIdle) {
 		this.mob = mob;
-		this.mimic = (PCChestMimicPet)mob;
+		this.mimic = (PCChestMimicPet) mob;
 		this.speed = speed;
 		this.pauseWhenMobIdle = pauseWhenMobIdle;
 		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK, Control.JUMP));
 	}
 
 	@Override
-	public boolean canStart() {
+	public boolean canStart () {
 		long l = this.mob.world.getTime();
 		if (l - this.lastUpdateTime < 20L) {
 			return false;
@@ -45,7 +45,10 @@ public class PCMeleeAttackGoal extends Goal {
 		if (livingEntity == null) {
 			return false;
 		}
-		if (!livingEntity.isAlive()) {
+		if (this.mimic.getIsAbandoned()) {
+			return false;
+		}
+		if (! livingEntity.isAlive()) {
 			return false;
 		}
 		if (this.mimic.getOwner() == livingEntity) {
@@ -59,32 +62,35 @@ public class PCMeleeAttackGoal extends Goal {
 	}
 
 	@Override
-	public boolean shouldContinue() {
+	public boolean shouldContinue () {
 		LivingEntity livingEntity = this.mob.getTarget();
 		if (livingEntity == null) {
 			return false;
 		}
-		if (!livingEntity.isAlive()) {
+		if (! livingEntity.isAlive()) {
+			return false;
+		}
+		if (this.mimic.getIsAbandoned()) {
 			return false;
 		}
 		if (this.mimic.getOwner() == livingEntity) {
 			return false;
 		}
-		if (!this.mob.isInWalkTargetRange(livingEntity.getBlockPos())) {
+		if (! this.mob.isInWalkTargetRange(livingEntity.getBlockPos())) {
 			return false;
 		}
-		return !(livingEntity instanceof PlayerEntity) || !livingEntity.isSpectator() && !((PlayerEntity)livingEntity).isCreative();
+		return ! (livingEntity instanceof PlayerEntity) || ! livingEntity.isSpectator() && ! ((PlayerEntity) livingEntity).isCreative();
 	}
 
 	@Override
-	public void start() {
+	public void start () {
 		this.mob.setAttacking(true);
 		this.updateCountdownTicks = 0;
 		this.cooldown = 0;
 	}
 
 	@Override
-	public void stop() {
+	public void stop () {
 		LivingEntity livingEntity = this.mob.getTarget();
 		if (! EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.test(livingEntity)) {
 			this.mob.setTarget(null);
@@ -94,12 +100,12 @@ public class PCMeleeAttackGoal extends Goal {
 	}
 
 	@Override
-	public boolean shouldRunEveryTick() {
+	public boolean shouldRunEveryTick () {
 		return true;
 	}
 
 	@Override
-	public void tick() {
+	public void tick () {
 		LivingEntity livingEntity = this.mob.getTarget();
 		if (livingEntity == null) {
 			return;
@@ -118,7 +124,7 @@ public class PCMeleeAttackGoal extends Goal {
 			} else if (d > 256.0) {
 				this.updateCountdownTicks += 5;
 			}
-			if (!this.mob.getNavigation().startMovingTo(livingEntity, this.speed)) {
+			if (! this.mob.getNavigation().startMovingTo(livingEntity, this.speed)) {
 				this.updateCountdownTicks += 15;
 			}
 			this.updateCountdownTicks = this.getTickCount(this.updateCountdownTicks);
@@ -127,7 +133,7 @@ public class PCMeleeAttackGoal extends Goal {
 		this.attack(livingEntity, d);
 	}
 
-	protected void attack(LivingEntity target, double squaredDistance) {
+	protected void attack (LivingEntity target, double squaredDistance) {
 		double d = this.getSquaredMaxAttackDistance(target);
 		if (squaredDistance <= d && this.cooldown <= 0) {
 			this.resetCooldown();
@@ -135,23 +141,23 @@ public class PCMeleeAttackGoal extends Goal {
 		}
 	}
 
-	protected void resetCooldown() {
+	protected void resetCooldown () {
 		this.cooldown = this.getTickCount(20);
 	}
 
-	protected boolean isCooledDown() {
+	protected boolean isCooledDown () {
 		return this.cooldown <= 0;
 	}
 
-	protected int getCooldown() {
+	protected int getCooldown () {
 		return this.cooldown;
 	}
 
-	protected int getMaxCooldown() {
+	protected int getMaxCooldown () {
 		return this.getTickCount(20);
 	}
 
-	protected double getSquaredMaxAttackDistance(LivingEntity entity) {
+	protected double getSquaredMaxAttackDistance (LivingEntity entity) {
 		return this.mob.getWidth() * 2.0f * (this.mob.getWidth() * 2.0f) + entity.getWidth();
 	}
 }

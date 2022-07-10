@@ -35,6 +35,10 @@
   "text.autoconfig.probablychests.option.mimicSettings.naturalMimicSpawnRate.@Tooltip": "0 means no natural mimics spawn while 1 means mimics spawn more often (still rare)",
   "text.autoconfig.probablychests.option.mimicSettings.allowPetMimics": "Enable pet mimics",
   "text.autoconfig.probablychests.option.mimicSettings.allowPetMimics.@Tooltip": "Allows players to use pet mimic keys to create pets",
+  "text.autoconfig.probablychests.option.mimicSettings.doPetMimicLimit": "Enable pet mimic limit",
+  "text.autoconfig.probablychests.option.mimicSettings.doPetMimicLimit.@Tooltip": "Prevents players from having more than a set number of pet mimics",
+  "text.autoconfig.probablychests.option.mimicSettings.petMimicLimit": "Pet mimic limit",
+  "text.autoconfig.probablychests.option.mimicSettings.petMimicLimit.@Tooltip": "Maximum number of pet mimics a player can have",
 
   "text.autoconfig.probablychests.option.worldGen": "World Generation",
   "text.autoconfig.probablychests.option.worldGen.potSpawnChance": "Pot spawn rate",

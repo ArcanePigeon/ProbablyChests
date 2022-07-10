@@ -244,6 +244,9 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 			}
 		}
 		this.onGroundLastTick = this.onGround;
+		if(this.getIsAbandoned()){
+			this.setMimicState(IS_STANDING);
+		}
 	}
 
 	protected boolean isDisallowedInPeaceful () {
@@ -400,7 +403,9 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 				return false;
 			} else if (this.mimic.squaredDistanceTo(livingEntity) < (double) (this.minDistance * this.minDistance)) {
 				return false;
-			} else {
+			}else if(this.mimic.getIsAbandoned()){
+				return false;
+			}else {
 				this.owner = livingEntity;
 				return true;
 			}
@@ -410,6 +415,8 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 			if (this.navigation.isIdle()) {
 				return false;
 			} else if (this.mimic.isSitting()) {
+				return false;
+			}else if(this.mimic.getIsAbandoned()){
 				return false;
 			} else {
 				return ! (this.mimic.squaredDistanceTo(this.owner) <= (double) (this.maxDistance * this.maxDistance));
@@ -532,7 +539,7 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 
 
 	public boolean canAttackWithOwner(LivingEntity target, LivingEntity owner) {
-		if (!(target instanceof GhastEntity)) {
+		if (!(target instanceof GhastEntity) || this.getIsAbandoned()) {
 			if (target instanceof PCChestMimicPet) {
 				PCChestMimicPet mimic = (PCChestMimicPet)target;
 				return !mimic.isTamed() || mimic.getOwner() != owner;

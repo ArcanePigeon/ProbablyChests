@@ -11,12 +11,8 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.Angerable;
-import net.minecraft.entity.mob.CreeperEntity;
-import net.minecraft.entity.mob.GhastEntity;
-import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.TameableEntity;
-import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.InventoryChangedListener;
@@ -38,11 +34,9 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
-import org.apache.logging.log4j.core.jmx.Server;
 import org.cloudwarp.probablychests.block.PCChestTypes;
 import org.cloudwarp.probablychests.interfaces.PlayerEntityAccess;
 import org.cloudwarp.probablychests.registry.PCItems;
-import org.cloudwarp.probablychests.screenhandlers.PCMimicScreenHandler;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -58,10 +52,13 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 	private static final TrackedData<Integer> MIMIC_STATE;
 	private static final TrackedData<Integer> ANGER_TIME;
 	private static final UniformIntProvider ANGER_TIME_RANGE;
+	private static final TrackedData<Boolean> IS_ABANDONED;
+
 
 	static {
 		MIMIC_STATE = DataTracker.registerData(PCTameablePetWithInventory.class, TrackedDataHandlerRegistry.INTEGER);
 		ANGER_TIME = DataTracker.registerData(PCTameablePetWithInventory.class, TrackedDataHandlerRegistry.INTEGER);
+		IS_ABANDONED = DataTracker.registerData(PCTameablePetWithInventory.class, TrackedDataHandlerRegistry.BOOLEAN);
 		ANGER_TIME_RANGE = TimeHelper.betweenSeconds(20, 39);
 	}
 
@@ -81,6 +78,8 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 
 	public int closeAnimationTimer = 12;
 	public int openAnimationTimer = 12;
+	public int checkForOwnerTimer = 40;
+	public int isAbandonedTimer = 400;
 
 
 	public PCTameablePetWithInventory (EntityType<? extends TameableEntity> entityType, World world) {
@@ -104,7 +103,21 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 	public void remove(RemovalReason reason) {
 		super.remove(reason);
 		if(this.getOwner() != null && this.getOwner() instanceof ServerPlayerEntity){
-			((PlayerEntityAccess)this.getOwner()).removePetMimic(this.getUuid());
+			((PlayerEntityAccess)this.getOwner()).removePetMimicFromOwnedList(this.getUuid());
+		}
+	}
+
+	public void tick () {
+		super.tick();
+		if(this.getOwner() != null && !this.world.isClient() && this.isTamed()) {
+			if (this.getIsAbandoned()){
+				if (this.isAbandonedTimer > 0) {
+					this.isAbandonedTimer--;
+				} else {
+					this.setTamed(false);
+					this.playSound(SoundEvents.BLOCK_ANVIL_BREAK,this.getSoundVolume(),0.9F);
+				}
+			}
 		}
 	}
 
@@ -113,19 +126,41 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 		return item.isFood() && item.getFoodComponent().isMeat();
 	}
 
+
 	public ActionResult interactMob (PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
 		Item item = itemStack.getItem();
+		if(this.world.isClient()){
+			return ActionResult.SUCCESS;
+		}
 
 		if (this.isTamed()) {
-			if (this.isBreedingItem(itemStack) && this.getHealth() < this.getMaxHealth()) {
+			if (!this.getIsAbandoned() && this.isBreedingItem(itemStack) && this.getHealth() < this.getMaxHealth()) {
 				if (! player.getAbilities().creativeMode) {
 					itemStack.decrement(1);
 				}
 				this.heal((float) item.getFoodComponent().getHunger());
 				this.emitGameEvent(GameEvent.MOB_INTERACT, this.getCameraBlockPos());
 				return ActionResult.SUCCESS;
-			} else {
+			}else if(itemStack.isOf(PCItems.MIMIC_HAND_BELL)){
+				if(!this.getIsAbandoned() && this.getOwner() == player) {
+					if (player.isSneaking()) {
+						((PlayerEntityAccess) player).removeMimicFromKeepList(this.getUuid());
+						this.playSound(SoundEvents.BLOCK_BEEHIVE_SHEAR,this.getSoundVolume(),0.9F);
+					} else {
+						((PlayerEntityAccess) player).addMimicToKeepList(this.getUuid());
+						this.playSound(SoundEvents.BLOCK_BEEHIVE_ENTER,this.getSoundVolume(),0.9F);
+					}
+				}else{
+					if(this.getIsAbandoned()){
+						this.setOwner(player);
+						this.setIsAbandoned(false);
+						((PlayerEntityAccess)player).addPetMimicToOwnedList(this.getUuid());
+						this.playSound(SoundEvents.BLOCK_ANVIL_PLACE,this.getSoundVolume(),0.9F);
+					}
+				}
+				return ActionResult.SUCCESS;
+			} else if(!this.getIsAbandoned()){
 				ActionResult actionResult = super.interactMob(player, hand);
 				if (player.isSneaking()) {
 					if (this.isOwner(player)) {
@@ -162,6 +197,7 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 		} else {
 			return super.interactMob(player, hand);
 		}
+		return ActionResult.FAIL;
 	}
 	public void updateSitting(PlayerEntity player) {}
 
@@ -317,6 +353,14 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 		return this.dataTracker.get(MIMIC_STATE);
 	}
 
+	public void setIsAbandoned (boolean state) {
+		this.dataTracker.set(IS_ABANDONED, state);
+	}
+
+	public boolean getIsAbandoned () {
+		return this.dataTracker.get(IS_ABANDONED);
+	}
+
 	@Nullable
 	@Override
 	public PassiveEntity createChild (ServerWorld world, PassiveEntity entity) {
@@ -327,6 +371,7 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 	protected void initDataTracker () {
 		super.initDataTracker();
 		this.dataTracker.startTracking(ANGER_TIME, 0);
+		this.dataTracker.startTracking(IS_ABANDONED, false);
 	}
 
 	@Override

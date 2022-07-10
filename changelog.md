@@ -82,3 +82,18 @@ All notable changes to this project will be documented in this file.
 - Fixed issue where mimics spawn in biomes they shouldn't
 - Fixed issue where mimics spawn in the air
 - fixed issue where mimics spawn way too frequently
+
+## [0.5.0] - 7/9/2022
+### Added
+- Cloth Config compat
+- Mod Menu compat
+- Option to limit the number of pet mimics a player can have
+- New animations for pet mimics
+- Open and close sounds for pet mimics
+- Custom screens for chests and mimics that can be modified with a texture pack
+### Changed
+- Lush chest texture
+### Fixed
+- Chest animation bug
+- Loud mimic sounds
+- Bad lighting check for spawning

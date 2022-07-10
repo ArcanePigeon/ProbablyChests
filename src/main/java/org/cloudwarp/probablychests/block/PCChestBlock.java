@@ -1,10 +1,7 @@
 package org.cloudwarp.probablychests.block;
 
-import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
-import net.minecraft.block.enums.ChestType;
-import net.minecraft.client.block.ChestAnimationProgress;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -45,17 +42,15 @@ import org.cloudwarp.probablychests.registry.PCItems;
 import org.cloudwarp.probablychests.registry.PCProperties;
 import org.cloudwarp.probablychests.utils.PCConfig;
 import org.cloudwarp.probablychests.utils.PCChestState;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
-import java.util.function.BiPredicate;
 
 public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> implements Waterloggable {
 
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	public static final EnumProperty<PCChestState> CHEST_STATE = PCProperties.PC_CHEST_STATE;
-	protected static final VoxelShape SHAPE = Block.createCuboidShape(1.0D, 0.0D, 1.5D, 14.0D, 14.0D, 13.0D);
+	protected static final VoxelShape SHAPE = Block.createCuboidShape(1.0D, 0.0D, 1.5D, 15.0D, 14.0D, 14.0D);
 	private final PCChestTypes type;
 
 
@@ -109,7 +104,7 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 			mimic.setOwner(player);
 			mimic.setTarget((LivingEntity) null);
 			mimic.setSitting(true);
-			((PlayerEntityAccess)player).addPetMimic(mimic.getUuid());
+			((PlayerEntityAccess)player).addPetMimicToOwnedList(mimic.getUuid());
 		}else{
 			mimic = new PCChestMimic(this.type.getMimicType(), world);
 		}
@@ -192,7 +187,11 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 					itemStack.decrement(1);
 				}
 				return ActionResult.CONSUME;
-			} else if (createMimic(world, pos, state)) {
+			}else if(itemStack.isOf(PCItems.MIMIC_HAND_BELL)){
+				//((PlayerEntityAccess) player).abandonMimics();
+				System.out.println("Abandoning " + ((PlayerEntityAccess) player).abandonMimics() +  "pet mimics");
+				return ActionResult.SUCCESS;
+			}else if (createMimic(world, pos, state)) {
 				return ActionResult.SUCCESS;
 			}
 		}

@@ -11,11 +11,13 @@ public class PCItems {
 	public static final Item MIMIC_KEY_FRAGMENT = new Item(new FabricItemSettings().group(ProbablyChests.PROBABLY_CHESTS_GROUP));
 	public static final Item MIMIC_CORE = new Item(new FabricItemSettings().group(ProbablyChests.PROBABLY_CHESTS_GROUP).maxCount(1));
 	public static final Item PET_MIMIC_KEY = new Item(new FabricItemSettings().group(ProbablyChests.PROBABLY_CHESTS_GROUP).maxCount(16));
+	public static final Item MIMIC_HAND_BELL = new Item(new FabricItemSettings().group(ProbablyChests.PROBABLY_CHESTS_GROUP).maxCount(1));
 
 	public static void init () {
 		Registry.register(Registry.ITEM, ProbablyChests.id("mimic_key"), MIMIC_KEY);
 		Registry.register(Registry.ITEM, ProbablyChests.id("mimic_key_fragment"), MIMIC_KEY_FRAGMENT);
 		Registry.register(Registry.ITEM, ProbablyChests.id("mimic_core"), MIMIC_CORE);
 		Registry.register(Registry.ITEM, ProbablyChests.id("pet_mimic_key"), PET_MIMIC_KEY);
+		Registry.register(Registry.ITEM, ProbablyChests.id("mimic_hand_bell"), MIMIC_HAND_BELL);
 	}
 }
