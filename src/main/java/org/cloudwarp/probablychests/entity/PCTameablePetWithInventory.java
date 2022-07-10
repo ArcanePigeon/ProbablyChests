@@ -53,12 +53,18 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 	private static final TrackedData<Integer> ANGER_TIME;
 	private static final UniformIntProvider ANGER_TIME_RANGE;
 	private static final TrackedData<Boolean> IS_ABANDONED;
+	private static final TrackedData<Boolean> MIMIC_HAS_LOCK;
+	private static final TrackedData<Boolean> IS_MIMIC_LOCKED;
+
+
 
 
 	static {
 		MIMIC_STATE = DataTracker.registerData(PCTameablePetWithInventory.class, TrackedDataHandlerRegistry.INTEGER);
 		ANGER_TIME = DataTracker.registerData(PCTameablePetWithInventory.class, TrackedDataHandlerRegistry.INTEGER);
 		IS_ABANDONED = DataTracker.registerData(PCTameablePetWithInventory.class, TrackedDataHandlerRegistry.BOOLEAN);
+		MIMIC_HAS_LOCK = DataTracker.registerData(PCTameablePetWithInventory.class, TrackedDataHandlerRegistry.BOOLEAN);
+		IS_MIMIC_LOCKED = DataTracker.registerData(PCTameablePetWithInventory.class, TrackedDataHandlerRegistry.BOOLEAN);
 		ANGER_TIME_RANGE = TimeHelper.betweenSeconds(20, 39);
 	}
 
@@ -80,6 +86,7 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 	public int openAnimationTimer = 12;
 	public int checkForOwnerTimer = 40;
 	public int isAbandonedTimer = 400;
+	public int biteDamageAmount = 3;
 
 
 	public PCTameablePetWithInventory (EntityType<? extends TameableEntity> entityType, World world) {
@@ -160,7 +167,20 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 					}
 				}
 				return ActionResult.SUCCESS;
-			} else if(!this.getIsAbandoned()){
+			}else if(this.getOwner() == player && !this.getIsAbandoned() && itemStack.isOf(PCItems.IRON_LOCK) && !this.getMimicHasLock()){
+				this.setMimicHasLock(true);
+				this.setIsMimicLocked(true);
+				if (! player.getAbilities().creativeMode) {
+					itemStack.decrement(1);
+				}
+			}else if(this.getOwner() == player && !this.getIsAbandoned() && itemStack.isOf(PCItems.IRON_KEY) && this.getMimicHasLock()){
+				if(this.getIsMimicLocked()){
+					// Play sound
+				}else{
+					// Play sound
+				}
+				this.setIsMimicLocked(!this.getIsMimicLocked());
+			}else if(!this.getIsAbandoned()){
 				ActionResult actionResult = super.interactMob(player, hand);
 				if (player.isSneaking()) {
 					if (this.isOwner(player)) {
@@ -176,7 +196,15 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 					return actionResult;
 				} else {
 					if (this.canMoveVoluntarily() && ! this.world.isClient) {
-						this.openGui(player);
+						if(this.getIsMimicLocked()) {
+							if(this.getOwner() == player) {
+								this.openGui(player);
+							}else{
+								this.bite(player);
+							}
+						}else{
+							this.openGui(player);
+						}
 					}
 					return ActionResult.success(this.world.isClient());
 				}
@@ -199,6 +227,17 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 		}
 		return ActionResult.FAIL;
 	}
+
+	protected void bite (LivingEntity target) {
+		if (this.isAlive()) {
+			if (target.damage(DamageSource.mob(this), this.biteDamageAmount)) {
+				this.playSound(this.getHurtSound(), this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 0.7F);
+				this.applyDamageEffects(this, target);
+			}
+		}
+	}
+
+
 	public void updateSitting(PlayerEntity player) {}
 
 	@Override
@@ -330,6 +369,9 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 
 		}
 		nbt.put("Inventory", listnbt);
+		nbt.putBoolean("is_abandoned", this.getIsAbandoned());
+		nbt.putBoolean("mimic_has_lock", this.getMimicHasLock());
+		nbt.putBoolean("is_mimic_locked", this.getIsMimicLocked());
 		this.writeAngerToNbt(nbt);
 	}
 
@@ -343,6 +385,9 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 			this.inventory.setStack(j, ItemStack.fromNbt(compoundnbt));
 		}
 		this.readAngerFromNbt(this.world, nbt);
+		this.setIsAbandoned(nbt.getBoolean("is_abandoned"));
+		this.setMimicHasLock(nbt.getBoolean("mimic_has_lock"));
+		this.setIsMimicLocked(nbt.getBoolean("is_mimic_locked"));
 	}
 
 	public void setMimicState (int state) {
@@ -361,6 +406,22 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 		return this.dataTracker.get(IS_ABANDONED);
 	}
 
+	public void setMimicHasLock (boolean state) {
+		this.dataTracker.set(MIMIC_HAS_LOCK, state);
+	}
+
+	public boolean getMimicHasLock () {
+		return this.dataTracker.get(MIMIC_HAS_LOCK);
+	}
+
+	public void setIsMimicLocked (boolean state) {
+		this.dataTracker.set(IS_MIMIC_LOCKED, state);
+	}
+
+	public boolean getIsMimicLocked () {
+		return this.dataTracker.get(IS_MIMIC_LOCKED);
+	}
+
 	@Nullable
 	@Override
 	public PassiveEntity createChild (ServerWorld world, PassiveEntity entity) {
@@ -372,6 +433,8 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 		super.initDataTracker();
 		this.dataTracker.startTracking(ANGER_TIME, 0);
 		this.dataTracker.startTracking(IS_ABANDONED, false);
+		this.dataTracker.startTracking(MIMIC_HAS_LOCK, false);
+		this.dataTracker.startTracking(IS_MIMIC_LOCKED, false);
 	}
 
 	@Override

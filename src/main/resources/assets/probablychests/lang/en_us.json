@@ -21,9 +21,11 @@
   "entity.probablychests.gold_chest_mimic_pet": "Friendly Gold Mimic",
   "item.probablychests.mimic_key": "Suspicious Key",
   "item.probablychests.mimic_key_fragment": "Key Fragment",
-  "item.probablychests.mimic_core": "Suspicious Eye",
+  "item.probablychests.mimic_core": "Mimic Heart",
   "item.probablychests.pet_mimic_key": "Friendly Key",
   "item.probablychests.mimic_hand_bell": "Mimic Hand Bell",
+  "item.probablychests.iron_key": "Iron Key",
+  "item.probablychests.iron_lock": "Iron Lock",
 
   "text.autoconfig.probablychests.title": "Probably Chests",
 
@@ -57,5 +59,7 @@
   "item.probablychests.shift.tooltip": "Press §eSHIFT§r for more Information",
   "item.probablychests.mimic_key.tooltip": "Click on a chest to make it secret mimic.",
   "item.probablychests.pet_mimic_key.tooltip": "Click on a chest to create a pet mimic.",
-  "item.probablychests.mimic_core.tooltip": "It looks like it needs to be combined with something."
+  "item.probablychests.mimic_core.tooltip": "It looks like it needs to be combined with something.",
+  "item.probablychests.iron_key.tooltip": "Use to lock and unlock your pet mimic. [requires iron lock first]",
+  "item.probablychests.iron_lock.tooltip": "Add a lock to your pet mimic to keep other players out."
 }
