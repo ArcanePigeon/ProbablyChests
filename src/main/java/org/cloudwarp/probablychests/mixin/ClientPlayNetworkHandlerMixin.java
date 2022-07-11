@@ -25,7 +25,7 @@ public class ClientPlayNetworkHandlerMixin implements ClientPlayPacketListenerAc
 	@Shadow private ClientWorld world;
 	@Override
 	public void onOpenMimicScreen(OpenMimicScreenS2CPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, (ClientPlayNetworkHandler)(Object)this, this.client);
+		/*NetworkThreadUtils.forceMainThread(packet, (ClientPlayNetworkHandler)(Object)this, this.client);
 		Entity entity = this.world.getEntityById(packet.getMimicId());
 		if (entity instanceof PCTameablePetWithInventory mimicEntity) {
 			ClientPlayerEntity clientPlayerEntity = this.client.player;
@@ -33,6 +33,6 @@ public class ClientPlayNetworkHandlerMixin implements ClientPlayPacketListenerAc
 			PCMimicScreenHandler mimicScreenHandler = new PCMimicScreenHandler(packet.getSyncId(), clientPlayerEntity.getInventory(), simpleInventory, mimicEntity);
 			clientPlayerEntity.currentScreenHandler = mimicScreenHandler;
 			this.client.setScreen(new PCMimicScreen(mimicScreenHandler, clientPlayerEntity.getInventory(), mimicEntity));
-		}
+		}*/
 	}
 }

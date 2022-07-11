@@ -1,39 +1,48 @@
 package org.cloudwarp.probablychests.screenhandlers;
 
 
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.server.network.ServerPlayerEntity;
 import org.cloudwarp.probablychests.entity.PCTameablePetWithInventory;
 import org.cloudwarp.probablychests.registry.PCScreenHandlerType;
+import org.cloudwarp.probablychests.utils.PCEventHandler;
+
+import java.util.UUID;
 
 public class PCMimicScreenHandler extends ScreenHandler {
 	private static final int columns = 9;
 	private final Inventory inventory;
 	private final int rows = 6;
-	private final PCTameablePetWithInventory entity;
-	public PCMimicScreenHandler (int syncId, PlayerInventory playerInventory, final PCTameablePetWithInventory entity){
-		this(PCScreenHandlerType.PC_CHEST_MIMIC,syncId,playerInventory,new SimpleInventory(54), entity);
+	private PCTameablePetWithInventory entity;
+	public PCMimicScreenHandler (int syncId, PlayerInventory playerInventory){
+		this(PCScreenHandlerType.PC_CHEST_MIMIC,syncId,playerInventory,new SimpleInventory(54));
 	}
-	public PCMimicScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory, final PCTameablePetWithInventory entity) {
-		this(null, syncId, playerInventory, inventory, entity);
-	}
-
-	public static PCMimicScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory, final PCTameablePetWithInventory entity) {
-		return new PCMimicScreenHandler(null, syncId, playerInventory, inventory, entity);
+	public PCMimicScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory) {
+		this(PCScreenHandlerType.PC_CHEST_MIMIC, syncId, playerInventory, inventory);
 	}
 
-	public PCMimicScreenHandler (ScreenHandlerType<?> type, int syncId, PlayerInventory playerInventory, Inventory inventory, final PCTameablePetWithInventory entity) {
+	public static PCMimicScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory) {
+		return new PCMimicScreenHandler(PCScreenHandlerType.PC_CHEST_MIMIC, syncId, playerInventory, inventory);
+	}
+
+	public PCMimicScreenHandler (ScreenHandlerType<?> type, int syncId, PlayerInventory playerInventory, Inventory inventory) {
 		super(type, syncId);
 		int k;
 		int j;
 		checkSize(inventory, rows * columns);
-		this.entity = entity;
 		this.inventory = inventory;
 		inventory.onOpen(playerInventory.player);
 		int i = (this.rows - 4) * 18;
@@ -54,9 +63,14 @@ public class PCMimicScreenHandler extends ScreenHandler {
 
 	}
 
+	public void setMimicEntity(PCTameablePetWithInventory entity){
+		this.entity = entity;
+	}
+
 	@Override
 	public boolean canUse(PlayerEntity player) {
-		return !this.entity.areInventoriesDifferent(this.inventory) && this.inventory.canPlayerUse(player) && this.entity.isAlive() && this.entity.distanceTo(player) < 8.0f;
+		return this.inventory.canPlayerUse(player);
+		//return !this.entity.areInventoriesDifferent(this.inventory) && this.inventory.canPlayerUse(player) && this.entity.isAlive() && this.entity.distanceTo(player) < 8.0f;
 	}
 
 	public ItemStack transferSlot(PlayerEntity player, int index) {
@@ -84,10 +98,12 @@ public class PCMimicScreenHandler extends ScreenHandler {
 	}
 
 	public void close(PlayerEntity player) {
-		if(this.entity != null) {
-			entity.closeGui(player);
-		}else{
-			System.out.println("entity is null");
+		if(player instanceof ServerPlayerEntity) {
+			if (this.entity != null) {
+				entity.closeGui(player);
+			} else {
+				System.out.println("entity is null");
+			}
 		}
 		super.close(player);
 		this.inventory.onClose(player);

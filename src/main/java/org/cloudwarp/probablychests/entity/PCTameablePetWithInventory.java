@@ -1,6 +1,10 @@
 package org.cloudwarp.probablychests.entity;
 
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -14,6 +18,7 @@ import net.minecraft.entity.mob.Angerable;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.InventoryChangedListener;
 import net.minecraft.inventory.SimpleInventory;
@@ -21,11 +26,15 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TimeHelper;
@@ -37,8 +46,12 @@ import net.minecraft.world.event.GameEvent;
 import org.cloudwarp.probablychests.ProbablyChests;
 import org.cloudwarp.probablychests.block.PCChestTypes;
 import org.cloudwarp.probablychests.interfaces.PlayerEntityAccess;
+import org.cloudwarp.probablychests.network.packet.OpenMimicScreenS2CPacket;
 import org.cloudwarp.probablychests.registry.PCItems;
 import org.cloudwarp.probablychests.registry.PCSounds;
+import org.cloudwarp.probablychests.screenhandlers.PCChestScreenHandler;
+import org.cloudwarp.probablychests.screenhandlers.PCMimicScreenHandler;
+import org.cloudwarp.probablychests.utils.PCEventHandler;
 import org.jetbrains.annotations.Nullable;
 
 import static org.cloudwarp.probablychests.utils.PCMimicCreationUtils.*;
@@ -207,7 +220,7 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 
 					return actionResult;
 				} else {
-					if (this.canMoveVoluntarily() && ! this.world.isClient) {
+					if (this.canMoveVoluntarily()) {
 						if (this.getIsMimicLocked()) {
 							if (this.getOwner() == player) {
 								this.openGui(player);
@@ -278,14 +291,21 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 
 	public void openGui (PlayerEntity player) {
 		if (player.world != null && ! this.world.isClient()) {
-			((PlayerEntityAccess) player).openMimicInventory(this, this.inventory);
 			if (this.viewerCount == 0) {
 				openAnimationTimer = 12;
 				this.setMimicState(IS_OPENING);
 				this.playSound(this.getOpenSound(), this.getSoundVolume(), 0.8F + getPitchOffset(0.1F));
 				this.playSound(PCSounds.CLOSE_2, this.getSoundVolume(), 1.5F + getPitchOffset(0.1F));
 			}
-			this.viewerCount += 1;
+			this.viewerCount++;
+			int syncId = player.openHandledScreen(new MimicScreenHandlerFactory()).getAsInt();
+			PacketByteBuf buf = PacketByteBufs.create();
+			buf.writeInt(this.inventory.size());
+			buf.writeVarInt(this.getId());
+			buf.writeByte(syncId);
+			for (ServerPlayerEntity p : PlayerLookup.tracking(this)) {
+				ServerPlayNetworking.send(p, PCEventHandler.MIMIC_INVENTORY_PACKET_ID, buf);
+			}
 		}
 	}
 
@@ -496,6 +516,25 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 
 	public void setAngryAt (@Nullable UUID angryAt) {
 		this.angryAt = angryAt;
+	}
+
+	private class MimicScreenHandlerFactory implements NamedScreenHandlerFactory {
+		private PCTameablePetWithInventory mimic () {
+			return PCTameablePetWithInventory.this;
+		}
+
+		@Override
+		public Text getDisplayName () {
+			return this.mimic().getDisplayName();
+		}
+
+		@Override
+		public ScreenHandler createMenu (int syncId, PlayerInventory inv, PlayerEntity player) {
+			var mimicInv = this.mimic().inventory;
+			PCMimicScreenHandler screenHandler = PCMimicScreenHandler.createScreenHandler(syncId, inv, mimicInv);
+			screenHandler.setMimicEntity(this.mimic());
+			return screenHandler;
+		}
 	}
 
 }

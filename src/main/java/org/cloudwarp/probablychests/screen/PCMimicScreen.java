@@ -13,12 +13,10 @@ import org.cloudwarp.probablychests.screenhandlers.PCMimicScreenHandler;
 
 public class PCMimicScreen extends HandledScreen<PCMimicScreenHandler> {
 	private static final Identifier TEXTURE = ProbablyChests.id("textures/gui/pc_mimic_gui.png");
-	private final PCTameablePetWithInventory entity;
 	private final int rows;
 
-	public PCMimicScreen (PCMimicScreenHandler handler, PlayerInventory inventory, PCTameablePetWithInventory entity) {
-		super(handler, inventory, entity.getDisplayName());
-		this.entity = entity;
+	public PCMimicScreen (PCMimicScreenHandler handler, PlayerInventory inventory, Text title) {
+		super(handler, inventory, title);
 		this.passEvents = false;
 		this.rows = handler.getRows();
 		this.backgroundHeight = 114 + this.rows * 18;

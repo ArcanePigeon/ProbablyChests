@@ -12,6 +12,6 @@ public class PCScreenHandlerType {
 
 	public static void registerScreenHandlers () {
 		PC_CHEST = Registry.register(Registry.SCREEN_HANDLER,ProbablyChests.id("pc_chest_screen_handler"), new ScreenHandlerType<>(PCChestScreenHandler::new));
-		//PC_CHEST_MIMIC = Registry.register(Registry.SCREEN_HANDLER,ProbablyChests.id("pc_chest_mimic_screen_handler"), new ScreenHandlerType<>(PCMimicScreenHandler::new));
+		PC_CHEST_MIMIC = Registry.register(Registry.SCREEN_HANDLER,ProbablyChests.id("pc_chest_mimic_screen_handler"), new ScreenHandlerType<>(PCMimicScreenHandler::new));
 	}
 }

@@ -45,13 +45,13 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntityMixin implemen
 	private void onScreenHandlerOpened(ScreenHandler screenHandler) {}
 	@Override
 	public void openMimicInventory(PCTameablePetWithInventory mimic, Inventory inventory) {
-		if (this.currentScreenHandler != this.playerScreenHandler) {
+		/*if (this.currentScreenHandler != this.playerScreenHandler) {
 			this.closeHandledScreen();
 		}
 		this.incrementScreenHandlerSyncId();
 		this.networkHandler.sendPacket(new OpenMimicScreenS2CPacket(this.screenHandlerSyncId, inventory.size(), mimic.getId()));
 		this.currentScreenHandler = new PCMimicScreenHandler(this.screenHandlerSyncId, this.getInventory(), inventory, mimic);
-		this.onScreenHandlerOpened(this.currentScreenHandler);
+		this.onScreenHandlerOpened(this.currentScreenHandler);*/
 	}
 	// Mimic tracker
 
