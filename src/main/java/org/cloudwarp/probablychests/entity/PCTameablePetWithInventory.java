@@ -34,10 +34,14 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
+import org.cloudwarp.probablychests.ProbablyChests;
 import org.cloudwarp.probablychests.block.PCChestTypes;
 import org.cloudwarp.probablychests.interfaces.PlayerEntityAccess;
 import org.cloudwarp.probablychests.registry.PCItems;
+import org.cloudwarp.probablychests.registry.PCSounds;
 import org.jetbrains.annotations.Nullable;
+
+import static org.cloudwarp.probablychests.utils.PCMimicCreationUtils.*;
 
 import java.util.UUID;
 
@@ -55,8 +59,6 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 	private static final TrackedData<Boolean> IS_ABANDONED;
 	private static final TrackedData<Boolean> MIMIC_HAS_LOCK;
 	private static final TrackedData<Boolean> IS_MIMIC_LOCKED;
-
-
 
 
 	static {
@@ -85,7 +87,7 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 	public int closeAnimationTimer = 12;
 	public int openAnimationTimer = 12;
 	public int checkForOwnerTimer = 40;
-	public int isAbandonedTimer = 400;
+	public int isAbandonedTimer;
 	public int biteDamageAmount = 3;
 
 
@@ -94,6 +96,11 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 		this.type = PCChestTypes.NORMAL;
 		this.ignoreCameraFrustum = true;
 		this.inventory.addListener(this);
+		this.isAbandonedTimer = ProbablyChests.loadedConfig.mimicSettings.abandonedMimicTimer * 1200;
+	}
+
+	public void setType (PCChestTypes type) {
+		this.type = type;
 	}
 
 	public static DefaultAttributeContainer.Builder createMobAttributes () {
@@ -107,22 +114,23 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 
 
 	@Override
-	public void remove(RemovalReason reason) {
+	public void remove (RemovalReason reason) {
 		super.remove(reason);
-		if(this.getOwner() != null && this.getOwner() instanceof ServerPlayerEntity){
-			((PlayerEntityAccess)this.getOwner()).removePetMimicFromOwnedList(this.getUuid());
+		if (this.getOwner() != null && this.getOwner() instanceof ServerPlayerEntity) {
+			((PlayerEntityAccess) this.getOwner()).removePetMimicFromOwnedList(this.getUuid());
 		}
 	}
 
 	public void tick () {
 		super.tick();
-		if(this.getOwner() != null && !this.world.isClient() && this.isTamed()) {
-			if (this.getIsAbandoned()){
+		if (this.getOwner() != null && ! this.world.isClient() && this.isTamed()) {
+			if (this.getIsAbandoned()) {
 				if (this.isAbandonedTimer > 0) {
 					this.isAbandonedTimer--;
 				} else {
 					this.setTamed(false);
-					this.playSound(SoundEvents.BLOCK_ANVIL_BREAK,this.getSoundVolume(),0.9F);
+
+					convertPetMimicToHostile(world, type, this);
 				}
 			}
 		}
@@ -137,56 +145,60 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 	public ActionResult interactMob (PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
 		Item item = itemStack.getItem();
-		if(this.world.isClient()){
+		if (this.world.isClient()) {
 			return ActionResult.SUCCESS;
 		}
 
 		if (this.isTamed()) {
-			if (!this.getIsAbandoned() && this.isBreedingItem(itemStack) && this.getHealth() < this.getMaxHealth()) {
+			if (! this.getIsAbandoned() && this.isBreedingItem(itemStack) && this.getHealth() < this.getMaxHealth()) {
 				if (! player.getAbilities().creativeMode) {
 					itemStack.decrement(1);
 				}
 				this.heal((float) item.getFoodComponent().getHunger());
+				this.playSound(PCSounds.MIMIC_BITE, this.getSoundVolume(), 1.5F + getPitchOffset(0.2F));
 				this.emitGameEvent(GameEvent.MOB_INTERACT, this.getCameraBlockPos());
 				return ActionResult.SUCCESS;
-			}else if(itemStack.isOf(PCItems.MIMIC_HAND_BELL)){
-				if(!this.getIsAbandoned() && this.getOwner() == player) {
+			} else if (itemStack.isOf(PCItems.MIMIC_HAND_BELL)) {
+				if (! this.getIsAbandoned() && this.getOwner() == player) {
 					if (player.isSneaking()) {
 						((PlayerEntityAccess) player).removeMimicFromKeepList(this.getUuid());
-						this.playSound(SoundEvents.BLOCK_BEEHIVE_SHEAR,this.getSoundVolume(),0.9F);
+						// 4 8
+						this.playSound(PCSounds.BELL_HIT_4, this.getSoundVolume(), 0.5F + getPitchOffset(0.1F));
 					} else {
 						((PlayerEntityAccess) player).addMimicToKeepList(this.getUuid());
-						this.playSound(SoundEvents.BLOCK_BEEHIVE_ENTER,this.getSoundVolume(),0.9F);
+						this.playSound(PCSounds.BELL_HIT_4, this.getSoundVolume(), 1.0F + getPitchOffset(0.1F));
 					}
-				}else{
-					if(this.getIsAbandoned()){
+				} else {
+					if (this.getIsAbandoned()) {
 						this.setOwner(player);
 						this.setIsAbandoned(false);
-						((PlayerEntityAccess)player).addPetMimicToOwnedList(this.getUuid());
-						this.playSound(SoundEvents.BLOCK_ANVIL_PLACE,this.getSoundVolume(),0.9F);
+						this.isAbandonedTimer = ProbablyChests.loadedConfig.mimicSettings.abandonedMimicTimer * 1200;
+						((PlayerEntityAccess) player).addPetMimicToOwnedList(this.getUuid());
+						this.playSound(PCSounds.BELL_HIT_2, this.getSoundVolume(), 1.0F + getPitchOffset(0.1F));
 					}
 				}
 				return ActionResult.SUCCESS;
-			}else if(this.getOwner() == player && !this.getIsAbandoned() && itemStack.isOf(PCItems.IRON_LOCK) && !this.getMimicHasLock()){
+			} else if (this.getOwner() == player && ! this.getIsAbandoned() && itemStack.isOf(PCItems.IRON_LOCK) && ! this.getMimicHasLock()) {
 				this.setMimicHasLock(true);
 				this.setIsMimicLocked(true);
 				if (! player.getAbilities().creativeMode) {
 					itemStack.decrement(1);
 				}
-			}else if(this.getOwner() == player && !this.getIsAbandoned() && itemStack.isOf(PCItems.IRON_KEY) && this.getMimicHasLock()){
-				if(this.getIsMimicLocked()){
-					// Play sound
-				}else{
-					// Play sound
+				this.playSound(PCSounds.APPLY_LOCK1, this.getSoundVolume(), 1.0F + getPitchOffset(0.1F));
+			} else if (this.getOwner() == player && ! this.getIsAbandoned() && itemStack.isOf(PCItems.IRON_KEY) && this.getMimicHasLock()) {
+				this.setIsMimicLocked(! this.getIsMimicLocked());
+				if (this.getIsMimicLocked()) {
+					this.playSound(PCSounds.LOCK_UNLOCK, this.getSoundVolume(), 1.3F + getPitchOffset(0.1F));
+				} else {
+					this.playSound(PCSounds.LOCK_UNLOCK, this.getSoundVolume(), 0.6F + getPitchOffset(0.1F));
 				}
-				this.setIsMimicLocked(!this.getIsMimicLocked());
-			}else if(!this.getIsAbandoned()){
+			} else if (! this.getIsAbandoned()) {
 				ActionResult actionResult = super.interactMob(player, hand);
 				if (player.isSneaking()) {
 					if (this.isOwner(player)) {
 						this.setSitting(! this.isSitting());
 						this.updateSitting(player);
-						this.playSound(this.isSitting() ? this.getSitSound() : this.getStandSound(), this.getSoundVolume(), 0.9F);
+						this.playSound(this.isSitting() ? this.getSitSound() : this.getStandSound(), this.getSoundVolume(), 0.9F + getPitchOffset(0.1F));
 						this.jumping = false;
 						this.navigation.stop();
 						this.setTarget((LivingEntity) null);
@@ -196,13 +208,13 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 					return actionResult;
 				} else {
 					if (this.canMoveVoluntarily() && ! this.world.isClient) {
-						if(this.getIsMimicLocked()) {
-							if(this.getOwner() == player) {
+						if (this.getIsMimicLocked()) {
+							if (this.getOwner() == player) {
 								this.openGui(player);
-							}else{
+							} else {
 								this.bite(player);
 							}
-						}else{
+						} else {
 							this.openGui(player);
 						}
 					}
@@ -213,13 +225,18 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 			if (! player.getAbilities().creativeMode) {
 				itemStack.decrement(1);
 			}
-			this.setOwner(player);
-			this.navigation.stop();
-			this.setTarget((LivingEntity) null);
-			this.setSitting(true);
-			this.updateSitting(player);
-			this.playSound(this.getSitSound(), this.getSoundVolume(), 0.9F);
-			this.world.sendEntityStatus(this, (byte) 7);
+			if(this instanceof PCChestMimicPet) {
+				this.setOwner(player);
+				this.navigation.stop();
+				this.setTarget((LivingEntity) null);
+				this.setSitting(true);
+				this.updateSitting(player);
+				this.playSound(this.getSitSound(), this.getSoundVolume(), 0.9F + getPitchOffset(0.1F));
+				this.world.sendEntityStatus(this, (byte) 7);
+			}else{
+				convertHostileMimicToPet(world, type, this, player);
+				this.playSound(this.getSitSound(), this.getSoundVolume(), 0.9F + getPitchOffset(0.1F));
+			}
 
 			return ActionResult.SUCCESS;
 		} else {
@@ -232,13 +249,19 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 		if (this.isAlive()) {
 			if (target.damage(DamageSource.mob(this), this.biteDamageAmount)) {
 				this.playSound(this.getHurtSound(), this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 0.7F);
+				this.playSound(PCSounds.MIMIC_BITE, this.getSoundVolume(), 1.5F + getPitchOffset(0.2F));
 				this.applyDamageEffects(this, target);
 			}
 		}
 	}
 
+	public float getPitchOffset (float range) {
+		return (this.random.nextFloat() - this.random.nextFloat()) * range;
+	}
 
-	public void updateSitting(PlayerEntity player) {}
+
+	public void updateSitting (PlayerEntity player) {
+	}
 
 	@Override
 	protected float getSoundVolume () {
@@ -249,28 +272,31 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 	public void onInventoryChanged (Inventory sender) {
 	}
 
-	public TrackedData<Integer> getMimicStateVariable(){
+	public TrackedData<Integer> getMimicStateVariable () {
 		return this.MIMIC_STATE;
 	}
 
 	public void openGui (PlayerEntity player) {
 		if (player.world != null && ! this.world.isClient()) {
-			((PlayerEntityAccess)player).openMimicInventory(this,this.inventory);
-			if(this.viewerCount == 0){
+			((PlayerEntityAccess) player).openMimicInventory(this, this.inventory);
+			if (this.viewerCount == 0) {
 				openAnimationTimer = 12;
 				this.setMimicState(IS_OPENING);
-				this.playSound(this.getOpenSound(),this.getSoundVolume(),0.8F);
+				this.playSound(this.getOpenSound(), this.getSoundVolume(), 0.8F + getPitchOffset(0.1F));
+				this.playSound(PCSounds.CLOSE_2, this.getSoundVolume(), 1.5F + getPitchOffset(0.1F));
 			}
 			this.viewerCount += 1;
 		}
 	}
+
 	public void closeGui (PlayerEntity player) {
 		if (player.world != null && ! this.world.isClient()) {
 			viewerCount -= 1;
-			if(viewerCount == 0){
+			if (viewerCount == 0) {
 				closeAnimationTimer = 12;
 				this.setMimicState(IS_CLOSED);
-				this.playSound(this.getCloseSound(), this.getSoundVolume(), 0.8F);
+				this.playSound(this.getCloseSound(), this.getSoundVolume(), 0.8F + getPitchOffset(0.1F));
+				this.playSound(PCSounds.CLOSE_2, this.getSoundVolume(), 1.0F + getPitchOffset(0.1F));
 			}
 			if (viewerCount < 0) {
 				System.out.println("this should not happen but i added a check just in case. Viewer count of pet mimic is less than 0");
@@ -447,28 +473,28 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 		return false;
 	}
 
-	public boolean areInventoriesDifferent(Inventory other) {
+	public boolean areInventoriesDifferent (Inventory other) {
 		return this.inventory != other;
 	}
 
-	public int getAngerTime() {
-		return (Integer)this.dataTracker.get(ANGER_TIME);
+	public int getAngerTime () {
+		return (Integer) this.dataTracker.get(ANGER_TIME);
 	}
 
-	public void setAngerTime(int angerTime) {
+	public void setAngerTime (int angerTime) {
 		this.dataTracker.set(ANGER_TIME, angerTime);
 	}
 
-	public void chooseRandomAngerTime() {
+	public void chooseRandomAngerTime () {
 		this.setAngerTime(ANGER_TIME_RANGE.get(this.random));
 	}
 
 	@Nullable
-	public UUID getAngryAt() {
+	public UUID getAngryAt () {
 		return this.angryAt;
 	}
 
-	public void setAngryAt(@Nullable UUID angryAt) {
+	public void setAngryAt (@Nullable UUID angryAt) {
 		this.angryAt = angryAt;
 	}
 

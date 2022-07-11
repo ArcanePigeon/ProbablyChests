@@ -30,8 +30,11 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
+import org.cloudwarp.probablychests.ProbablyChests;
 import org.cloudwarp.probablychests.block.PCChestTypes;
 import org.cloudwarp.probablychests.entity.ai.PCMeleeAttackGoal;
+import org.cloudwarp.probablychests.registry.PCSounds;
+import org.cloudwarp.probablychests.utils.MimicDifficulty;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.example.GeckoLibMod;
 import software.bernie.geckolib3.GeckoLib;
@@ -85,11 +88,12 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 	}
 
 	public static DefaultAttributeContainer.Builder createMobAttributes () {
-		return LivingEntity.createLivingAttributes().add(EntityAttributes.GENERIC_FOLLOW_RANGE, 20.0D)
+		MimicDifficulty mimicDifficulty = ProbablyChests.loadedConfig.mimicSettings.mimicDifficulty;
+		return LivingEntity.createLivingAttributes().add(EntityAttributes.GENERIC_FOLLOW_RANGE, 12.0D)
 				.add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 2)
-				.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 5)
+				.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, mimicDifficulty.getDamage())
 				.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 1)
-				.add(EntityAttributes.GENERIC_MAX_HEALTH, 50)
+				.add(EntityAttributes.GENERIC_MAX_HEALTH, mimicDifficulty.getHealth())
 				.add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.5D);
 	}
 
@@ -160,7 +164,7 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 
 	@Override
 	public void registerControllers (AnimationData animationData) {
-		animationData.addAnimationController(new AnimationController(this, CONTROLLER_NAME, 3, this::devMovement));
+		animationData.addAnimationController(new AnimationController(this, CONTROLLER_NAME, 6, this::devMovement));
 	}
 
 	@Override
@@ -531,6 +535,7 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 		boolean bl = target.damage(DamageSource.mob(this), (float)((int)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE)));
 		if (bl) {
 			this.playSound(this.getHurtSound(), this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 0.7F);
+			this.playSound(PCSounds.MIMIC_BITE, this.getSoundVolume(), 1.5F + getPitchOffset(0.2F));
 			this.applyDamageEffects(this, target);
 		}
 

@@ -1,19 +1,19 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    " IN",
+    " IA",
     " SI",
     "S  "
   ],
   "key": {
-    "N": {
-      "item": "minecraft:iron_nugget"
+    "A": {
+      "item": "minecraft:amethyst_shard"
     },
     "S": {
       "item": "minecraft:stick"
     },
     "I": {
-      "item": "minecraft:iron_ingot"
+      "item": "minecraft:copper_ingot"
     }
   },
   "result": {

@@ -21,7 +21,7 @@
   "entity.probablychests.gold_chest_mimic_pet": "Friendly Gold Mimic",
   "item.probablychests.mimic_key": "Suspicious Key",
   "item.probablychests.mimic_key_fragment": "Key Fragment",
-  "item.probablychests.mimic_core": "Mimic Heart",
+  "item.probablychests.mimic_core": "Suspicious Eye",
   "item.probablychests.pet_mimic_key": "Friendly Key",
   "item.probablychests.mimic_hand_bell": "Mimic Hand Bell",
   "item.probablychests.iron_key": "Iron Key",
@@ -30,8 +30,8 @@
   "text.autoconfig.probablychests.title": "Probably Chests",
 
   "text.autoconfig.probablychests.option.mimicSettings": "Mimic Settings",
-  "text.autoconfig.probablychests.option.mimicSettings.easierMimics": "Enable easier mimics",
-  "text.autoconfig.probablychests.option.mimicSettings.easierMimics.@Tooltip": "Reduces health, damage, and speed",
+  "text.autoconfig.probablychests.option.mimicSettings.mimicDifficulty": "Mimic difficulty",
+  "text.autoconfig.probablychests.option.mimicSettings.mimicDifficulty.@Tooltip": "Set the difficulty of mimics [changes health, speed, and damage]",
   "text.autoconfig.probablychests.option.mimicSettings.spawnNaturalMimics": "Enable natural mimic spawns",
   "text.autoconfig.probablychests.option.mimicSettings.spawnNaturalMimics.@Tooltip": "Makes mimics spawn like regular mobs in dark areas (does not affect secret mimic system)",
   "text.autoconfig.probablychests.option.mimicSettings.naturalMimicSpawnRate": "Natural mimic spawn rate",
@@ -42,6 +42,8 @@
   "text.autoconfig.probablychests.option.mimicSettings.doPetMimicLimit.@Tooltip": "Prevents players from having more than a set number of pet mimics",
   "text.autoconfig.probablychests.option.mimicSettings.petMimicLimit": "Pet mimic limit",
   "text.autoconfig.probablychests.option.mimicSettings.petMimicLimit.@Tooltip": "Maximum number of pet mimics a player can have",
+  "text.autoconfig.probablychests.option.mimicSettings.abandonedMimicTimer": "Abandoned mimic time",
+  "text.autoconfig.probablychests.option.mimicSettings.abandonedMimicTimer.@Tooltip": "Time [in minutes] after a mimic is abandoned that it can be reclaimed before becoming hostile",
 
   "text.autoconfig.probablychests.option.worldGen": "World Generation",
   "text.autoconfig.probablychests.option.worldGen.potSpawnChance": "Pot spawn rate",

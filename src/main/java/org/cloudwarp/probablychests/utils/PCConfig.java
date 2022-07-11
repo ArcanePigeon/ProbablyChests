@@ -4,7 +4,7 @@ import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import org.cloudwarp.probablychests.ProbablyChests;
-
+import static org.cloudwarp.probablychests.utils.MimicDifficulty.*;
 
 @Config(name = ProbablyChests.MOD_ID)
 public class PCConfig implements ConfigData {
@@ -17,7 +17,7 @@ public class PCConfig implements ConfigData {
 
 	public static class MimicSettings {
 		@ConfigEntry.Gui.Tooltip()
-		public boolean easierMimics = false;
+		public MimicDifficulty mimicDifficulty = MEDIUM;
 		@ConfigEntry.Gui.Tooltip()
 		public boolean spawnNaturalMimics = true;
 		@ConfigEntry.Gui.Tooltip()
@@ -28,6 +28,8 @@ public class PCConfig implements ConfigData {
 		public boolean doPetMimicLimit = false;
 		@ConfigEntry.Gui.Tooltip()
 		public int petMimicLimit = 2;
+		@ConfigEntry.Gui.Tooltip()
+		public int abandonedMimicTimer = 5;
 	}
 
 	public static class WorldGen {

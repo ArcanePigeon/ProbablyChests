@@ -21,6 +21,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.*;
 import org.cloudwarp.probablychests.ProbablyChests;
+import org.cloudwarp.probablychests.registry.PCSounds;
+import org.cloudwarp.probablychests.utils.MimicDifficulty;
 import org.cloudwarp.probablychests.utils.PCConfig;
 import software.bernie.geckolib3.core.AnimationState;
 import software.bernie.geckolib3.core.IAnimatable;
@@ -62,17 +64,13 @@ public class PCChestMimic extends PCTameablePetWithInventory implements IAnimata
 	}
 
 	public static DefaultAttributeContainer.Builder createMobAttributes () {
-		boolean easyMimics = ProbablyChests.loadedConfig.mimicSettings.easierMimics;
-		if (easyMimics) {
-			maxHealth = 30;
-			maxDamage = 3;
-			moveSpeed = 1D;
-		}
+		MimicDifficulty mimicDifficulty = ProbablyChests.loadedConfig.mimicSettings.mimicDifficulty;
+		moveSpeed = mimicDifficulty.getSpeed();
 		return LivingEntity.createLivingAttributes().add(EntityAttributes.GENERIC_FOLLOW_RANGE, 12.0D)
 				.add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 2)
-				.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, maxDamage)
+				.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, mimicDifficulty.getDamage())
 				.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 1)
-				.add(EntityAttributes.GENERIC_MAX_HEALTH, maxHealth)
+				.add(EntityAttributes.GENERIC_MAX_HEALTH, mimicDifficulty.getHealth())
 				.add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.5D);
 	}
 
@@ -114,7 +112,7 @@ public class PCChestMimic extends PCTameablePetWithInventory implements IAnimata
 
 	@Override
 	public void registerControllers (AnimationData animationData) {
-		animationData.addAnimationController(new AnimationController(this, CONTROLLER_NAME, 3, this::devMovement));
+		animationData.addAnimationController(new AnimationController(this, CONTROLLER_NAME, 6, this::devMovement));
 	}
 
 	@Override
@@ -160,6 +158,7 @@ public class PCChestMimic extends PCTameablePetWithInventory implements IAnimata
 		if (this.isAlive()) {
 			if (this.squaredDistanceTo(target) < 1.5D && this.canSee(target) && target.damage(DamageSource.mob(this), this.getDamageAmount())) {
 				this.playSound(this.getHurtSound(), this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 0.7F);
+				this.playSound(PCSounds.MIMIC_BITE, this.getSoundVolume(), 1.5F + getPitchOffset(0.2F));
 				this.applyDamageEffects(this, target);
 			}
 		}

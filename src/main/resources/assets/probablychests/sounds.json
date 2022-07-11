@@ -1,0 +1,51 @@
+{
+  "bell_hit1": {
+    "subtitle": "subtitles.probablychests.bell_hit1",
+    "sounds": [
+      "probablychests:bell_hit1"
+    ]
+  },
+  "bell_hit2": {
+    "subtitle": "subtitles.probablychests.bell_hit2",
+    "sounds": [
+      "probablychests:bell_hit2"
+    ]
+  },
+  "bell_hit4": {
+    "subtitle": "subtitles.probablychests.bell_hit4",
+    "sounds": [
+      "probablychests:bell_hit4"
+    ]
+  },
+  "close2": {
+    "subtitle": "subtitles.probablychests.close2",
+    "sounds": [
+      "probablychests:close2"
+    ]
+  },
+  "mimic_bite": {
+    "subtitle": "subtitles.probablychests.mimic_bite",
+    "sounds": [
+      "probablychests:mimic_bite"
+    ]
+  },
+  "apply_lock1": {
+    "subtitle": "subtitles.probablychests.apply_lock1",
+    "sounds": [
+      "probablychests:apply_lock1"
+    ]
+  },
+  "apply_lock2": {
+    "subtitle": "subtitles.probablychests.apply_lock2",
+    "sounds": [
+      "probablychests:apply_lock2"
+    ]
+  },
+  "lock_unlock": {
+    "subtitle": "subtitles.probablychests.lock_unlock",
+    "sounds": [
+      "probablychests:lock_unlock"
+    ]
+  }
+
+}

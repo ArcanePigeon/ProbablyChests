@@ -5,21 +5,16 @@ import me.shedaniel.autoconfig.ConfigHolder;
 import me.shedaniel.autoconfig.serializer.Toml4jConfigSerializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.enums.Attachment;
-import net.minecraft.data.client.*;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Direction;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cloudwarp.probablychests.registry.*;
 import org.cloudwarp.probablychests.utils.PCConfig;
 import org.cloudwarp.probablychests.utils.PCEventHandler;
+import org.cloudwarp.probablychests.utils.MimicDifficulty;
 import org.cloudwarp.probablychests.world.feature.PCFeatures;
 import org.cloudwarp.probablychests.world.feature.PCPlacementModifierType;
 import org.cloudwarp.probablychests.world.gen.PCWorldGen;
@@ -46,6 +41,7 @@ public class ProbablyChests implements ModInitializer {
 		PCEventHandler.registerEvents();
 		GeckoLibMod.DISABLE_IN_DEV = true;
 		GeckoLib.initialize();
+		PCSounds.init();
 		PCLootTables.init();
 		PCBlockEntities.init();
 		PCBlocks.init();
@@ -69,12 +65,13 @@ public class ProbablyChests implements ModInitializer {
 		nbt.putFloat("chest_spawn_chance", config.worldGen.chestSpawnChance);
 		nbt.putFloat("surface_chest_spawn_chance", config.worldGen.surfaceChestSpawnChance);
 		nbt.putFloat("secret_mimic_chance", config.worldGen.secretMimicChance);
-		nbt.putBoolean("easier_mimics", config.mimicSettings.easierMimics);
+		nbt.putInt("mimic_difficulty", config.mimicSettings.mimicDifficulty.toInt());
 		nbt.putBoolean("spawn_natural_mimics", config.mimicSettings.spawnNaturalMimics);
 		nbt.putFloat("natural_mimic_spawn_rate", config.mimicSettings.naturalMimicSpawnRate);
 		nbt.putBoolean("allow_pet_mimics", config.mimicSettings.allowPetMimics);
 		nbt.putBoolean("do_pet_mimic_limit", config.mimicSettings.doPetMimicLimit);
 		nbt.putInt("pet_mimic_limit", config.mimicSettings.petMimicLimit);
+		nbt.putInt("abandoned_mimic_timer", config.mimicSettings.abandonedMimicTimer);
 		return nbt;
 	}
 	public static PCConfig nbtToConfig(NbtCompound nbt){
@@ -86,12 +83,13 @@ public class ProbablyChests implements ModInitializer {
 		config.worldGen.chestSpawnChance = nbt.getFloat("chest_spawn_chance");
 		config.worldGen.surfaceChestSpawnChance = nbt.getFloat("surface_chest_spawn_chance");
 		config.worldGen.secretMimicChance = nbt.getFloat("secret_mimic_chance");
-		config.mimicSettings.easierMimics = nbt.getBoolean("easier_mimics");
+		config.mimicSettings.mimicDifficulty = MimicDifficulty.fromInt( nbt.getInt("mimic_difficulty"));
 		config.mimicSettings.spawnNaturalMimics = nbt.getBoolean("spawn_natural_mimics");
 		config.mimicSettings.naturalMimicSpawnRate = nbt.getFloat("natural_mimic_spawn_rate");
 		config.mimicSettings.allowPetMimics = nbt.getBoolean("allow_pet_mimics");
 		config.mimicSettings.doPetMimicLimit = nbt.getBoolean("do_pet_mimic_limit");
 		config.mimicSettings.petMimicLimit = nbt.getInt("pet_mimic_limit");
+		config.mimicSettings.abandonedMimicTimer = nbt.getInt("abandoned_mimic_timer");
 		return config;
 	}
 }
