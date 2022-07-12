@@ -4,12 +4,9 @@
   "package": "org.cloudwarp.probablychests.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "PlayerEntityMixin",
-    "ServerPlayerEntityMixin",
-    "ClientPlayPacketListenerMixin"
+    "ServerPlayerEntityMixin"
   ],
   "client": [
-    "ClientPlayNetworkHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

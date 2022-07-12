@@ -19,8 +19,6 @@ import org.cloudwarp.probablychests.ProbablyChests;
 import org.cloudwarp.probablychests.block.PCChestTypes;
 import org.cloudwarp.probablychests.client.entity.PCChestRenderer;
 import org.cloudwarp.probablychests.entity.PCTameablePetWithInventory;
-import org.cloudwarp.probablychests.interfaces.ClientPlayPacketListenerAccess;
-import org.cloudwarp.probablychests.mixin.ClientPlayNetworkHandlerMixin;
 import org.cloudwarp.probablychests.registry.PCBlockEntities;
 import org.cloudwarp.probablychests.registry.PCEntities;
 import org.cloudwarp.probablychests.registry.PCScreenHandlerType;

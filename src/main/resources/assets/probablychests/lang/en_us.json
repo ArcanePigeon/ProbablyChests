@@ -2,8 +2,8 @@
   "itemGroup.probablychests.probablychests": "Probably Chests",
   "block.probablychests.lush_chest": "Lush Chest",
   "block.probablychests.normal_chest": "Wooden Chest",
-  "block.probablychests.rocky_chest": "Rocky Chest",
-  "block.probablychests.stone_chest": "Stone Chest",
+  "block.probablychests.rocky_chest": "Sandstone Chest",
+  "block.probablychests.stone_chest": "Deepslate Chest",
   "block.probablychests.gold_chest": "Gold Chest",
   "block.probablychests.normal_pot": "Clay Pot",
   "block.probablychests.lush_pot": "Lush Pot",
@@ -27,9 +27,20 @@
   "item.probablychests.iron_key": "Iron Key",
   "item.probablychests.iron_lock": "Iron Lock",
 
+  "subtitles.probablychests.bell_hit1": "Abandon mimics bell",
+  "subtitles.probablychests.bell_hit2": "Claim Abandoned mimic bell",
+  "subtitles.probablychests.bell_hit4": "Tag/untag mimic bell",
+  "subtitles.probablychests.close2": "Mimic mouth sounds",
+  "subtitles.probablychests.mimic_bite": "Mimic bite",
+  "subtitles.probablychests.apply_lock1": "Apply mimic lock",
+  "subtitles.probablychests.lock_unlock": "Lock/unlock pet mimic",
+
+  "stat.probablychests.mimic_encounters": "Mimic Encounters",
+  "stat.probablychests.abandoned_mimics": "Abandoned Mimics",
+
   "text.autoconfig.probablychests.title": "Probably Chests",
 
-  "text.autoconfig.probablychests.option.mimicSettings": "Mimic Settings",
+  "text.autoconfig.probablychests.option.mimicSettings": "Mimic Settings [requires world restart]",
   "text.autoconfig.probablychests.option.mimicSettings.mimicDifficulty": "Mimic difficulty",
   "text.autoconfig.probablychests.option.mimicSettings.mimicDifficulty.@Tooltip": "Set the difficulty of mimics [changes health, speed, and damage]",
   "text.autoconfig.probablychests.option.mimicSettings.spawnNaturalMimics": "Enable natural mimic spawns",
@@ -55,7 +66,7 @@
   "text.autoconfig.probablychests.option.worldGen.secretMimicChance": "Secret mimic chance",
   "text.autoconfig.probablychests.option.worldGen.secretMimicChance.@Tooltip": "0 means chests will never be mimics while 1 means they will always be mimics",
 
-  "item.probablychests.mimicHandBell.tooltip.shift": "Click and crouch click on a pet mimic to tag and un tag it. [Resets on logout]",
+  "item.probablychests.mimicHandBell.tooltip.shift": "Click to tag a pet mimic and crouch click to untag it. [Resets on logout]",
   "item.probablychests.mimicHandBell.tooltip.shift2": "Click on an amethyst cluster to abandon all untagged mimics.",
   "item.probablychests.mimicHandBell.tooltip.shift3": "Click on an abandoned mimic to reclaim ownership.",
   "item.probablychests.shift.tooltip": "Press §eSHIFT§r for more Information",

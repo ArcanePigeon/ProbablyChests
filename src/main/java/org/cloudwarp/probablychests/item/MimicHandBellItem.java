@@ -1,5 +1,6 @@
 package org.cloudwarp.probablychests.item;
 
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.gui.screen.Screen;
@@ -9,6 +10,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -21,6 +23,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import org.cloudwarp.probablychests.interfaces.PlayerEntityAccess;
 import org.cloudwarp.probablychests.registry.PCSounds;
+import org.cloudwarp.probablychests.registry.PCStatistics;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -37,10 +40,14 @@ public class MimicHandBellItem extends Item {
 		ItemPlacementContext itemPlacementContext = new ItemPlacementContext(context);
 		BlockPos blockPos = itemPlacementContext.getBlockPos();
 
-		if (world instanceof ServerWorld serverWorld && context.getPlayer() != null) {
+		if (world instanceof ServerWorld serverWorld && context.getPlayer() instanceof  ServerPlayerEntity player) {
 			blockPos = blockPos.offset(context.getSide().getOpposite());
 			if(serverWorld.getBlockState(blockPos).isOf(Blocks.AMETHYST_CLUSTER)){
-				((PlayerEntityAccess) context.getPlayer()).abandonMimics();
+				int amount = ((PlayerEntityAccess) player).abandonMimics();
+				if(amount > 0){
+					player.increaseStat(PCStatistics.ABANDONED_MIMICS,amount);
+					Criteria.ITEM_USED_ON_BLOCK.trigger(player,blockPos,context.getStack());
+				}
 				playSound(world,blockPos,PCSounds.BELL_HIT_1);
 			}
 		}

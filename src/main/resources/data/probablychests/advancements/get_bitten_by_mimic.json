@@ -1,0 +1,95 @@
+{
+  "display": {
+    "icon": {
+      "item": "probablychests:iron_lock"
+    },
+    "title": "Bloody thieves",
+    "description": "Get bitten trying to access a locked mimic",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "probablychests:encounter_a_mimic",
+  "criteria": {
+    "probablychests:normal_chest_mimic_pet": {
+      "trigger": "minecraft:entity_hurt_player",
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "probablychests:normal_chest_mimic_pet"
+            }
+          }
+        ]
+      }
+    },
+    "probablychests:lush_chest_mimic_pet": {
+      "trigger": "minecraft:entity_hurt_player",
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "probablychests:lush_chest_mimic_pet"
+            }
+          }
+        ]
+      }
+    },
+    "probablychests:gold_chest_mimic_pet": {
+      "trigger": "minecraft:entity_hurt_player",
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "probablychests:gold_chest_mimic_pet"
+            }
+          }
+        ]
+      }
+    },
+    "probablychests:stone_chest_mimic_pet": {
+      "trigger": "minecraft:entity_hurt_player",
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "probablychests:stone_chest_mimic_pet"
+            }
+          }
+        ]
+      }
+    },
+    "probablychests:rocky_chest_mimic_pet": {
+      "trigger": "minecraft:entity_hurt_player",
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "probablychests:rocky_chest_mimic_pet"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "probablychests:normal_chest_mimic_pet",
+      "probablychests:lush_chest_mimic_pet",
+      "probablychests:gold_chest_mimic_pet",
+      "probablychests:stone_chest_mimic_pet",
+      "probablychests:rocky_chest_mimic_pet"
+    ]
+  ]
+}

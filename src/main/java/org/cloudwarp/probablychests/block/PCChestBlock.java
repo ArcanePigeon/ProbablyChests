@@ -70,12 +70,12 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 	}
 
 	public void onBlockBreakStart (BlockState state, World world, BlockPos pos, PlayerEntity player) {
-		createMimic(world, pos, state, this.type);
+		createMimic(world, pos, state, this.type, player);
 	}
 
 	public void onEntityCollision (BlockState state, World world, BlockPos pos, Entity entity) {
-		if (entity instanceof PlayerEntity) {
-			createMimic(world, pos, state, this.type);
+		if (entity instanceof PlayerEntity player) {
+			createMimic(world, pos, state, this.type, player);
 		}
 	}
 
@@ -104,7 +104,7 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 					itemStack.decrement(1);
 				}
 				return ActionResult.CONSUME;
-			}else if (createMimic(world, pos, state, this.type)) {
+			}else if (createMimic(world, pos, state, this.type, player)) {
 				return ActionResult.SUCCESS;
 			}
 		}
@@ -137,7 +137,7 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 		}
 
 		BlockEntity blockEntity = world.getBlockEntity(pos);
-		if (! createMimic(world, pos, state, this.type)) {
+		if (! createMimic(world, pos, state, this.type, null)) {
 			if (blockEntity instanceof Inventory) {
 				ItemScatterer.spawn(world, pos, (Inventory) ((Object) blockEntity));
 				world.updateComparators(pos, this);

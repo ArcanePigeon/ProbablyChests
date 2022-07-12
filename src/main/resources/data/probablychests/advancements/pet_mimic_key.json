@@ -1,0 +1,28 @@
+{
+  "display": {
+    "icon": {
+      "item": "probablychests:pet_mimic_key"
+    },
+    "title": "It's Alive!",
+    "description": "Acquire a friendly key",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "probablychests:mimic_core",
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "probablychests:pet_mimic_key"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

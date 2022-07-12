@@ -46,7 +46,6 @@ import net.minecraft.world.event.GameEvent;
 import org.cloudwarp.probablychests.ProbablyChests;
 import org.cloudwarp.probablychests.block.PCChestTypes;
 import org.cloudwarp.probablychests.interfaces.PlayerEntityAccess;
-import org.cloudwarp.probablychests.network.packet.OpenMimicScreenS2CPacket;
 import org.cloudwarp.probablychests.registry.PCItems;
 import org.cloudwarp.probablychests.registry.PCSounds;
 import org.cloudwarp.probablychests.screenhandlers.PCChestScreenHandler;

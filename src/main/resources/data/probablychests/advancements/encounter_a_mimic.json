@@ -1,0 +1,95 @@
+{
+  "display": {
+    "icon": {
+      "item": "probablychests:normal_chest"
+    },
+    "title": "Fooled By Furniture",
+    "description": "Encounter a secret mimic",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false,
+    "background": "minecraft:textures/block/cobblestone.png"
+  },
+  "criteria": {
+    "probablychests:normal_chest_mimic": {
+      "trigger": "minecraft:summoned_entity",
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "probablychests:normal_chest_mimic"
+            }
+          }
+        ]
+      }
+    },
+    "probablychests:lush_chest_mimic": {
+      "trigger": "minecraft:summoned_entity",
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "probablychests:lush_chest_mimic"
+            }
+          }
+        ]
+      }
+    },
+    "probablychests:gold_chest_mimic": {
+      "trigger": "minecraft:summoned_entity",
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "probablychests:gold_chest_mimic"
+            }
+          }
+        ]
+      }
+    },
+    "probablychests:stone_chest_mimic": {
+      "trigger": "minecraft:summoned_entity",
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "probablychests:stone_chest_mimic"
+            }
+          }
+        ]
+      }
+    },
+    "probablychests:rocky_chest_mimic": {
+      "trigger": "minecraft:summoned_entity",
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "probablychests:rocky_chest_mimic"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "probablychests:normal_chest_mimic",
+      "probablychests:lush_chest_mimic",
+      "probablychests:gold_chest_mimic",
+      "probablychests:stone_chest_mimic",
+      "probablychests:rocky_chest_mimic"
+    ]
+  ]
+}

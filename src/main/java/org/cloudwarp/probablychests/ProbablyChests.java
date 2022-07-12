@@ -42,6 +42,7 @@ public class ProbablyChests implements ModInitializer {
 		GeckoLibMod.DISABLE_IN_DEV = true;
 		GeckoLib.initialize();
 		PCSounds.init();
+		PCStatistics.init();
 		PCLootTables.init();
 		PCBlockEntities.init();
 		PCBlocks.init();

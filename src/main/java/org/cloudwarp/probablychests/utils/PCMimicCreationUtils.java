@@ -1,11 +1,13 @@
 package org.cloudwarp.probablychests.utils;
 
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
@@ -16,13 +18,14 @@ import org.cloudwarp.probablychests.entity.PCChestMimic;
 import org.cloudwarp.probablychests.entity.PCChestMimicPet;
 import org.cloudwarp.probablychests.entity.PCTameablePetWithInventory;
 import org.cloudwarp.probablychests.interfaces.PlayerEntityAccess;
+import org.cloudwarp.probablychests.registry.PCStatistics;
 
 import static org.cloudwarp.probablychests.block.PCChestBlock.FACING;
 import static org.cloudwarp.probablychests.block.PCChestBlock.WATERLOGGED;
 
 public class PCMimicCreationUtils {
 
-	public static boolean createMimic (World world, BlockPos pos, BlockState state, PCChestTypes type) {
+	public static boolean createMimic (World world, BlockPos pos, BlockState state, PCChestTypes type, PlayerEntity player) {
 		PCChestBlockEntity chest = getChestBlockFromWorld(world, pos);
 		if (chest != null) {
 			boolean wasSecretMimic = checkForSecretMimic(chest, world, pos, type);
@@ -30,7 +33,7 @@ public class PCMimicCreationUtils {
 				return false;
 			}
 			if (world.getDifficulty() != Difficulty.PEACEFUL && chest.isMimic) {
-				createMimic(false,pos,state,world,chest, null, type);
+				createMimic(false,pos,state,world,chest, player, type);
 				return true;
 			}
 		}
@@ -48,8 +51,15 @@ public class PCMimicCreationUtils {
 			mimic.setTarget((LivingEntity) null);
 			mimic.setSitting(true);
 			((PlayerEntityAccess)player).addPetMimicToOwnedList(mimic.getUuid());
+			if(player != null) {
+				Criteria.SUMMONED_ENTITY.trigger((ServerPlayerEntity) player, mimic);
+			}
 		}else{
 			mimic = new PCChestMimic(type.getMimicType(), world);
+			if(player != null) {
+				player.increaseStat(PCStatistics.MIMIC_ENCOUNTERS, 1);
+				Criteria.SUMMONED_ENTITY.trigger((ServerPlayerEntity) player, mimic);
+			}
 		}
 		mimic.setType(type);
 		mimic.setPos(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D);

@@ -1,0 +1,95 @@
+{
+  "display": {
+    "icon": {
+      "item": "probablychests:lush_chest"
+    },
+    "title": "Carnivorous Storage",
+    "description": "Create a pet mimic",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "probablychests:pet_mimic_key",
+  "criteria": {
+    "probablychests:normal_chest_mimic_pet": {
+      "trigger": "minecraft:summoned_entity",
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "probablychests:normal_chest_mimic_pet"
+            }
+          }
+        ]
+      }
+    },
+    "probablychests:lush_chest_mimic_pet": {
+      "trigger": "minecraft:summoned_entity",
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "probablychests:lush_chest_mimic_pet"
+            }
+          }
+        ]
+      }
+    },
+    "probablychests:gold_chest_mimic_pet": {
+      "trigger": "minecraft:summoned_entity",
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "probablychests:gold_chest_mimic_pet"
+            }
+          }
+        ]
+      }
+    },
+    "probablychests:stone_chest_mimic_pet": {
+      "trigger": "minecraft:summoned_entity",
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "probablychests:stone_chest_mimic_pet"
+            }
+          }
+        ]
+      }
+    },
+    "probablychests:rocky_chest_mimic_pet": {
+      "trigger": "minecraft:summoned_entity",
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "probablychests:rocky_chest_mimic_pet"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "probablychests:normal_chest_mimic_pet",
+      "probablychests:lush_chest_mimic_pet",
+      "probablychests:gold_chest_mimic_pet",
+      "probablychests:stone_chest_mimic_pet",
+      "probablychests:rocky_chest_mimic_pet"
+    ]
+  ]
+}
