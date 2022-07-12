@@ -18,6 +18,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.*;
 import org.cloudwarp.probablychests.ProbablyChests;
@@ -78,6 +79,7 @@ public class PCChestMimic extends PCTameablePetWithInventory implements IAnimata
 	protected void initGoals () {
 		this.goalSelector.add(2, new PCChestMimic.FaceTowardTargetGoal(this));
 		this.goalSelector.add(7, new PCChestMimic.IdleGoal(this));
+		this.goalSelector.add(6, new PCChestMimic.SleepGoal(this));
 		this.goalSelector.add(1, new PCChestMimic.SwimmingGoal(this));
 		this.goalSelector.add(5, new PCChestMimic.MoveGoal(this));
 		this.targetSelector.add(1, new ActiveTargetGoal<>(this, PlayerEntity.class, 10, true, false, livingEntity -> Math.abs(livingEntity.getY() - this.getY()) <= 4.0D));
@@ -402,7 +404,7 @@ public class PCChestMimic extends PCTameablePetWithInventory implements IAnimata
 
 		public IdleGoal (PCChestMimic mimic) {
 			this.mimic = mimic;
-
+			this.setControls(EnumSet.of(Control.LOOK));
 		}
 
 		public boolean canStart () {
@@ -411,6 +413,41 @@ public class PCChestMimic extends PCTameablePetWithInventory implements IAnimata
 
 		public void tick () {
 
+		}
+	}
+	static class SleepGoal extends Goal {
+		private final PCChestMimic mimic;
+
+		public SleepGoal (PCChestMimic mimic) {
+			this.mimic = mimic;
+		}
+
+		public boolean canStart () {
+			return ! this.mimic.hasVehicle() && this.mimic.getMimicState() == IS_SLEEPING;
+		}
+		public boolean shouldContinue(){
+			return ! this.mimic.hasVehicle() && this.mimic.getMimicState() == IS_SLEEPING;
+		}
+
+		public void tick () {
+			lockToBlock(10F,10F);
+			((PCChestMimic.MimicMoveControl) this.mimic.getMoveControl()).look(this.mimic.getYaw(), true);
+		}
+		public void lockToBlock(float maxYawChange, float maxPitchChange) {
+			float r = Math.round(this.mimic.getHeadYaw() / 90F)*90F;
+			double x = this.mimic.getBlockX() - this.mimic.getX();
+			double z = this.mimic.getBlockZ() - this.mimic.getZ();
+			this.mimic.setYaw(this.changeAngle(this.mimic.getYaw(), r, maxYawChange));
+		}
+		private float changeAngle(float from, float to, float max) {
+			float f = MathHelper.wrapDegrees(to - from);
+			if (f > max) {
+				f = max;
+			}
+			if (f < -max) {
+				f = -max;
+			}
+			return from + f;
 		}
 	}
 

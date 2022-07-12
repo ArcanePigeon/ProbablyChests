@@ -37,7 +37,9 @@ import org.cloudwarp.probablychests.registry.PCItems;
 import org.cloudwarp.probablychests.registry.PCProperties;
 import org.cloudwarp.probablychests.utils.PCConfig;
 import org.cloudwarp.probablychests.utils.PCChestState;
+import org.cloudwarp.probablychests.utils.VoxelShaper;
 
+import java.util.Map;
 import java.util.Random;
 
 import static org.cloudwarp.probablychests.utils.PCMimicCreationUtils.*;
@@ -47,7 +49,8 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	public static final EnumProperty<PCChestState> CHEST_STATE = PCProperties.PC_CHEST_STATE;
-	protected static final VoxelShape SHAPE = Block.createCuboidShape(1.0D, 0.0D, 1.5D, 15.0D, 14.0D, 14.0D);
+	protected static final VoxelShape SHAPE = Block.createCuboidShape(1.0D, 0.0D, 1.5D, 15.0D, 14.0D, 14.5D);
+	protected static final Map<Direction, VoxelShape> SHAPES = VoxelShaper.generateRotations(SHAPE);
 	private final PCChestTypes type;
 
 
@@ -154,7 +157,7 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 
 	@Override
 	public VoxelShape getOutlineShape (BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-		return SHAPE;
+		return SHAPES.get(state.get(FACING));
 	}
 
 
