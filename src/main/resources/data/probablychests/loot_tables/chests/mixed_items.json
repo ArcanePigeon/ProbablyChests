@@ -6,7 +6,6 @@
         "min": 5,
         "max": 9
       },
-      "bonus_rolls": 0,
       "entries": [
         {
           "type": "minecraft:item",

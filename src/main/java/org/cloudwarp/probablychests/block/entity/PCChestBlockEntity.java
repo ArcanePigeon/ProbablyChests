@@ -25,6 +25,7 @@ import org.cloudwarp.probablychests.block.PCChestTypes;
 import org.cloudwarp.probablychests.registry.PCProperties;
 import org.cloudwarp.probablychests.screenhandlers.PCChestScreenHandler;
 import org.cloudwarp.probablychests.utils.PCChestState;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
@@ -191,10 +192,14 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 		this.getWorld().setBlockState(this.getPos(), this.getCachedState().with(CHEST_STATE, state));
 	}
 
-
 	@Override
-	public ScreenHandler createMenu (int syncId, PlayerInventory inventory, PlayerEntity player) {
-		return PCChestScreenHandler.createScreenHandler(syncId, inventory, this);
+	@Nullable
+	public ScreenHandler createMenu(int syncId, PlayerInventory inventory, PlayerEntity player) {
+		if (this.checkUnlocked(player)) {
+			this.checkLootInteraction(inventory.player);
+			return PCChestScreenHandler.createScreenHandler(syncId, inventory, this);
+		}
+		return null;
 	}
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
@@ -227,7 +232,7 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 
 	@Override
 	protected ScreenHandler createScreenHandler (int syncId, PlayerInventory inventory) {
-		return GenericContainerScreenHandler.createGeneric9x6(syncId, inventory, this);
+		return PCChestScreenHandler.createScreenHandler(syncId, inventory, this);
 	}
 
 	@Override
@@ -237,7 +242,7 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 
 	@Override
 	public int size () {
-		return type.size;
+		return 54;
 	}
 
 	public PCChestTypes type () {

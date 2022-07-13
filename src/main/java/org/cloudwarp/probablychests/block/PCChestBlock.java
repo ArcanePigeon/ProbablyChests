@@ -12,6 +12,7 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.Stats;
@@ -70,12 +71,12 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 	}
 
 	public void onBlockBreakStart (BlockState state, World world, BlockPos pos, PlayerEntity player) {
-		createMimic(world, pos, state, this.type, player);
+		tryMakeHostileMimic(world, pos, state, player, this.type);
 	}
 
 	public void onEntityCollision (BlockState state, World world, BlockPos pos, Entity entity) {
 		if (entity instanceof PlayerEntity player) {
-			createMimic(world, pos, state, this.type, player);
+			tryMakeHostileMimic(world, pos, state, player, this.type);
 		}
 	}
 
@@ -92,24 +93,27 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 		//------------------------
 		if (chest != null) {
 			ItemStack itemStack = player.getStackInHand(hand);
-			if (itemStack.isOf(PCItems.PET_MIMIC_KEY) && config.mimicSettings.allowPetMimics && ! player.isSneaking()) {
-				boolean creationSuccess = createPetMimic(world, pos, state, player, this.type);
-				if (! player.isCreative() && creationSuccess) {
-					itemStack.decrement(1);
-				}
-				return ActionResult.CONSUME;
-			} else if (itemStack.isOf(PCItems.MIMIC_KEY) && ! chest.isMimic && ! player.isSneaking()) {
-				chest.isMimic = true;
+			if (itemStack.isOf(PCItems.PET_MIMIC_KEY) && config.mimicSettings.allowPetMimics && ! player.isSneaking() && tryMakePetMimic(world, pos, state, player, this.type)) {
 				if (! player.isCreative()) {
 					itemStack.decrement(1);
 				}
 				return ActionResult.CONSUME;
-			}else if (createMimic(world, pos, state, this.type, player)) {
-				return ActionResult.SUCCESS;
+			} else if (itemStack.isOf(PCItems.MIMIC_KEY) && ! chest.isMimic && ! player.isSneaking() && !isSecretMimic(chest,world,pos,this.type)) {
+				chest.isMimic = true;
+				chest.isNatural = false;
+				if (! player.isCreative()) {
+					itemStack.decrement(1);
+				}
+				return ActionResult.CONSUME;
+			} else {
+				if(isSecretMimic(chest,world,pos,type)){
+					tryMakeHostileMimic(world, pos, state, player, this.type);
+					return ActionResult.SUCCESS;
+				}
 			}
 		}
 		NamedScreenHandlerFactory namedScreenHandlerFactory = this.createScreenHandlerFactory(state, world, pos);
-		if (namedScreenHandlerFactory != null) {
+		if (namedScreenHandlerFactory != null && player instanceof ServerPlayerEntity && chest.checkUnlocked(player)) {
 			player.openHandledScreen(namedScreenHandlerFactory);
 			player.incrementStat(this.getOpenStat());
 		}
@@ -137,11 +141,14 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 		}
 
 		BlockEntity blockEntity = world.getBlockEntity(pos);
-		if (! createMimic(world, pos, state, this.type, null)) {
+		PCChestBlockEntity chest = getChestBlockFromWorld(world,pos);
+		if (! isSecretMimic(chest,world,pos,this.type)) {
 			if (blockEntity instanceof Inventory) {
 				ItemScatterer.spawn(world, pos, (Inventory) ((Object) blockEntity));
 				world.updateComparators(pos, this);
 			}
+		}else{
+			tryMakeHostileMimic(world, pos, state, null, this.type);
 		}
 		super.onStateReplaced(state, world, pos, newState, moved);
 	}
