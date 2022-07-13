@@ -55,7 +55,7 @@ public class PCChestMimic extends PCTameablePetWithInventory implements IAnimata
 	private boolean onGroundLastTick;
 	private int timeUntilSleep = 0;
 	private int jumpEndTimer = 10;
-	private int spawnWaitTimer = 5;
+	private int spawnWaitTimer = 10;
 	private boolean isAttemptingToSleep = false;
 
 	public PCChestMimic (EntityType<? extends PCTameablePetWithInventory> entityType, World world) {
@@ -184,40 +184,38 @@ public class PCChestMimic extends PCTameablePetWithInventory implements IAnimata
 		super.tick();
 		if (jumpEndTimer >= 0) {
 			jumpEndTimer -= 1;
-		}
-		if (this.onGround) {
-			if (this.onGroundLastTick) {
-				if (this.getMimicState() != IS_SLEEPING  && !isAttemptingToSleep) {
-					timeUntilSleep = 150;
-					isAttemptingToSleep = true;
-					if(this.getMimicState() != IS_CLOSED) {
-						this.setMimicState(IS_IDLE);
+		}if (spawnWaitTimer > 0) {
+			spawnWaitTimer -= 1;
+		} else {
+			if (this.onGround) {
+				if (this.onGroundLastTick) {
+					if (this.getMimicState() != IS_SLEEPING && ! isAttemptingToSleep) {
+						timeUntilSleep = 150;
+						isAttemptingToSleep = true;
+						if (this.getMimicState() != IS_CLOSED) {
+							this.setMimicState(IS_IDLE);
+						}
 					}
-				}
-				if (isAttemptingToSleep) {
-					timeUntilSleep -= 1;
-					if (timeUntilSleep <= 0) {
-						timeUntilSleep = 0;
-						this.setMimicState(IS_SLEEPING);
+					if (isAttemptingToSleep) {
+						timeUntilSleep -= 1;
+						if (timeUntilSleep <= 0) {
+							timeUntilSleep = 0;
+							this.setMimicState(IS_SLEEPING);
+						}
 					}
+				} else {
+					isAttemptingToSleep = false;
+					this.setMimicState(IS_CLOSED);
+					this.playSound(this.getLandingSound(), this.getSoundVolume(),
+							((this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F) / 0.8F);
 				}
 			} else {
 				isAttemptingToSleep = false;
-				this.setMimicState(IS_CLOSED);
-				this.playSound(this.getLandingSound(), this.getSoundVolume(),
-						((this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F) / 0.8F);
-			}
-		} else {
-			isAttemptingToSleep = false;
-			if (this.getMimicState() != IS_JUMPING) {
-				if (spawnWaitTimer > 0) {
-					spawnWaitTimer -= 1;
-				} else {
+				if (this.getMimicState() != IS_JUMPING) {
 					this.setMimicState(IS_IN_AIR);
 				}
 			}
 		}
-
 		this.onGroundLastTick = this.onGround;
 	}
 
