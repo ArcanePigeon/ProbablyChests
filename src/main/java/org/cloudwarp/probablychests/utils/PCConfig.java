@@ -36,7 +36,7 @@ public class PCConfig implements ConfigData {
 		@ConfigEntry.Gui.Tooltip()
 		public float potSpawnChance = 0.40F;
 		@ConfigEntry.Gui.Tooltip()
-		public float chestSpawnChance = 0.35F;
+		public float chestSpawnChance = 0.37F;
 		@ConfigEntry.Gui.Tooltip()
 		public float surfaceChestSpawnChance = 0.02F;
 		@ConfigEntry.Gui.Tooltip()
