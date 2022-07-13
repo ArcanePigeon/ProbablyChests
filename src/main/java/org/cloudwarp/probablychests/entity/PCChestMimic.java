@@ -4,6 +4,7 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -82,6 +83,7 @@ public class PCChestMimic extends PCTameablePetWithInventory implements IAnimata
 		this.goalSelector.add(6, new PCChestMimic.SleepGoal(this));
 		this.goalSelector.add(1, new PCChestMimic.SwimmingGoal(this));
 		this.goalSelector.add(5, new PCChestMimic.MoveGoal(this));
+		this.targetSelector.add(3, (new RevengeGoal(this, new Class[0])).setGroupRevenge(new Class[0]));
 		this.targetSelector.add(1, new ActiveTargetGoal<>(this, PlayerEntity.class, 10, true, false, livingEntity -> Math.abs(livingEntity.getY() - this.getY()) <= 4.0D));
 	}
 
@@ -131,7 +133,7 @@ public class PCChestMimic extends PCTameablePetWithInventory implements IAnimata
 			jumpStrength = 1D;
 		} else {
 			jumpStrength = livingEntity.getY() - this.getY();
-			jumpStrength = jumpStrength <= 0 ? 1D : Math.min(jumpStrength / 2.5D + 1.0D, 2.5D);
+			jumpStrength = jumpStrength <= 0 ? 1.0D : Math.min(jumpStrength / 3.5D + 1.0D, 2.5D);
 		}
 		this.setVelocity(vec3d.x, (double) this.getJumpVelocity() * jumpStrength, vec3d.z);
 		this.velocityDirty = true;
@@ -142,7 +144,7 @@ public class PCChestMimic extends PCTameablePetWithInventory implements IAnimata
 	}
 
 	protected boolean canAttack () {
-		return true;
+		return this.canMoveVoluntarily();
 	}
 
 	protected float getDamageAmount () {
@@ -158,12 +160,20 @@ public class PCChestMimic extends PCTameablePetWithInventory implements IAnimata
 
 	protected void damage (LivingEntity target) {
 		if (this.isAlive()) {
-			if (this.squaredDistanceTo(target) < 1.5D && this.canSee(target) && target.damage(DamageSource.mob(this), this.getDamageAmount())) {
+			if (this.squaredDistanceToEntity(target) < 0.6D && this.canSee(target) && target.damage(DamageSource.mob(this), this.getDamageAmount())) {
 				this.playSound(this.getHurtSound(), this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 0.7F);
 				this.playSound(PCSounds.MIMIC_BITE, this.getSoundVolume(), 1.5F + getPitchOffset(0.2F));
 				this.applyDamageEffects(this, target);
 			}
 		}
+	}
+
+	public double squaredDistanceToEntity(LivingEntity entity) {
+		Vec3d vector  = entity.getPos();
+		double d = this.getX() - vector.x;
+		double e = this.getY() - (vector.y+1);
+		double f = this.getZ() - vector.z;
+		return d * d + e * e + f * f;
 	}
 
 	protected int getTicksUntilNextJump () {

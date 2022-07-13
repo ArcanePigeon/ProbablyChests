@@ -103,6 +103,7 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 		this.goalSelector.add(5, new PCMeleeAttackGoal(this, 1.0, true));
 		this.goalSelector.add(6, new FollowOwnerGoal(this, 1, 5, 2, false));
 		this.targetSelector.add(1, new TrackOwnerAttackerGoal(this));
+		this.targetSelector.add(3, (new RevengeGoal(this, new Class[0])).setGroupRevenge(new Class[0]));
 		this.targetSelector.add(2, new AttackWithOwnerGoal(this));
 		this.targetSelector.add(8, new UniversalAngerGoal<>(this, true));
 		this.targetSelector.add(4, new ActiveTargetGoal<>(this, PlayerEntity.class, 10, true, false, this::shouldAngerAt));
@@ -181,7 +182,7 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 			jumpStrength = 1D;
 		} else {
 			jumpStrength = livingEntity.getY() - this.getY();
-			jumpStrength = jumpStrength <= 0 ? 1D : jumpStrength / 2.5D + 1.0D;
+			jumpStrength = jumpStrength <= 0 ? 1D : jumpStrength / 3.5D + 1.0D;
 		}
 		//moveSpeed = this.world.random.nextDouble(1.5D,2.1D);
 		this.setVelocity(vec3d.x, (double) this.getJumpVelocity() * jumpStrength, vec3d.z);
@@ -280,6 +281,10 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 		super.initDataTracker();
 	}
 
+	@Override
+	public boolean canBeLeashedBy (PlayerEntity player) {
+		return false;
+	}
 
 	public static class MimicMoveControl extends MoveControl {
 		private final PCChestMimicPet mimic;
@@ -448,7 +453,7 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 			this.mimic.getLookControl().lookAt(this.owner, 40.0F, (float) this.mimic.getMaxLookPitchChange());
 			if (-- this.updateCountdownTicks <= 0) {
 				this.updateCountdownTicks = this.getTickCount(10);
-				if (! this.mimic.isLeashed() && ! this.mimic.hasVehicle()) {
+				if (! this.mimic.hasVehicle()) {
 					if (this.mimic.squaredDistanceTo(this.owner) >= 184.0D) {
 						this.tryTeleport();
 					} else {

@@ -70,7 +70,7 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 4,
+          "weight": 1,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -102,22 +102,6 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 5,
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 3.0,
-                "max": 8.0
-              },
-              "add": false
-            }
-          ],
-          "name": "minecraft:clay_ball"
-        },
-        {
-          "type": "minecraft:item",
           "weight": 20,
           "functions": [
             {
@@ -131,26 +115,6 @@
             }
           ],
           "name": "minecraft:arrow"
-        },
-        {
-          "type": "minecraft:item",
-          "weight": 4,
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 1.0,
-                "max": 1.0
-              },
-              "add": false
-            },
-            {
-              "function": "minecraft:set_potion",
-              "id": "minecraft:regeneration"
-            }
-          ],
-          "name": "minecraft:potion"
         }
       ],
       "conditions": [

@@ -62,7 +62,7 @@
         },
         {
           "type": "minecraft:loot_table",
-          "weight": 10,
+          "weight": 1,
           "name": "probablychests:chests/normal_items",
           "functions": [
             {
@@ -76,6 +76,18 @@
           "type": "minecraft:loot_table",
           "weight": 1,
           "name": "probablychests:chests/mixed_items",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": 1,
+              "add": true
+            }
+          ]
+        },
+        {
+          "type": "minecraft:loot_table",
+          "weight": 20,
+          "name": "minecraft:chests/end_city_treasure",
           "functions": [
             {
               "function": "minecraft:set_count",

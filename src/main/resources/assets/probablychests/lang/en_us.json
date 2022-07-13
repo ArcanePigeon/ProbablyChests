@@ -38,9 +38,9 @@
   "stat.probablychests.mimic_encounters": "Mimic Encounters",
   "stat.probablychests.abandoned_mimics": "Abandoned Mimics",
 
-  "text.autoconfig.probablychests.title": "Probably Chests",
+  "text.autoconfig.probablychests.title": "Probably Chests [changes require a world restart]",
 
-  "text.autoconfig.probablychests.option.mimicSettings": "Mimic Settings [requires world restart]",
+  "text.autoconfig.probablychests.option.mimicSettings": "MIMIC SETTINGS",
   "text.autoconfig.probablychests.option.mimicSettings.mimicDifficulty": "Mimic difficulty",
   "text.autoconfig.probablychests.option.mimicSettings.mimicDifficulty.@Tooltip": "Set the difficulty of mimics [changes health, speed, and damage]",
   "text.autoconfig.probablychests.option.mimicSettings.spawnNaturalMimics": "Enable natural mimic spawns",
@@ -56,7 +56,7 @@
   "text.autoconfig.probablychests.option.mimicSettings.abandonedMimicTimer": "Abandoned mimic time",
   "text.autoconfig.probablychests.option.mimicSettings.abandonedMimicTimer.@Tooltip": "Time [in minutes] after a mimic is abandoned that it can be reclaimed before becoming hostile",
 
-  "text.autoconfig.probablychests.option.worldGen": "World Generation",
+  "text.autoconfig.probablychests.option.worldGen": "WORLD GENERATION",
   "text.autoconfig.probablychests.option.worldGen.potSpawnChance": "Pot spawn rate",
   "text.autoconfig.probablychests.option.worldGen.potSpawnChance.@Tooltip": "0 means pots will not generate while 1 means they will generate often",
   "text.autoconfig.probablychests.option.worldGen.chestSpawnChance": "Chest spawn rate",

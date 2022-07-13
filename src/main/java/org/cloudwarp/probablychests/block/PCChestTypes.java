@@ -56,8 +56,8 @@ public enum PCChestTypes {
 			case LUSH -> PCLootTables.LUSH_CHEST;
 			case ROCKY -> PCLootTables.ROCKY_CHEST;
 			case NORMAL -> PCLootTables.NORMAL_CHEST;
-			//case STONE -> PCLootTables.STONE_CHEST;
-			//case GOLD -> PCLootTables.GOLD_CHEST;
+			case STONE -> PCLootTables.STONE_CHEST;
+			case GOLD -> PCLootTables.GOLD_CHEST;
 			default -> PCLootTables.NORMAL_CHEST;
 		};
 	}

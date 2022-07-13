@@ -69,7 +69,10 @@ public class PCMimicScreenHandler extends ScreenHandler {
 
 	@Override
 	public boolean canUse(PlayerEntity player) {
-		//return this.inventory.canPlayerUse(player);
+		if(this.entity.getIsMimicLocked() && player != this.entity.getOwner()){
+			this.entity.bite(player);
+			return false;
+		}
 		return !this.entity.areInventoriesDifferent(this.inventory) && this.inventory.canPlayerUse(player) && this.entity.isAlive() && this.entity.distanceTo(player) < 8.0f;
 	}
 

@@ -181,7 +181,7 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 						this.playSound(PCSounds.BELL_HIT_4, this.getSoundVolume(), 1.0F + getPitchOffset(0.1F));
 					}
 				} else {
-					if (this.getIsAbandoned()) {
+					if (this.getIsAbandoned() && !((PlayerEntityAccess)player).checkForMimicLimit()) {
 						this.setOwner(player);
 						this.setIsAbandoned(false);
 						this.isAbandonedTimer = ProbablyChests.loadedConfig.mimicSettings.abandonedMimicTimer * 1200;
@@ -257,7 +257,7 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 		return ActionResult.FAIL;
 	}
 
-	protected void bite (LivingEntity target) {
+	public void bite (LivingEntity target) {
 		if (this.isAlive()) {
 			if (target.damage(DamageSource.mob(this), this.biteDamageAmount)) {
 				this.playSound(this.getHurtSound(), this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 0.7F);
