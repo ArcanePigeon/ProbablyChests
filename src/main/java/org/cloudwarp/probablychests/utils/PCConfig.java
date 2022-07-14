@@ -34,11 +34,11 @@ public class PCConfig implements ConfigData {
 
 	public static class WorldGen {
 		@ConfigEntry.Gui.Tooltip()
-		public float potSpawnChance = 0.40F;
+		public float potSpawnChance = 0.4F;
 		@ConfigEntry.Gui.Tooltip()
-		public float chestSpawnChance = 0.37F;
+		public float chestSpawnChance = 0.5F;
 		@ConfigEntry.Gui.Tooltip()
-		public float surfaceChestSpawnChance = 0.02F;
+		public float surfaceChestSpawnChance = 0.5F;
 		@ConfigEntry.Gui.Tooltip()
 		public float secretMimicChance = 0.25F;
 	}

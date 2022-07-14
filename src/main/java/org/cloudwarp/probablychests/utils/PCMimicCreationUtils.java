@@ -126,6 +126,13 @@ public class PCMimicCreationUtils {
 	}
 
 	public static boolean isSecretMimic (PCChestBlockEntity chest, World world, BlockPos pos, PCChestTypes type) {
+		if(world.getDifficulty() == Difficulty.PEACEFUL){
+			if (! chest.hasBeenOpened && chest.isNatural) {
+				chest.hasBeenOpened = true;
+				LootableContainerBlockEntity.setLootTable(world, world.getRandom(), pos, type.getLootTable());
+			}
+			return false;
+		}
 		PCConfig config = ProbablyChests.loadedConfig;
 		if (! chest.hasBeenOpened && chest.isNatural) {
 			chest.hasBeenOpened = true;

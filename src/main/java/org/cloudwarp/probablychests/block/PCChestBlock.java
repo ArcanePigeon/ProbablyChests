@@ -30,6 +30,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import org.cloudwarp.probablychests.ProbablyChests;
@@ -98,7 +99,7 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 					itemStack.decrement(1);
 				}
 				return ActionResult.CONSUME;
-			} else if (itemStack.isOf(PCItems.MIMIC_KEY) && ! chest.isMimic && ! player.isSneaking() && !isSecretMimic(chest,world,pos,this.type)) {
+			} else if (itemStack.isOf(PCItems.MIMIC_KEY) && ! player.isSneaking() && !isSecretMimic(chest,world,pos,this.type) && world.getDifficulty() != Difficulty.PEACEFUL) {
 				chest.isMimic = true;
 				chest.isNatural = false;
 				if (! player.isCreative()) {
