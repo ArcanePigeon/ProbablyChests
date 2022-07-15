@@ -10,6 +10,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -66,6 +67,10 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 		return PCChestBlock.hasBlockOnTop(world, pos);
 	}
 
+	public static boolean isDry (BlockState state) {
+		return ! state.get(WATERLOGGED);
+	}
+
 	private static boolean hasBlockOnTop (BlockView world, BlockPos pos) {
 		BlockPos blockPos = pos.up();
 		return world.getBlockState(blockPos).isSolidBlock(world, blockPos);
@@ -82,8 +87,6 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 	}
 
 
-
-
 	@Override
 	public ActionResult onUse (BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		if (world.isClient) {
@@ -91,15 +94,37 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 		}
 		PCChestBlockEntity chest = getChestBlockFromWorld(world, pos);
 		PCConfig config = ProbablyChests.loadedConfig;
+		ItemStack itemStack = player.getStackInHand(hand);
+		if (chest.isLocked) {
+			if (chest.hasGoldLock && itemStack.isOf(PCItems.GOLD_KEY)) {
+				chest.isLocked = false;
+				chest.hasGoldLock = false;
+				// play sound
+				if (! player.isCreative()) {
+					itemStack.decrement(1);
+				}
+				return ActionResult.CONSUME;
+			} else if (chest.hasVoidLock && itemStack.isOf(PCItems.VOID_KEY)) {
+				chest.isLocked = false;
+				chest.hasVoidLock = false;
+				// play sound
+				if (! player.isCreative()) {
+					itemStack.decrement(1);
+				}
+				return ActionResult.CONSUME;
+			} else {
+				// play sound
+				return ActionResult.FAIL;
+			}
+		}
 		//------------------------
 		if (chest != null) {
-			ItemStack itemStack = player.getStackInHand(hand);
 			if (itemStack.isOf(PCItems.PET_MIMIC_KEY) && config.mimicSettings.allowPetMimics && ! player.isSneaking() && tryMakePetMimic(world, pos, state, player, this.type)) {
 				if (! player.isCreative()) {
 					itemStack.decrement(1);
 				}
 				return ActionResult.CONSUME;
-			} else if (itemStack.isOf(PCItems.MIMIC_KEY) && ! player.isSneaking() && !isSecretMimic(chest,world,pos,this.type) && world.getDifficulty() != Difficulty.PEACEFUL) {
+			} else if (itemStack.isOf(PCItems.MIMIC_KEY) && ! player.isSneaking() && ! isSecretMimic(chest, world, pos, this.type) && world.getDifficulty() != Difficulty.PEACEFUL) {
 				chest.isMimic = true;
 				chest.isNatural = false;
 				if (! player.isCreative()) {
@@ -107,7 +132,7 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 				}
 				return ActionResult.CONSUME;
 			} else {
-				if(isSecretMimic(chest,world,pos,type)){
+				if (isSecretMimic(chest, world, pos, type)) {
 					tryMakeHostileMimic(world, pos, state, player, this.type);
 					return ActionResult.SUCCESS;
 				}
@@ -142,13 +167,13 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 		}
 
 		BlockEntity blockEntity = world.getBlockEntity(pos);
-		PCChestBlockEntity chest = getChestBlockFromWorld(world,pos);
-		if (! isSecretMimic(chest,world,pos,this.type)) {
+		PCChestBlockEntity chest = getChestBlockFromWorld(world, pos);
+		if (! isSecretMimic(chest, world, pos, this.type)) {
 			if (blockEntity instanceof Inventory) {
 				ItemScatterer.spawn(world, pos, (Inventory) ((Object) blockEntity));
 				world.updateComparators(pos, this);
 			}
-		}else{
+		} else {
 			tryMakeHostileMimic(world, pos, state, null, this.type);
 		}
 		super.onStateReplaced(state, world, pos, newState, moved);
@@ -156,7 +181,7 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 
 	@Override
 	public void onPlaced (World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
-		PCChestBlockEntity chest = getChestBlockFromWorld(world,pos);
+		PCChestBlockEntity chest = getChestBlockFromWorld(world, pos);
 		if (chest != null && itemStack.hasCustomName()) {
 			chest.setCustomName(itemStack.getName());
 		}
@@ -175,7 +200,7 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 
 
 	@Override
-	public BlockRenderType getRenderType(BlockState state) {
+	public BlockRenderType getRenderType (BlockState state) {
 		return BlockRenderType.ENTITYBLOCK_ANIMATED;
 	}
 
@@ -217,7 +242,7 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 		return this.entityTypeRetriever.get();
 	}
 
-	public static Direction getFacing(BlockState state) {
+	public static Direction getFacing (BlockState state) {
 		return state.get(FACING);
 	}
 

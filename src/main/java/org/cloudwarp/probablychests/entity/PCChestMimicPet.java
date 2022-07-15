@@ -88,12 +88,11 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 	}
 
 	public static DefaultAttributeContainer.Builder createMobAttributes () {
-		MimicDifficulty mimicDifficulty = ProbablyChests.loadedConfig.mimicSettings.mimicDifficulty;
 		return LivingEntity.createLivingAttributes().add(EntityAttributes.GENERIC_FOLLOW_RANGE, 12.0D)
 				.add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 2)
-				.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, mimicDifficulty.getDamage())
+				.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 5)
 				.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 1)
-				.add(EntityAttributes.GENERIC_MAX_HEALTH, mimicDifficulty.getHealth())
+				.add(EntityAttributes.GENERIC_MAX_HEALTH, 30)
 				.add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.5D);
 	}
 

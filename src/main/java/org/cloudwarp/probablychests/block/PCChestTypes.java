@@ -3,6 +3,7 @@ package org.cloudwarp.probablychests.block;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Material;
+import net.minecraft.block.SeaPickleBlock;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.EntityType;
 import net.minecraft.screen.ScreenHandlerType;
@@ -117,11 +118,11 @@ public enum PCChestTypes {
 
 	public FabricBlockSettings setting () {
 		return switch (this) {
-			case LUSH, NORMAL, CORAL -> FabricBlockSettings.of(Material.WOOD)
+			case LUSH, NORMAL -> FabricBlockSettings.of(Material.WOOD)
 					.hardness(2.0F)
 					.resistance(10.0F)
 					.sounds(BlockSoundGroup.WOOD);
-			case ROCKY, STONE, NETHER -> FabricBlockSettings.of(Material.STONE)
+			case ROCKY, STONE -> FabricBlockSettings.of(Material.STONE)
 					.hardness(2.0F)
 					.resistance(10.0F)
 					.sounds(BlockSoundGroup.STONE);
@@ -132,7 +133,20 @@ public enum PCChestTypes {
 			case ICE -> FabricBlockSettings.of(Material.DENSE_ICE)
 					.hardness(2.0F)
 					.resistance(10.0F)
-					.sounds(BlockSoundGroup.GLASS);
+					.sounds(BlockSoundGroup.GLASS)
+					.luminance(state -> 7)
+					.slipperiness(0.98f);
+			case CORAL -> FabricBlockSettings.of(Material.WOOD)
+					.hardness(2.0F)
+					.resistance(10.0F)
+					.sounds(BlockSoundGroup.CORAL)
+					.luminance(state -> PCChestBlock.isDry(state) ? 0 : 15)
+					.slipperiness(0.2f);
+			case NETHER -> FabricBlockSettings.of(Material.STONE)
+					.hardness(2.0F)
+					.resistance(10.0F)
+					.sounds(BlockSoundGroup.STONE)
+					.luminance(state -> 9);
 			default -> FabricBlockSettings.of(Material.WOOD);
 		};
 	}

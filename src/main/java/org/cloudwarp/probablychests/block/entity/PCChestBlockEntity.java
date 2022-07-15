@@ -9,7 +9,6 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -45,8 +44,12 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 	private final AnimationFactory factory = new AnimationFactory(this);
 	public boolean isMimic = false;
 	public boolean isNatural = false;
-	public boolean hasBeenOpened = false;
+	public boolean hasBeenInteractedWith = false;
 	public boolean hasMadeMimic = false;
+
+	public boolean hasGoldLock = false;
+	public boolean hasVoidLock = false;
+	public boolean isLocked = false;
 	private final ViewerCountManager stateManager = new ViewerCountManager() {
 
 		@Override
@@ -113,8 +116,11 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 			Inventories.readNbt(nbt, this.inventory);
 		}
 		this.isMimic = nbt.getBoolean("isMimic");
+		this.hasGoldLock = nbt.getBoolean("hasGoldLock");
+		this.hasVoidLock = nbt.getBoolean("hasVoidLock");
+		this.isLocked = nbt.getBoolean("isLocked");
 		this.isNatural = nbt.getBoolean("isNatural");
-		this.hasBeenOpened = nbt.getBoolean("hasBeenOpened");
+		this.hasBeenInteractedWith = nbt.getBoolean("hasBeenOpened");
 		this.hasMadeMimic = nbt.getBoolean("hasMadeMimic");
 	}
 
@@ -125,8 +131,11 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 			Inventories.writeNbt(nbt, this.inventory);
 		}
 		nbt.putBoolean("isMimic", this.isMimic);
+		nbt.putBoolean("hasGoldLock", this.hasGoldLock);
+		nbt.putBoolean("hasVoidLock", this.hasVoidLock);
+		nbt.putBoolean("isLocked", this.isLocked);
 		nbt.putBoolean("isNatural", this.isNatural);
-		nbt.putBoolean("hasBeenOpened", this.hasBeenOpened);
+		nbt.putBoolean("hasBeenOpened", this.hasBeenInteractedWith);
 		nbt.putBoolean("hasMadeMimic", this.hasMadeMimic);
 	}
 
@@ -195,6 +204,9 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 	@Override
 	@Nullable
 	public ScreenHandler createMenu(int syncId, PlayerInventory inventory, PlayerEntity player) {
+		if(!hasBeenInteractedWith && player.isSpectator()){
+			return null;
+		}
 		if (this.checkUnlocked(player)) {
 			this.checkLootInteraction(inventory.player);
 			return PCChestScreenHandler.createScreenHandler(syncId, inventory, this);

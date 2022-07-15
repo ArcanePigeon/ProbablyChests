@@ -414,6 +414,7 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 
 		}
 		nbt.put("Inventory", listnbt);
+		nbt.putInt("mimic_state",this.getMimicState());
 		nbt.putBoolean("is_abandoned", this.getIsAbandoned());
 		nbt.putBoolean("mimic_has_lock", this.getMimicHasLock());
 		nbt.putBoolean("is_mimic_locked", this.getIsMimicLocked());
@@ -430,6 +431,7 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 			this.inventory.setStack(j, ItemStack.fromNbt(compoundnbt));
 		}
 		this.readAngerFromNbt(this.world, nbt);
+		this.setMimicState(nbt.getInt("mimic_state"));
 		this.setIsAbandoned(nbt.getBoolean("is_abandoned"));
 		this.setMimicHasLock(nbt.getBoolean("mimic_has_lock"));
 		this.setIsMimicLocked(nbt.getBoolean("is_mimic_locked"));

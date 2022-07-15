@@ -37,9 +37,13 @@ public class UndergroundChestFeature extends Feature<DefaultFeatureConfig> {
 		BlockState blockToBePlaced = null;
 		boolean isWater = structureWorldAccess.getBlockState(pos).isOf(Blocks.WATER);
 		boolean isNether = structureWorldAccess.getDimension().isUltrawarm();
+		boolean hasGoldLock = false;
 
 		if (isWater) {
 			if (random.nextFloat() < 0.85F) {
+				return false;
+			}
+			if(structureWorldAccess.getBlockState(pos.up()).isSolidBlock(structureWorldAccess,pos.up())){
 				return false;
 			}
 			if (structureWorldAccess.getBiome(pos).isIn(ConventionalBiomeTags.ICY) || structureWorldAccess.getBiome(pos).isIn(ConventionalBiomeTags.SNOWY)) {
@@ -75,6 +79,7 @@ public class UndergroundChestFeature extends Feature<DefaultFeatureConfig> {
 				if (pos.getY() <= 0) {
 					if (random.nextFloat() < 0.25F) {
 						blockToBePlaced = PCBlocks.GOLD_CHEST.getDefaultState();
+						hasGoldLock = true;
 					} else {
 						blockToBePlaced = PCBlocks.STONE_CHEST.getDefaultState();
 					}
@@ -101,6 +106,8 @@ public class UndergroundChestFeature extends Feature<DefaultFeatureConfig> {
 		PCChestBlockEntity chest = (PCChestBlockEntity) structureWorldAccess.getBlockEntity(pos);
 		if (chest != null) {
 			chest.isNatural = true;
+			chest.hasGoldLock = hasGoldLock;
+			chest.isLocked = hasGoldLock;
 		}
 		return true;
 	}

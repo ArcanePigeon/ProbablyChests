@@ -33,18 +33,18 @@ public enum MimicDifficulty {
 		return switch (this) {
 			case EASY -> 3;
 			case MEDIUM -> 5;
-			case HARD -> 8;
+			case HARD -> 9;
 			case INSANE -> 12;
 			default -> 5;
 		};
 	}
 	public double getSpeed(){
 		return switch (this) {
-			case EASY -> 0.5D;
-			case MEDIUM -> 1D;
-			case HARD -> 1.5D;
-			case INSANE -> 2D;
-			default -> 1D;
+			case EASY -> 1.3D;
+			case MEDIUM -> 1.5D;
+			case HARD -> 1.9D;
+			case INSANE -> 3D;
+			default -> 0.8D;
 		};
 	}
 }

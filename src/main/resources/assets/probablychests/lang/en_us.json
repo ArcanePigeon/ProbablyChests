@@ -38,6 +38,10 @@
   "item.probablychests.mimic_hand_bell": "Mimic Hand Bell",
   "item.probablychests.iron_key": "Iron Key",
   "item.probablychests.iron_lock": "Iron Lock",
+  "item.probablychests.gold_key": "Gold Key",
+  "item.probablychests.gold_lock": "Gold Lock",
+  "item.probablychests.void_key": "Void Key",
+  "item.probablychests.void_lock": "Void Lock",
 
   "subtitles.probablychests.bell_hit1": "Abandon mimics bell",
   "subtitles.probablychests.bell_hit2": "Claim Abandoned mimic bell",

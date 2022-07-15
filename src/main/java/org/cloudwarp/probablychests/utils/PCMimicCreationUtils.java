@@ -6,7 +6,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
@@ -19,7 +18,6 @@ import org.cloudwarp.probablychests.entity.PCChestMimic;
 import org.cloudwarp.probablychests.entity.PCChestMimicPet;
 import org.cloudwarp.probablychests.entity.PCTameablePetWithInventory;
 import org.cloudwarp.probablychests.interfaces.PlayerEntityAccess;
-import org.cloudwarp.probablychests.registry.PCLootTables;
 import org.cloudwarp.probablychests.registry.PCStatistics;
 
 import static org.cloudwarp.probablychests.block.PCChestBlock.FACING;
@@ -127,15 +125,15 @@ public class PCMimicCreationUtils {
 
 	public static boolean isSecretMimic (PCChestBlockEntity chest, World world, BlockPos pos, PCChestTypes type) {
 		if(world.getDifficulty() == Difficulty.PEACEFUL){
-			if (! chest.hasBeenOpened && chest.isNatural) {
-				chest.hasBeenOpened = true;
+			if (! chest.hasBeenInteractedWith && chest.isNatural) {
+				chest.hasBeenInteractedWith = true;
 				LootableContainerBlockEntity.setLootTable(world, world.getRandom(), pos, type.getLootTable());
 			}
 			return false;
 		}
 		PCConfig config = ProbablyChests.loadedConfig;
-		if (! chest.hasBeenOpened && chest.isNatural) {
-			chest.hasBeenOpened = true;
+		if (! chest.hasBeenInteractedWith && chest.isNatural) {
+			chest.hasBeenInteractedWith = true;
 			float mimicRandom = world.getRandom().nextFloat();
 			chest.isMimic = mimicRandom < config.worldGen.secretMimicChance;
 			if(!chest.isMimic){

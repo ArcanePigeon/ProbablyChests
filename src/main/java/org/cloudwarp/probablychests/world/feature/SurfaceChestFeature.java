@@ -36,6 +36,7 @@ public class SurfaceChestFeature extends Feature<DefaultFeatureConfig> {
 		DefaultFeatureConfig config = context.getConfig();
 		BlockState blockToBePlaced = null;
 		// Set block type based on environment
+		boolean hasVoidLock = false;
 		if (! structureWorldAccess.getBlockState(pos.down()).isSolidBlock(structureWorldAccess, pos)) {
 			return false;
 		}
@@ -43,6 +44,7 @@ public class SurfaceChestFeature extends Feature<DefaultFeatureConfig> {
 		Biome biome = structureWorldAccess.getBiome(pos).value();
 
 		if (isEnd) {
+			hasVoidLock = true;
 			blockToBePlaced = PCBlocks.SHADOW_CHEST.getDefaultState();
 		} else if (structureWorldAccess.getBiome(pos).isIn(BiomeTags.IS_OCEAN)) {
 			if(structureWorldAccess.getBiome(pos).isIn(ConventionalBiomeTags.ICY)){
@@ -72,6 +74,8 @@ public class SurfaceChestFeature extends Feature<DefaultFeatureConfig> {
 		PCChestBlockEntity chest = (PCChestBlockEntity) structureWorldAccess.getBlockEntity(pos);
 		if (chest != null) {
 			chest.isNatural = true;
+			chest.hasVoidLock = hasVoidLock;
+			chest.isLocked = hasVoidLock;
 		}
 		return true;
 	}
