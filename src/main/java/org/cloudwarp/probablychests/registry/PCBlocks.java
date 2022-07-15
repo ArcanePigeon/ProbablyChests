@@ -19,11 +19,15 @@ public class PCBlocks {
 
 	//---------------------------
 
-	public static final Block LUSH_CHEST = create("lush_chest", new PCChestBlock(PCChestTypes.LUSH.setting(), PCChestTypes.LUSH), true);
-	public static final Block NORMAL_CHEST = create("normal_chest", new PCChestBlock(PCChestTypes.NORMAL.setting(), PCChestTypes.NORMAL), true);
-	public static final Block ROCKY_CHEST = create("rocky_chest", new PCChestBlock(PCChestTypes.ROCKY.setting(), PCChestTypes.ROCKY), true);
-	public static final Block STONE_CHEST = create("stone_chest", new PCChestBlock(PCChestTypes.STONE.setting(), PCChestTypes.STONE), true);
-	public static final Block GOLD_CHEST = create("gold_chest", new PCChestBlock(PCChestTypes.GOLD.setting(), PCChestTypes.GOLD), true);
+	public static final Block LUSH_CHEST    = create("lush_chest",  new PCChestBlock(PCChestTypes.LUSH.setting(),     PCChestTypes.LUSH), true);
+	public static final Block NORMAL_CHEST  = create("normal_chest", new PCChestBlock(PCChestTypes.NORMAL.setting(),  PCChestTypes.NORMAL), true);
+	public static final Block ROCKY_CHEST   = create("rocky_chest",  new PCChestBlock(PCChestTypes.ROCKY.setting(),   PCChestTypes.ROCKY), true);
+	public static final Block STONE_CHEST   = create("stone_chest",  new PCChestBlock(PCChestTypes.STONE.setting(),   PCChestTypes.STONE), true);
+	public static final Block GOLD_CHEST    = create("gold_chest",   new PCChestBlock(PCChestTypes.GOLD.setting(),    PCChestTypes.GOLD), true);
+	public static final Block NETHER_CHEST  = create("nether_chest", new PCChestBlock(PCChestTypes.NETHER.setting(),  PCChestTypes.NETHER), true);
+	public static final Block SHADOW_CHEST  = create("shadow_chest", new PCChestBlock(PCChestTypes.SHADOW.setting(),  PCChestTypes.SHADOW), true);
+	public static final Block ICE_CHEST     = create("ice_chest",    new PCChestBlock(PCChestTypes.ICE.setting(),     PCChestTypes.ICE), true);
+	public static final Block CORAL_CHEST   = create("coral_chest",  new PCChestBlock(PCChestTypes.CORAL.setting(),   PCChestTypes.CORAL), true);
 
 	//---------------------------
 

@@ -1,0 +1,78 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:loot_table",
+          "name": "probablychests:chests/rare_items",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": 1,
+              "add": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:loot_table",
+          "name": "probablychests:chests/normal_items",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": 1,
+              "add": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:loot_table",
+          "weight": 1,
+          "name": "probablychests:chests/mining_items",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": 1,
+              "add": true
+            }
+          ]
+        },
+        {
+          "type": "minecraft:loot_table",
+          "weight": 10,
+          "name": "probablychests:chests/normal_items",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": 1,
+              "add": true
+            }
+          ]
+        },
+        {
+          "type": "minecraft:loot_table",
+          "weight": 1,
+          "name": "probablychests:chests/mixed_items",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": 1,
+              "add": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -26,10 +26,14 @@ public class PCBlockEntities {
 	}
 
 	//--------------------------------------------------------------
-	public static final BlockEntityType<LushChestBlockEntity> LUSH_CHEST_BLOCK_ENTITY = register("lush_chest_block_entity", FabricBlockEntityTypeBuilder.create(LushChestBlockEntity::new, LUSH_CHEST).build(null));
-	public static final BlockEntityType<NormalChestBlockEntity> NORMAL_CHEST_BLOCK_ENTITY = register("normal_chest_block_entity", FabricBlockEntityTypeBuilder.create(NormalChestBlockEntity::new, NORMAL_CHEST).build(null));
-	public static final BlockEntityType<RockyChestBlockEntity> ROCKY_CHEST_BLOCK_ENTITY = register("rocky_chest_block_entity", FabricBlockEntityTypeBuilder.create(RockyChestBlockEntity::new, ROCKY_CHEST).build(null));
-	public static final BlockEntityType<StoneChestBlockEntity> STONE_CHEST_BLOCK_ENTITY = register("stone_chest_block_entity", FabricBlockEntityTypeBuilder.create(StoneChestBlockEntity::new, STONE_CHEST).build(null));
-	public static final BlockEntityType<GoldChestBlockEntity> GOLD_CHEST_BLOCK_ENTITY = register("gold_chest_block_entity", FabricBlockEntityTypeBuilder.create(GoldChestBlockEntity::new, GOLD_CHEST).build(null));
+	public static final BlockEntityType<LushChestBlockEntity>   LUSH_CHEST_BLOCK_ENTITY    = register("lush_chest_block_entity",    FabricBlockEntityTypeBuilder.create(LushChestBlockEntity::new,     LUSH_CHEST).build(null));
+	public static final BlockEntityType<NormalChestBlockEntity> NORMAL_CHEST_BLOCK_ENTITY  = register("normal_chest_block_entity",  FabricBlockEntityTypeBuilder.create(NormalChestBlockEntity::new,   NORMAL_CHEST).build(null));
+	public static final BlockEntityType<RockyChestBlockEntity>  ROCKY_CHEST_BLOCK_ENTITY   = register("rocky_chest_block_entity",   FabricBlockEntityTypeBuilder.create(RockyChestBlockEntity::new,    ROCKY_CHEST).build(null));
+	public static final BlockEntityType<StoneChestBlockEntity>  STONE_CHEST_BLOCK_ENTITY   = register("stone_chest_block_entity",   FabricBlockEntityTypeBuilder.create(StoneChestBlockEntity::new,    STONE_CHEST).build(null));
+	public static final BlockEntityType<GoldChestBlockEntity>   GOLD_CHEST_BLOCK_ENTITY    = register("gold_chest_block_entity",    FabricBlockEntityTypeBuilder.create(GoldChestBlockEntity::new,     GOLD_CHEST).build(null));
+	public static final BlockEntityType<NetherChestBlockEntity> NETHER_CHEST_BLOCK_ENTITY  = register("nether_chest_block_entity",  FabricBlockEntityTypeBuilder.create(NetherChestBlockEntity::new,   NETHER_CHEST).build(null));
+	public static final BlockEntityType<ShadowChestBlockEntity> SHADOW_CHEST_BLOCK_ENTITY  = register("shadow_chest_block_entity",  FabricBlockEntityTypeBuilder.create(ShadowChestBlockEntity::new,   SHADOW_CHEST).build(null));
+	public static final BlockEntityType<IceChestBlockEntity>    ICE_CHEST_BLOCK_ENTITY     = register("ice_chest_block_entity",     FabricBlockEntityTypeBuilder.create(IceChestBlockEntity::new,      ICE_CHEST).build(null));
+	public static final BlockEntityType<CoralChestBlockEntity>  CORAL_CHEST_BLOCK_ENTITY   = register("coral_chest_block_entity",   FabricBlockEntityTypeBuilder.create(CoralChestBlockEntity::new,    CORAL_CHEST).build(null));
 
 }

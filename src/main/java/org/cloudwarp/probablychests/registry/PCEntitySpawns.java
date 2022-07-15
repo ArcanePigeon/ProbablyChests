@@ -17,6 +17,10 @@ public class PCEntitySpawns {
 			BiomeModifications.addSpawn(BiomeSelectors.spawnsOneOf(EntityType.ZOMBIE), SpawnGroup.MONSTER, PCEntities.LUSH_CHEST_MIMIC, 1, 1, 1);
 			BiomeModifications.addSpawn(BiomeSelectors.spawnsOneOf(EntityType.ZOMBIE), SpawnGroup.MONSTER, PCEntities.GOLD_CHEST_MIMIC, 1, 1, 1);
 			BiomeModifications.addSpawn(BiomeSelectors.spawnsOneOf(EntityType.ZOMBIE), SpawnGroup.MONSTER, PCEntities.STONE_CHEST_MIMIC, 1, 1, 1);
+			BiomeModifications.addSpawn(BiomeSelectors.spawnsOneOf(EntityType.ZOMBIFIED_PIGLIN), SpawnGroup.MONSTER, PCEntities.NETHER_CHEST_MIMIC, 1, 1, 1);
+			BiomeModifications.addSpawn(BiomeSelectors.spawnsOneOf(EntityType.ZOMBIFIED_PIGLIN), SpawnGroup.MONSTER, PCEntities.SHADOW_CHEST_MIMIC, 1, 1, 1);
+			BiomeModifications.addSpawn(BiomeSelectors.spawnsOneOf(EntityType.GOAT), SpawnGroup.MONSTER, PCEntities.ICE_CHEST_MIMIC, 1, 1, 1);
+			BiomeModifications.addSpawn(BiomeSelectors.spawnsOneOf(EntityType.DROWNED), SpawnGroup.MONSTER, PCEntities.CORAL_CHEST_MIMIC, 1, 1, 1);
 		}
 	}
 }

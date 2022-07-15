@@ -14,6 +14,10 @@ public class PCLootTables {
 	public static Identifier ROCKY_CHEST;
 	public static Identifier STONE_CHEST;
 	public static Identifier GOLD_CHEST;
+	public static Identifier NETHER_CHEST;
+	public static Identifier SHADOW_CHEST;
+	public static Identifier ICE_CHEST;
+	public static Identifier CORAL_CHEST;
 
 	private static Identifier register (String id) {
 		return PCLootTables.registerLootTable(new Identifier(id));
@@ -32,5 +36,9 @@ public class PCLootTables {
 		ROCKY_CHEST = PCLootTables.register("probablychests:chests/rocky_pc_chests");
 		STONE_CHEST = PCLootTables.register("probablychests:chests/stone_pc_chests");
 		GOLD_CHEST = PCLootTables.register("probablychests:chests/gold_pc_chests");
+		NETHER_CHEST = PCLootTables.register("probablychests:chests/nether_pc_chests");
+		SHADOW_CHEST = PCLootTables.register("probablychests:chests/shadow_pc_chests");
+		ICE_CHEST = PCLootTables.register("probablychests:chests/ice_pc_chests");
+		CORAL_CHEST = PCLootTables.register("probablychests:chests/coral_pc_chests");
 	}
 }

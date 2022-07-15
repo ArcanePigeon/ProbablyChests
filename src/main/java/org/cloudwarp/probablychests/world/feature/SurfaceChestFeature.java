@@ -39,14 +39,17 @@ public class SurfaceChestFeature extends Feature<DefaultFeatureConfig> {
 		if (! structureWorldAccess.getBlockState(pos.down()).isSolidBlock(structureWorldAccess, pos)) {
 			return false;
 		}
+		boolean isEnd = structureWorldAccess.getDimension().hasEnderDragonFight();
 		Biome biome = structureWorldAccess.getBiome(pos).value();
 
-		if (structureWorldAccess.getDimension().isUltrawarm()) {
-			return false;
-		} else if (structureWorldAccess.getDimension().isRespawnAnchorWorking()) {
-			return false;
+		if (isEnd) {
+			blockToBePlaced = PCBlocks.SHADOW_CHEST.getDefaultState();
 		} else if (structureWorldAccess.getBiome(pos).isIn(BiomeTags.IS_OCEAN)) {
-			return false;
+			if(structureWorldAccess.getBiome(pos).isIn(ConventionalBiomeTags.ICY)){
+				blockToBePlaced = PCBlocks.ICE_CHEST.getDefaultState();
+			}else{
+				return false;
+			}
 		} else {
 			if (structureWorldAccess.getBiome(pos).isIn(ConventionalBiomeTags.FLORAL) ||
 					structureWorldAccess.getBiome(pos).isIn(ConventionalBiomeTags.FLOWER_FORESTS) ||
@@ -55,13 +58,17 @@ public class SurfaceChestFeature extends Feature<DefaultFeatureConfig> {
 			} else if (isBiomeWithinTempRange(biome, 1F, 10.0F) ||
 					structureWorldAccess.getBiome(pos).isIn(ConventionalBiomeTags.CLIMATE_HOT)) {
 				blockToBePlaced = PCBlocks.ROCKY_CHEST.getDefaultState();
-			} else {
+			} else if(structureWorldAccess.getBiome(pos).isIn(ConventionalBiomeTags.SNOWY)){
+				blockToBePlaced = PCBlocks.ICE_CHEST.getDefaultState();
+			} else if(structureWorldAccess.getBiome(pos).isIn(ConventionalBiomeTags.BEACH)){
+				blockToBePlaced = PCBlocks.CORAL_CHEST.getDefaultState();
+			}else{
 				blockToBePlaced = PCBlocks.NORMAL_CHEST.getDefaultState();
 			}
 		}
 
 		structureWorldAccess.setBlockState(pos, blockToBePlaced, 3);
-		//structureWorldAccess.setBlockState(pos.up(), Blocks.SOUL_CAMPFIRE.getDefaultState(), 3);
+		structureWorldAccess.setBlockState(pos.up(), Blocks.SOUL_CAMPFIRE.getDefaultState(), 3);
 		PCChestBlockEntity chest = (PCChestBlockEntity) structureWorldAccess.getBlockEntity(pos);
 		if (chest != null) {
 			chest.isNatural = true;
