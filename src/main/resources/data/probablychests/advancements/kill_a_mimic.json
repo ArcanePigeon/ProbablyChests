@@ -81,6 +81,62 @@
           }
         ]
       }
+    },
+    "probablychests:nether_chest_mimic": {
+      "trigger": "minecraft:player_killed_entity",
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "probablychests:nether_chest_mimic"
+            }
+          }
+        ]
+      }
+    },
+    "probablychests:shadow_chest_mimic": {
+      "trigger": "minecraft:player_killed_entity",
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "probablychests:shadow_chest_mimic"
+            }
+          }
+        ]
+      }
+    },
+    "probablychests:ice_chest_mimic": {
+      "trigger": "minecraft:player_killed_entity",
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "probablychests:ice_chest_mimic"
+            }
+          }
+        ]
+      }
+    },
+    "probablychests:coral_chest_mimic": {
+      "trigger": "minecraft:player_killed_entity",
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "probablychests:coral_chest_mimic"
+            }
+          }
+        ]
+      }
     }
   },
   "requirements": [
@@ -89,7 +145,11 @@
       "probablychests:lush_chest_mimic",
       "probablychests:gold_chest_mimic",
       "probablychests:stone_chest_mimic",
-      "probablychests:rocky_chest_mimic"
+      "probablychests:rocky_chest_mimic",
+      "probablychests:nether_chest_mimic",
+      "probablychests:shadow_chest_mimic",
+      "probablychests:ice_chest_mimic",
+      "probablychests:coral_chest_mimic"
     ]
   ]
 }

@@ -3,8 +3,8 @@
   "pools": [
     {
       "rolls": {
-        "min": 4,
-        "max": 6
+        "min": 6,
+        "max": 10
       },
       "entries": [
         {
@@ -18,7 +18,7 @@
                 "min": 1,
                 "max": 5
               },
-              "add": true
+              "add": false
             }
           ]
         },
@@ -33,7 +33,7 @@
                 "min": 1,
                 "max": 5
               },
-              "add": true
+              "add": false
             }
           ]
         },
@@ -48,7 +48,7 @@
                 "min": 1,
                 "max": 5
               },
-              "add": true
+              "add": false
             }
           ]
         },
@@ -63,7 +63,7 @@
                 "min": 1,
                 "max": 5
               },
-              "add": true
+              "add": false
             }
           ]
         },
@@ -78,7 +78,7 @@
                 "min": 5,
                 "max": 10
               },
-              "add": true
+              "add": false
             }
           ]
         },
@@ -286,14 +286,22 @@
               "count": {
                 "min": 2,
                 "max": 5
-              }
+              },
+              "add": false
             }
           ]
         },
         {
           "type": "minecraft:item",
           "weight": 2,
-          "name": "minecraft:minecart"
+          "name": "minecraft:minecart",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": 1,
+              "add": false
+            }
+          ]
         },
         {
           "type": "minecraft:item",
@@ -305,7 +313,8 @@
               "count": {
                 "min": 3,
                 "max": 8
-              }
+              },
+              "add": false
             }
           ]
         }

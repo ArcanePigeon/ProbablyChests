@@ -18,7 +18,7 @@
         {
           "type": "minecraft:item",
           "weight": 10,
-          "name": "probablychests:gold_key"
+          "name": "probablychests:void_key"
         },
         {
           "type": "minecraft:empty",

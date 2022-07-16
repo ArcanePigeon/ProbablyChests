@@ -37,21 +37,10 @@
             {
               "function": "minecraft:set_count",
               "count": {
-                "min": 1,
+                "type": "minecraft:uniform",
+                "min": 0,
                 "max": 2
               },
-              "add": false
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
-          "weight": 1,
-          "name": "minecraft:netherite_scrap",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": 1,
               "add": false
             }
           ]
@@ -103,6 +92,18 @@
                 "min": 1,
                 "max": 2
               },
+              "add": false
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 15,
+          "name": "probablychests:gold_key",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": 1,
               "add": false
             }
           ]

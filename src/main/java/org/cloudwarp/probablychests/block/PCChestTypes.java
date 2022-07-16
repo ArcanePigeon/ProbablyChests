@@ -120,31 +120,31 @@ public enum PCChestTypes {
 		return switch (this) {
 			case LUSH, NORMAL -> FabricBlockSettings.of(Material.WOOD)
 					.hardness(2.0F)
-					.resistance(10.0F)
+					.resistance(3600000.0f)
 					.sounds(BlockSoundGroup.WOOD);
 			case ROCKY, STONE -> FabricBlockSettings.of(Material.STONE)
 					.hardness(2.0F)
-					.resistance(10.0F)
+					.resistance(3600000.0f)
 					.sounds(BlockSoundGroup.STONE);
 			case GOLD, SHADOW -> FabricBlockSettings.of(Material.METAL)
 					.hardness(2.0F)
-					.resistance(10.0F)
+					.resistance(3600000.0f)
 					.sounds(BlockSoundGroup.METAL);
 			case ICE -> FabricBlockSettings.of(Material.DENSE_ICE)
 					.hardness(2.0F)
-					.resistance(10.0F)
+					.resistance(3600000.0f)
 					.sounds(BlockSoundGroup.GLASS)
 					.luminance(state -> 7)
 					.slipperiness(0.98f);
 			case CORAL -> FabricBlockSettings.of(Material.WOOD)
 					.hardness(2.0F)
-					.resistance(10.0F)
+					.resistance(3600000.0f)
 					.sounds(BlockSoundGroup.CORAL)
-					.luminance(state -> PCChestBlock.isDry(state) ? 0 : 15)
-					.slipperiness(0.2f);
+					.luminance(state -> PCChestBlock.isDry(state) ? 0 : 12)
+					.slipperiness(0.99f);
 			case NETHER -> FabricBlockSettings.of(Material.STONE)
 					.hardness(2.0F)
-					.resistance(10.0F)
+					.resistance(3600000.0f)
 					.sounds(BlockSoundGroup.STONE)
 					.luminance(state -> 9);
 			default -> FabricBlockSettings.of(Material.WOOD);

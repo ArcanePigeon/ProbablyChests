@@ -1,0 +1,34 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "FLF",
+    "VCV",
+    "FLF"
+  ],
+  "key": {
+    "L": {
+      "tag": "minecraft:logs"
+    },
+    "C": {
+      "item": "minecraft:chest"
+    },
+    "F": [
+      {
+        "item": "minecraft:tube_coral"
+      },
+      {
+        "item": "minecraft:fire_coral"
+      },
+      {
+        "item": "minecraft:horn_coral"
+      }
+    ],
+    "V": {
+      "item": "minecraft:kelp"
+    }
+  },
+  "result": {
+    "item": "probablychests:coral_chest",
+    "count": 1
+  }
+}

@@ -90,5 +90,9 @@
   "item.probablychests.pet_mimic_key.tooltip": "Click on a chest to create a pet mimic.",
   "item.probablychests.mimic_core.tooltip": "It looks like it needs to be combined with something.",
   "item.probablychests.iron_key.tooltip": "Use to lock and unlock your pet mimic. [requires iron lock first]",
-  "item.probablychests.iron_lock.tooltip": "Add a lock to your pet mimic to keep other players out."
+  "item.probablychests.iron_lock.tooltip": "Add a lock to your pet mimic to keep other players out.",
+  "item.probablychests.gold_key.tooltip": "Use to lock and unlock gold chests.",
+  "item.probablychests.gold_lock.tooltip": "Add a lock to gold chests to keep players out.",
+  "item.probablychests.void_key.tooltip": "Use to lock and unlock void chests.",
+  "item.probablychests.void_lock.tooltip": "Add a lock to void chests to keep players out."
 }

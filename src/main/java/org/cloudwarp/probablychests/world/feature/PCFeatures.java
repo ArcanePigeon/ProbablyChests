@@ -60,7 +60,7 @@ public class PCFeatures {
 		//-----------------------------------
 		SURFACE_CHEST_PLACED = register(ProbablyChests.id("surface_chest_placed"),
 				SURFACE_CHEST,
-				PCRarityFilterPlacementModifier.of(surfaceChestSpawnChance * 0.01F),
+				PCRarityFilterPlacementModifier.of(surfaceChestSpawnChance * 0.02F),
 				SquarePlacementModifier.of(),
 				PlacedFeatures.MOTION_BLOCKING_HEIGHTMAP
 		);
@@ -68,7 +68,7 @@ public class PCFeatures {
 				UNDERGROUND_CHEST,
 				CountPlacementModifier.of(2),
 				SquarePlacementModifier.of(),
-				PCRarityFilterPlacementModifier.of(chestSpawnChance),
+				PCRarityFilterPlacementModifier.of(chestSpawnChance * 0.85F),
 				HeightRangePlacementModifier.uniform(YOffset.aboveBottom(6), YOffset.fixed(64)),
 				EnvironmentScanPlacementModifier.of(Direction.DOWN, BlockPredicate.solid(), 32)
 		);

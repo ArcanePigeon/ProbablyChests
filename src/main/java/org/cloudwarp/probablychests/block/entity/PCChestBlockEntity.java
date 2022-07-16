@@ -100,12 +100,19 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 		to.setInvStackList(defaultedList);
 	}
 
-	static void playSound (World world, BlockPos pos, BlockState state, SoundEvent soundEvent) {
+	public static void playSound (World world, BlockPos pos, BlockState state, SoundEvent soundEvent) {
 		double d = (double) pos.getX() + 0.5;
 		double e = (double) pos.getY() + 0.5;
 		double f = (double) pos.getZ() + 0.5;
 
 		world.playSound(null, d, e, f, soundEvent, SoundCategory.BLOCKS, 0.5f, world.random.nextFloat() * 0.1f + 0.9f);
+	}
+	public static void playSound (World world, BlockPos pos, BlockState state, SoundEvent soundEvent, float pitchRange) {
+		double d = (double) pos.getX() + 0.5;
+		double e = (double) pos.getY() + 0.5;
+		double f = (double) pos.getZ() + 0.5;
+
+		world.playSound(null, d, e, f, soundEvent, SoundCategory.BLOCKS, 0.5f, world.random.nextFloat() * 0.1f + pitchRange);
 	}
 
 	@Override

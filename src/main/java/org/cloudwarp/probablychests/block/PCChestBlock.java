@@ -10,7 +10,6 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -38,8 +37,10 @@ import org.cloudwarp.probablychests.ProbablyChests;
 import org.cloudwarp.probablychests.block.entity.PCChestBlockEntity;
 import org.cloudwarp.probablychests.registry.PCItems;
 import org.cloudwarp.probablychests.registry.PCProperties;
+import org.cloudwarp.probablychests.registry.PCSounds;
 import org.cloudwarp.probablychests.utils.PCConfig;
 import org.cloudwarp.probablychests.utils.PCChestState;
+import org.cloudwarp.probablychests.utils.PCLockedState;
 import org.cloudwarp.probablychests.utils.VoxelShaper;
 
 import java.util.Map;
@@ -52,6 +53,7 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	public static final EnumProperty<PCChestState> CHEST_STATE = PCProperties.PC_CHEST_STATE;
+	public static final EnumProperty<PCLockedState> LOCKED_STATE = PCProperties.PC_LOCKED_STATE;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(1.0D, 0.0D, 1.5D, 15.0D, 14.0D, 14.5D);
 	protected static final Map<Direction, VoxelShape> SHAPES = VoxelShaper.generateRotations(SHAPE);
 	private final PCChestTypes type;
@@ -59,7 +61,7 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 
 	public PCChestBlock (Settings settings, PCChestTypes type) {
 		super(settings, type::getBlockEntityType);
-		this.setDefaultState(((this.stateManager.getDefaultState()).with(FACING, Direction.NORTH)).with(WATERLOGGED, false).with(CHEST_STATE, PCChestState.CLOSED));
+		this.setDefaultState(((this.stateManager.getDefaultState()).with(FACING, Direction.NORTH)).with(WATERLOGGED, false).with(CHEST_STATE, PCChestState.CLOSED).with(LOCKED_STATE,PCLockedState.UNLOCKED));
 		this.type = type;
 	}
 
@@ -86,6 +88,79 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 		}
 	}
 
+	@Override
+	public float getHardness () {
+		if(this.stateManager.getProperty(PCProperties.PC_LOCKED_STATE.getName()).equals(PCLockedState.LOCKED)){
+			return -1F;
+		}
+		return 2.0F;
+	}
+
+	@Override
+	public float calcBlockBreakingDelta (BlockState state, PlayerEntity player, BlockView world, BlockPos pos) {
+		float f = state.get(PCProperties.PC_LOCKED_STATE).equals(PCLockedState.LOCKED) ? -1F : 2.0F;
+		if (f == -1.0f) {
+			return 0.0f;
+		}
+		int i = player.canHarvest(state) ? 30 : 100;
+		return player.getBlockBreakingSpeed(state) / f / (float)i;
+	}
+
+	public boolean unlockBlock(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit){
+		PCChestBlockEntity chest = getChestBlockFromWorld(world, pos);
+		ItemStack itemStack = player.getStackInHand(hand);
+		if (chest.hasGoldLock && itemStack.isOf(PCItems.GOLD_KEY)) {
+			chest.isLocked = false;
+			PCChestBlockEntity.playSound(world,pos,state,PCSounds.LOCK_UNLOCK, 1.3f);
+			return true;
+		} else if (chest.hasVoidLock && itemStack.isOf(PCItems.VOID_KEY)) {
+			chest.isLocked = false;
+			PCChestBlockEntity.playSound(world,pos,state,PCSounds.LOCK_UNLOCK, 1.3f);
+			return true;
+		} else {
+			PCChestBlockEntity.playSound(world,pos,state,PCSounds.APPLY_LOCK2, 1.0f);
+			return false;
+		}
+	}
+	public boolean lockBlock(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit){
+		PCChestBlockEntity chest = getChestBlockFromWorld(world, pos);
+		ItemStack itemStack = player.getStackInHand(hand);
+		if (chest.hasGoldLock && itemStack.isOf(PCItems.GOLD_KEY)) {
+			chest.isLocked = true;
+			PCChestBlockEntity.playSound(world,pos,state,PCSounds.LOCK_UNLOCK, 0.6f);
+			return true;
+		} else if (chest.hasVoidLock && itemStack.isOf(PCItems.VOID_KEY)) {
+			chest.isLocked = true;
+			PCChestBlockEntity.playSound(world,pos,state,PCSounds.LOCK_UNLOCK, 0.6f);
+			return true;
+		} else {
+			return false;
+		}
+	}
+	public boolean addLockToBlock (BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit){
+		PCChestBlockEntity chest = getChestBlockFromWorld(world, pos);
+		ItemStack itemStack = player.getStackInHand(hand);
+		if (!chest.hasGoldLock && !chest.hasVoidLock && !chest.isLocked) {
+			if(itemStack.isOf(PCItems.GOLD_LOCK) && chest.type().equals(PCChestTypes.GOLD)){
+				chest.isLocked = true;
+				chest.hasGoldLock = true;
+				PCChestBlockEntity.playSound(world,pos,state,PCSounds.APPLY_LOCK1, 0.6f);
+				return true;
+			}else if(itemStack.isOf(PCItems.VOID_LOCK) && chest.type().equals(PCChestTypes.SHADOW)){
+				chest.isLocked = true;
+				chest.hasVoidLock = true;
+				PCChestBlockEntity.playSound(world,pos,state,PCSounds.APPLY_LOCK1, 0.6f);
+				return true;
+			}
+		}
+		return false;
+	}
+	public void lockBlockState(BlockState state, World world, BlockPos pos){
+		world.setBlockState(pos, state.with(PCProperties.PC_LOCKED_STATE,PCLockedState.LOCKED));
+	}
+	public void unlockBlockState(BlockState state, World world, BlockPos pos){
+		world.setBlockState(pos, state.with(PCProperties.PC_LOCKED_STATE,PCLockedState.UNLOCKED));
+	}
 
 	@Override
 	public ActionResult onUse (BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
@@ -96,25 +171,20 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 		PCConfig config = ProbablyChests.loadedConfig;
 		ItemStack itemStack = player.getStackInHand(hand);
 		if (chest.isLocked) {
-			if (chest.hasGoldLock && itemStack.isOf(PCItems.GOLD_KEY)) {
-				chest.isLocked = false;
-				chest.hasGoldLock = false;
-				// play sound
-				if (! player.isCreative()) {
-					itemStack.decrement(1);
-				}
+			if(unlockBlock(state, world, pos, player, hand, hit)){
+				unlockBlockState(state,world,pos);
 				return ActionResult.CONSUME;
-			} else if (chest.hasVoidLock && itemStack.isOf(PCItems.VOID_KEY)) {
-				chest.isLocked = false;
-				chest.hasVoidLock = false;
-				// play sound
-				if (! player.isCreative()) {
-					itemStack.decrement(1);
-				}
-				return ActionResult.CONSUME;
-			} else {
-				// play sound
+			}else{
 				return ActionResult.FAIL;
+			}
+		}else{
+			if(addLockToBlock(state, world, pos, player, hand, hit)){
+				lockBlockState(state,world,pos);
+				return ActionResult.CONSUME;
+			}
+			if(lockBlock(state, world, pos, player, hand, hit)){
+				lockBlockState(state,world,pos);
+				return ActionResult.CONSUME;
 			}
 		}
 		//------------------------
@@ -204,13 +274,14 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 		return BlockRenderType.ENTITYBLOCK_ANIMATED;
 	}
 
+
 	public BlockState getPlacementState (ItemPlacementContext ctx) {
 		FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
 		return (this.getDefaultState().with(FACING, ctx.getPlayerFacing().getOpposite())).with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
 	}
 
 	protected void appendProperties (StateManager.Builder<Block, BlockState> builder) {
-		builder.add(FACING, WATERLOGGED, CHEST_STATE);
+		builder.add(FACING, WATERLOGGED, CHEST_STATE, LOCKED_STATE);
 		super.appendProperties(builder);
 	}
 

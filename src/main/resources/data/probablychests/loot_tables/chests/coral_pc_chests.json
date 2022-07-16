@@ -6,14 +6,7 @@
       "entries": [
         {
           "type": "minecraft:loot_table",
-          "name": "probablychests:chests/rare_items",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": 1,
-              "add": false
-            }
-          ]
+          "name": "probablychests:chests/rare_items"
         }
       ]
     },
@@ -22,67 +15,22 @@
       "entries": [
         {
           "type": "minecraft:loot_table",
-          "name": "probablychests:chests/normal_items",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": 1,
-              "add": true
-            }
-          ]
+          "name": "probablychests:chests/normal_items"
         }
       ]
     },
     {
       "rolls": 1,
       "entries": [
-        {
-          "type": "minecraft:loot_table",
-          "weight": 1,
-          "name": "probablychests:chests/lush_items",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": 1,
-              "add": true
-            }
-          ]
-        },
-        {
-          "type": "minecraft:loot_table",
-          "weight": 1,
-          "name": "probablychests:chests/mining_items",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": 1,
-              "add": true
-            }
-          ]
-        },
-        {
-          "type": "minecraft:loot_table",
-          "weight": 1,
-          "name": "probablychests:chests/normal_items",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": 1,
-              "add": true
-            }
-          ]
-        },
         {
           "type": "minecraft:loot_table",
           "weight": 10,
-          "name": "probablychests:chests/mixed_items",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": 1,
-              "add": true
-            }
-          ]
+          "name": "probablychests:chests/ocean_items"
+        },
+        {
+          "type": "minecraft:loot_table",
+          "weight": 1,
+          "name": "probablychests:chests/mixed_items"
         }
       ]
     }

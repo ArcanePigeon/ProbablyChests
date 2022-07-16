@@ -17,6 +17,8 @@ import net.minecraft.world.gen.feature.util.CaveSurface;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 import org.cloudwarp.probablychests.block.entity.PCChestBlockEntity;
 import org.cloudwarp.probablychests.registry.PCBlocks;
+import org.cloudwarp.probablychests.registry.PCProperties;
+import org.cloudwarp.probablychests.utils.PCLockedState;
 
 import static org.cloudwarp.probablychests.world.gen.SurfaceChestGeneration.*;
 
@@ -37,6 +39,7 @@ public class SurfaceChestFeature extends Feature<DefaultFeatureConfig> {
 		BlockState blockToBePlaced = null;
 		// Set block type based on environment
 		boolean hasVoidLock = false;
+		PCLockedState lockedState = PCLockedState.UNLOCKED;
 		if (! structureWorldAccess.getBlockState(pos.down()).isSolidBlock(structureWorldAccess, pos)) {
 			return false;
 		}
@@ -69,7 +72,10 @@ public class SurfaceChestFeature extends Feature<DefaultFeatureConfig> {
 			}
 		}
 
-		structureWorldAccess.setBlockState(pos, blockToBePlaced, 3);
+		if(hasVoidLock){
+			lockedState = PCLockedState.LOCKED;
+		}
+		structureWorldAccess.setBlockState(pos, blockToBePlaced.with(PCProperties.PC_LOCKED_STATE, lockedState), 3);
 		structureWorldAccess.setBlockState(pos.up(), Blocks.SOUL_CAMPFIRE.getDefaultState(), 3);
 		PCChestBlockEntity chest = (PCChestBlockEntity) structureWorldAccess.getBlockEntity(pos);
 		if (chest != null) {
