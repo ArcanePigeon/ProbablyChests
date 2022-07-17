@@ -122,7 +122,7 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 		if (chest.hasGoldLock && itemStack.isOf(PCItems.GOLD_KEY)) {
 			chest.isLocked = false;
 			PCChestBlockEntity.playSound(world,pos,state,PCSounds.LOCK_UNLOCK, 1.3f);
-			if(chest.isNatural){
+			if(chest.isNatural && !chest.hasBeenInteractedWith){
 				if (! player.getAbilities().creativeMode) {
 					itemStack.decrement(1);
 					locks.add(new ItemStack(PCItems.GOLD_LOCK));
@@ -134,7 +134,7 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 		} else if (chest.hasVoidLock && itemStack.isOf(PCItems.VOID_KEY)) {
 			chest.isLocked = false;
 			PCChestBlockEntity.playSound(world,pos,state,PCSounds.LOCK_UNLOCK, 1.3f);
-			if(chest.isNatural){
+			if(chest.isNatural && !chest.hasBeenInteractedWith){
 				if (! player.getAbilities().creativeMode) {
 					itemStack.decrement(1);
 					locks.add(new ItemStack(PCItems.VOID_LOCK));
@@ -146,7 +146,7 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 		} else if (chest.hasIronLock && itemStack.isOf(PCItems.IRON_KEY)) {
 			chest.isLocked = false;
 			PCChestBlockEntity.playSound(world,pos,state,PCSounds.LOCK_UNLOCK, 1.3f);
-			if(chest.isNatural){
+			if(chest.isNatural && !chest.hasBeenInteractedWith){
 				if (! player.getAbilities().creativeMode) {
 					itemStack.decrement(1);
 					locks.add(new ItemStack(PCItems.IRON_LOCK));

@@ -101,8 +101,8 @@ public class UndergroundChestFeature extends Feature<DefaultFeatureConfig> {
 		if(hasGoldLock){
 			lockedState = PCLockedState.LOCKED;
 		}
-		structureWorldAccess.setBlockState(pos, blockToBePlaced.with(PCProperties.PC_LOCKED_STATE, lockedState), 3);
-		structureWorldAccess.setBlockState(pos.up(), Blocks.SOUL_CAMPFIRE.getDefaultState(), 3);
+		//structureWorldAccess.setBlockState(pos, blockToBePlaced.with(PCProperties.PC_LOCKED_STATE, lockedState), 3);
+		//structureWorldAccess.setBlockState(pos.up(), Blocks.SOUL_CAMPFIRE.getDefaultState(), 3);
 		structureWorldAccess.setBlockState(pos, blockToBePlaced.with(Properties.WATERLOGGED, isWater).with(PCProperties.PC_LOCKED_STATE,lockedState), 3);
 		PCChestBlockEntity chest = (PCChestBlockEntity) structureWorldAccess.getBlockEntity(pos);
 		if (chest != null) {
