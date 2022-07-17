@@ -73,6 +73,9 @@ public class ProbablyChests implements ModInitializer {
 		nbt.putBoolean("do_pet_mimic_limit", config.mimicSettings.doPetMimicLimit);
 		nbt.putInt("pet_mimic_limit", config.mimicSettings.petMimicLimit);
 		nbt.putInt("abandoned_mimic_timer", config.mimicSettings.abandonedMimicTimer);
+		nbt.putBoolean("allow_pet_mimic_locking", config.mimicSettings.allowPetMimicLocking);
+		nbt.putBoolean("allow_chest_locking", config.chestSettings.allowChestLocking);
+		nbt.putBoolean("enable_locked_chest_owners", config.chestSettings.enableLockedChestOwners);
 		return nbt;
 	}
 	public static PCConfig nbtToConfig(NbtCompound nbt){
@@ -91,6 +94,9 @@ public class ProbablyChests implements ModInitializer {
 		config.mimicSettings.doPetMimicLimit = nbt.getBoolean("do_pet_mimic_limit");
 		config.mimicSettings.petMimicLimit = nbt.getInt("pet_mimic_limit");
 		config.mimicSettings.abandonedMimicTimer = nbt.getInt("abandoned_mimic_timer");
+		config.mimicSettings.allowPetMimicLocking = nbt.getBoolean("allow_pet_mimic_locking");
+		config.chestSettings.allowChestLocking = nbt.getBoolean("allow_chest_locking");
+		config.chestSettings.enableLockedChestOwners = nbt.getBoolean("enable_locked_chest_owners");
 		return config;
 	}
 }

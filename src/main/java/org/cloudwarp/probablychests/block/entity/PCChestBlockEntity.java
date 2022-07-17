@@ -33,6 +33,8 @@ import software.bernie.geckolib3.core.easing.EasingType;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
+import java.util.UUID;
+
 public class PCChestBlockEntity extends LootableContainerBlockEntity implements IAnimatable {
 
 	public static final AnimationBuilder CLOSED = new AnimationBuilder().addAnimation("closed", false);
@@ -49,7 +51,9 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 
 	public boolean hasGoldLock = false;
 	public boolean hasVoidLock = false;
+	public boolean hasIronLock = false;
 	public boolean isLocked = false;
+	public UUID owner = null;
 	private final ViewerCountManager stateManager = new ViewerCountManager() {
 
 		@Override
@@ -125,10 +129,14 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 		this.isMimic = nbt.getBoolean("isMimic");
 		this.hasGoldLock = nbt.getBoolean("hasGoldLock");
 		this.hasVoidLock = nbt.getBoolean("hasVoidLock");
+		this.hasIronLock = nbt.getBoolean("hasIronLock");
 		this.isLocked = nbt.getBoolean("isLocked");
 		this.isNatural = nbt.getBoolean("isNatural");
 		this.hasBeenInteractedWith = nbt.getBoolean("hasBeenOpened");
 		this.hasMadeMimic = nbt.getBoolean("hasMadeMimic");
+		if(nbt.contains("pc_owner")) {
+			this.owner = nbt.getUuid("pc_owner");
+		}
 	}
 
 	@Override
@@ -140,10 +148,14 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 		nbt.putBoolean("isMimic", this.isMimic);
 		nbt.putBoolean("hasGoldLock", this.hasGoldLock);
 		nbt.putBoolean("hasVoidLock", this.hasVoidLock);
+		nbt.putBoolean("hasIronLock", this.hasIronLock);
 		nbt.putBoolean("isLocked", this.isLocked);
 		nbt.putBoolean("isNatural", this.isNatural);
 		nbt.putBoolean("hasBeenOpened", this.hasBeenInteractedWith);
 		nbt.putBoolean("hasMadeMimic", this.hasMadeMimic);
+		if(this.owner != null) {
+			nbt.putUuid("pc_owner", this.owner);
+		}
 	}
 
 	@Override

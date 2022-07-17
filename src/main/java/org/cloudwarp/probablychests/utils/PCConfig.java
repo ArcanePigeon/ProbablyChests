@@ -15,6 +15,9 @@ public class PCConfig implements ConfigData {
 	@ConfigEntry.Gui.CollapsibleObject
 	public WorldGen worldGen = new WorldGen();
 
+	@ConfigEntry.Gui.CollapsibleObject
+	public ChestSettings chestSettings = new ChestSettings();
+
 	public static class MimicSettings {
 		@ConfigEntry.Gui.Tooltip()
 		public MimicDifficulty mimicDifficulty = MEDIUM;
@@ -30,6 +33,8 @@ public class PCConfig implements ConfigData {
 		public int petMimicLimit = 2;
 		@ConfigEntry.Gui.Tooltip()
 		public int abandonedMimicTimer = 5;
+		@ConfigEntry.Gui.Tooltip()
+		public boolean allowPetMimicLocking = true;
 	}
 
 	public static class WorldGen {
@@ -41,6 +46,13 @@ public class PCConfig implements ConfigData {
 		public float surfaceChestSpawnChance = 0.5F;
 		@ConfigEntry.Gui.Tooltip()
 		public float secretMimicChance = 0.25F;
+	}
+
+	public static class ChestSettings {
+		@ConfigEntry.Gui.Tooltip()
+		public boolean allowChestLocking = true;
+		@ConfigEntry.Gui.Tooltip()
+		public boolean enableLockedChestOwners = true;
 	}
 
 

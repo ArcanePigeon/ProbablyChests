@@ -3,6 +3,8 @@ package org.cloudwarp.probablychests.block;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
@@ -25,6 +27,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.ItemScatterer;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -79,11 +82,13 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 	}
 
 	public void onBlockBreakStart (BlockState state, World world, BlockPos pos, PlayerEntity player) {
-		tryMakeHostileMimic(world, pos, state, player, this.type);
+		if(!getChestBlockFromWorld(world, pos).isLocked) {
+			tryMakeHostileMimic(world, pos, state, player, this.type);
+		}
 	}
 
 	public void onEntityCollision (BlockState state, World world, BlockPos pos, Entity entity) {
-		if (entity instanceof PlayerEntity player) {
+		if (entity instanceof PlayerEntity player && !getChestBlockFromWorld(world, pos).isLocked) {
 			tryMakeHostileMimic(world, pos, state, player, this.type);
 		}
 	}
@@ -108,14 +113,47 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 
 	public boolean unlockBlock(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit){
 		PCChestBlockEntity chest = getChestBlockFromWorld(world, pos);
+		if(ProbablyChests.loadedConfig.chestSettings.enableLockedChestOwners && chest.owner != null && player.getUuid() != chest.owner){
+			PCChestBlockEntity.playSound(world,pos,state,PCSounds.APPLY_LOCK2, 1.0f);
+			return false;
+		}
+		DefaultedList<ItemStack> locks = DefaultedList.of();
 		ItemStack itemStack = player.getStackInHand(hand);
 		if (chest.hasGoldLock && itemStack.isOf(PCItems.GOLD_KEY)) {
 			chest.isLocked = false;
 			PCChestBlockEntity.playSound(world,pos,state,PCSounds.LOCK_UNLOCK, 1.3f);
+			if(chest.isNatural){
+				if (! player.getAbilities().creativeMode) {
+					itemStack.decrement(1);
+					locks.add(new ItemStack(PCItems.GOLD_LOCK));
+					ItemScatterer.spawn(world,pos,locks);
+				}
+				chest.hasGoldLock = false;
+			}
 			return true;
 		} else if (chest.hasVoidLock && itemStack.isOf(PCItems.VOID_KEY)) {
 			chest.isLocked = false;
 			PCChestBlockEntity.playSound(world,pos,state,PCSounds.LOCK_UNLOCK, 1.3f);
+			if(chest.isNatural){
+				if (! player.getAbilities().creativeMode) {
+					itemStack.decrement(1);
+					locks.add(new ItemStack(PCItems.VOID_LOCK));
+					ItemScatterer.spawn(world,pos,locks);
+				}
+				chest.hasVoidLock = false;
+			}
+			return true;
+		} else if (chest.hasIronLock && itemStack.isOf(PCItems.IRON_KEY)) {
+			chest.isLocked = false;
+			PCChestBlockEntity.playSound(world,pos,state,PCSounds.LOCK_UNLOCK, 1.3f);
+			if(chest.isNatural){
+				if (! player.getAbilities().creativeMode) {
+					itemStack.decrement(1);
+					locks.add(new ItemStack(PCItems.IRON_LOCK));
+					ItemScatterer.spawn(world,pos,locks);
+				}
+				chest.hasIronLock = false;
+			}
 			return true;
 		} else {
 			PCChestBlockEntity.playSound(world,pos,state,PCSounds.APPLY_LOCK2, 1.0f);
@@ -124,6 +162,9 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 	}
 	public boolean lockBlock(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit){
 		PCChestBlockEntity chest = getChestBlockFromWorld(world, pos);
+		if(ProbablyChests.loadedConfig.chestSettings.enableLockedChestOwners && chest.owner != null && player.getUuid() != chest.owner){
+			return false;
+		}
 		ItemStack itemStack = player.getStackInHand(hand);
 		if (chest.hasGoldLock && itemStack.isOf(PCItems.GOLD_KEY)) {
 			chest.isLocked = true;
@@ -133,22 +174,46 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 			chest.isLocked = true;
 			PCChestBlockEntity.playSound(world,pos,state,PCSounds.LOCK_UNLOCK, 0.6f);
 			return true;
+		} else if (chest.hasIronLock && itemStack.isOf(PCItems.IRON_KEY)) {
+			chest.isLocked = true;
+			PCChestBlockEntity.playSound(world,pos,state,PCSounds.LOCK_UNLOCK, 0.6f);
+			return true;
 		} else {
 			return false;
 		}
 	}
 	public boolean addLockToBlock (BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit){
+		if(!ProbablyChests.loadedConfig.chestSettings.allowChestLocking){
+			return false;
+		}
 		PCChestBlockEntity chest = getChestBlockFromWorld(world, pos);
 		ItemStack itemStack = player.getStackInHand(hand);
-		if (!chest.hasGoldLock && !chest.hasVoidLock && !chest.isLocked) {
+		if (!chest.hasGoldLock && !chest.hasVoidLock && !chest.hasIronLock) {
 			if(itemStack.isOf(PCItems.GOLD_LOCK) && chest.type().equals(PCChestTypes.GOLD)){
 				chest.isLocked = true;
 				chest.hasGoldLock = true;
+				chest.owner = player.getUuid();
+				if (! player.getAbilities().creativeMode) {
+					itemStack.decrement(1);
+				}
 				PCChestBlockEntity.playSound(world,pos,state,PCSounds.APPLY_LOCK1, 0.6f);
 				return true;
 			}else if(itemStack.isOf(PCItems.VOID_LOCK) && chest.type().equals(PCChestTypes.SHADOW)){
 				chest.isLocked = true;
 				chest.hasVoidLock = true;
+				chest.owner = player.getUuid();
+				if (! player.getAbilities().creativeMode) {
+					itemStack.decrement(1);
+				}
+				PCChestBlockEntity.playSound(world,pos,state,PCSounds.APPLY_LOCK1, 0.6f);
+				return true;
+			}else if(itemStack.isOf(PCItems.IRON_LOCK)){
+				chest.isLocked = true;
+				chest.hasIronLock = true;
+				chest.owner = player.getUuid();
+				if (! player.getAbilities().creativeMode) {
+					itemStack.decrement(1);
+				}
 				PCChestBlockEntity.playSound(world,pos,state,PCSounds.APPLY_LOCK1, 0.6f);
 				return true;
 			}
@@ -239,13 +304,25 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		PCChestBlockEntity chest = getChestBlockFromWorld(world, pos);
 		if (! isSecretMimic(chest, world, pos, this.type)) {
-			if (blockEntity instanceof Inventory) {
-				ItemScatterer.spawn(world, pos, (Inventory) ((Object) blockEntity));
+			if (blockEntity instanceof Inventory inventory) {
+				ItemScatterer.spawn(world, pos, inventory);
 				world.updateComparators(pos, this);
 			}
 		} else {
 			tryMakeHostileMimic(world, pos, state, null, this.type);
 		}
+		DefaultedList<ItemStack> locks = DefaultedList.of();
+		if(chest.hasVoidLock){
+			locks.add(new ItemStack(PCItems.VOID_LOCK));
+		}else if(chest.hasGoldLock){
+			locks.add(new ItemStack(PCItems.GOLD_LOCK));
+		}else if(chest.hasIronLock){
+			locks.add(new ItemStack(PCItems.IRON_LOCK));
+		}
+		if(!locks.isEmpty()){
+			ItemScatterer.spawn(world,pos,locks);
+		}
+
 		super.onStateReplaced(state, world, pos, newState, moved);
 	}
 

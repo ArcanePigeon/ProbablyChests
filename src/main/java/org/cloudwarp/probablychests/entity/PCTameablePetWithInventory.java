@@ -50,6 +50,7 @@ import org.cloudwarp.probablychests.registry.PCItems;
 import org.cloudwarp.probablychests.registry.PCSounds;
 import org.cloudwarp.probablychests.screenhandlers.PCChestScreenHandler;
 import org.cloudwarp.probablychests.screenhandlers.PCMimicScreenHandler;
+import org.cloudwarp.probablychests.utils.PCConfig;
 import org.cloudwarp.probablychests.utils.PCEventHandler;
 import org.jetbrains.annotations.Nullable;
 
@@ -160,6 +161,7 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 		if (this.world.isClient()) {
 			return ActionResult.SUCCESS;
 		}
+		PCConfig config = ProbablyChests.loadedConfig;
 
 		if (this.isTamed()) {
 			if (! this.getIsAbandoned() && this.isBreedingItem(itemStack) && this.getHealth() < this.getMaxHealth()) {
@@ -190,14 +192,14 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 					}
 				}
 				return ActionResult.SUCCESS;
-			} else if (this.getOwner() == player && ! this.getIsAbandoned() && itemStack.isOf(PCItems.IRON_LOCK) && ! this.getMimicHasLock()) {
+			} else if (this.getOwner() == player && ! this.getIsAbandoned() && itemStack.isOf(PCItems.IRON_LOCK) && ! this.getMimicHasLock() && config.mimicSettings.allowPetMimicLocking) {
 				this.setMimicHasLock(true);
 				this.setIsMimicLocked(true);
 				if (! player.getAbilities().creativeMode) {
 					itemStack.decrement(1);
 				}
 				this.playSound(PCSounds.APPLY_LOCK1, this.getSoundVolume(), 1.0F + getPitchOffset(0.1F));
-			} else if (this.getOwner() == player && ! this.getIsAbandoned() && itemStack.isOf(PCItems.IRON_KEY) && this.getMimicHasLock()) {
+			} else if (this.getOwner() == player && ! this.getIsAbandoned() && itemStack.isOf(PCItems.IRON_KEY) && this.getMimicHasLock() && config.mimicSettings.allowPetMimicLocking) {
 				this.setIsMimicLocked(! this.getIsMimicLocked());
 				if (this.getIsMimicLocked()) {
 					this.playSound(PCSounds.LOCK_UNLOCK, this.getSoundVolume(), 1.3F + getPitchOffset(0.1F));
@@ -220,7 +222,7 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 					return actionResult;
 				} else {
 					if (this.canMoveVoluntarily()) {
-						if (this.getIsMimicLocked()) {
+						if (this.getIsMimicLocked() && config.mimicSettings.allowPetMimicLocking) {
 							if (this.getOwner() == player) {
 								this.openGui(player);
 							} else {
