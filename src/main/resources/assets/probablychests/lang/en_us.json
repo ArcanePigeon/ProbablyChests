@@ -49,6 +49,7 @@
   "subtitles.probablychests.close2": "Mimic mouth sounds",
   "subtitles.probablychests.mimic_bite": "Mimic bite",
   "subtitles.probablychests.apply_lock1": "Apply mimic lock",
+  "subtitles.probablychests.apply_lock2": "Chest is locked",
   "subtitles.probablychests.lock_unlock": "Lock/unlock pet mimic",
 
   "stat.probablychests.mimic_encounters": "Mimic Encounters",
@@ -71,6 +72,8 @@
   "text.autoconfig.probablychests.option.mimicSettings.petMimicLimit.@Tooltip": "Maximum number of pet mimics a player can have",
   "text.autoconfig.probablychests.option.mimicSettings.abandonedMimicTimer": "Abandoned mimic time",
   "text.autoconfig.probablychests.option.mimicSettings.abandonedMimicTimer.@Tooltip": "Time [in minutes] after a mimic is abandoned that it can be reclaimed before becoming hostile",
+  "text.autoconfig.probablychests.option.mimicSettings.allowPetMimicLocking": "Allow pet mimic locking",
+  "text.autoconfig.probablychests.option.mimicSettings.allowPetMimicLocking.@Tooltip": "Allow players to lock their pet mimics",
 
   "text.autoconfig.probablychests.option.worldGen": "WORLD GENERATION",
   "text.autoconfig.probablychests.option.worldGen.potSpawnChance": "Pot spawn rate",
@@ -81,6 +84,12 @@
   "text.autoconfig.probablychests.option.worldGen.surfaceChestSpawnChance.@Tooltip": "0 means surface chests will not generate while 1 means they will generate more often",
   "text.autoconfig.probablychests.option.worldGen.secretMimicChance": "Secret mimic chance",
   "text.autoconfig.probablychests.option.worldGen.secretMimicChance.@Tooltip": "0 means chests will never be mimics while 1 means they will always be mimics",
+
+  "text.autoconfig.probablychests.option.chestSettings": "CHEST SETTINGS",
+  "text.autoconfig.probablychests.option.chestSettings.allowChestLocking": "Allow player chest locking",
+  "text.autoconfig.probablychests.option.chestSettings.allowChestLocking.@Tooltip": "Allow players to lock chests in the world",
+  "text.autoconfig.probablychests.option.chestSettings.enableLockedChestOwners": "Enable locked chest owners",
+  "text.autoconfig.probablychests.option.chestSettings.enableLockedChestOwners.@Tooltip": "Only allow the owner of a locked chest be able to unlock it",
 
   "item.probablychests.mimicHandBell.tooltip.shift": "Click to tag a pet mimic and crouch click to untag it. [Resets on logout]",
   "item.probablychests.mimicHandBell.tooltip.shift2": "Click on an amethyst cluster to abandon all untagged mimics.",
