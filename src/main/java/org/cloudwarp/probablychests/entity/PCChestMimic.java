@@ -171,7 +171,7 @@ public class PCChestMimic extends PCTameablePetWithInventory implements IAnimata
 	public double squaredDistanceToEntity(LivingEntity entity) {
 		Vec3d vector  = entity.getPos();
 		double d = this.getX() - vector.x;
-		double e = this.getY() - (vector.y+1);
+		double e = this.getY() - (vector.y+0.6D);
 		double f = this.getZ() - vector.z;
 		return d * d + e * e + f * f;
 	}
