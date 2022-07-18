@@ -2,6 +2,7 @@ package org.cloudwarp.probablychests.world.feature;
 
 import com.mojang.serialization.Codec;
 import net.fabricmc.fabric.api.tag.convention.v1.ConventionalBiomeTags;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -102,7 +103,12 @@ public class UndergroundChestFeature extends Feature<DefaultFeatureConfig> {
 			lockedState = PCLockedState.LOCKED;
 		}
 		//structureWorldAccess.setBlockState(pos, blockToBePlaced.with(PCProperties.PC_LOCKED_STATE, lockedState), 3);
-		//structureWorldAccess.setBlockState(pos.up(), Blocks.SOUL_CAMPFIRE.getDefaultState(), 3);
+		if(FabricLoader.getInstance().isDevelopmentEnvironment()) {
+			BlockPos debugPos = pos;
+			for (int i = 0; i < 40; i++) {
+				structureWorldAccess.setBlockState(debugPos = debugPos.up(), Blocks.END_ROD.getDefaultState(), 3);
+			}
+		}
 		structureWorldAccess.setBlockState(pos, blockToBePlaced.with(Properties.WATERLOGGED, isWater).with(PCProperties.PC_LOCKED_STATE,lockedState), 3);
 		PCChestBlockEntity chest = (PCChestBlockEntity) structureWorldAccess.getBlockEntity(pos);
 		if (chest != null) {

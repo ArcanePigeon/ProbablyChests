@@ -303,6 +303,10 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		PCChestBlockEntity chest = getChestBlockFromWorld(world, pos);
+		if(chest == null){
+			super.onStateReplaced(state, world, pos, newState, moved);
+			return;
+		}
 		if (! isSecretMimic(chest, world, pos, this.type)) {
 			if (blockEntity instanceof Inventory inventory) {
 				ItemScatterer.spawn(world, pos, inventory);
