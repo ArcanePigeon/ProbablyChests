@@ -45,7 +45,7 @@ public class PCConfig implements ConfigData {
 		@ConfigEntry.Gui.Tooltip()
 		public float surfaceChestSpawnChance = 0.6F;
 		@ConfigEntry.Gui.Tooltip()
-		public float secretMimicChance = 0.25F;
+		public float secretMimicChance = 0.35F;
 	}
 
 	public static class ChestSettings {
