@@ -83,7 +83,7 @@ All notable changes to this project will be documented in this file.
 - Fixed issue where mimics spawn in the air
 - fixed issue where mimics spawn way too frequently
 
-## [0.5.0] - 7/17/2022
+## [0.5.0] - 7/19/2022
 ### Added
 - Cloth Config compat
 - Mod Menu compat
