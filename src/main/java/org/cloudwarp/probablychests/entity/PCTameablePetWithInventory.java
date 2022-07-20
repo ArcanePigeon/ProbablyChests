@@ -72,6 +72,7 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 	private static final TrackedData<Boolean> IS_ABANDONED;
 	private static final TrackedData<Boolean> MIMIC_HAS_LOCK;
 	private static final TrackedData<Boolean> IS_MIMIC_LOCKED;
+	private static final TrackedData<Boolean> IS_OPEN_STATE;
 
 
 	static {
@@ -80,28 +81,27 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 		IS_ABANDONED = DataTracker.registerData(PCTameablePetWithInventory.class, TrackedDataHandlerRegistry.BOOLEAN);
 		MIMIC_HAS_LOCK = DataTracker.registerData(PCTameablePetWithInventory.class, TrackedDataHandlerRegistry.BOOLEAN);
 		IS_MIMIC_LOCKED = DataTracker.registerData(PCTameablePetWithInventory.class, TrackedDataHandlerRegistry.BOOLEAN);
+		IS_OPEN_STATE = DataTracker.registerData(PCTameablePetWithInventory.class, TrackedDataHandlerRegistry.BOOLEAN);
 		ANGER_TIME_RANGE = TimeHelper.betweenSeconds(20, 39);
 	}
 
 	// Mimic States
 	public static final int IS_SLEEPING = 0;
 	public static final int IS_IN_AIR = 1;
-	public static final int IS_CLOSED = 2;
-	public static final int IS_IDLE = 3;
-	public static final int IS_JUMPING = 4;
-	public static final int IS_OPENED = 5;
-	public static final int IS_STANDING = 6;
-	public static final int IS_SITTING = 7;
-	public static final int IS_OPENING = 8;
+	public static final int IS_IDLE = 2;
+	public static final int IS_JUMPING = 3;
+	public static final int IS_BITING = 4;
+	public static final int IS_LANDING = 5;
+
 
 
 	public int viewerCount = 0;
 
-	public int closeAnimationTimer = 12;
-	public int openAnimationTimer = 12;
-	public int checkForOwnerTimer = 40;
+	public int closeAnimationTimer;
+	public int openAnimationTimer;
+	public int biteAnimationTimer;
 	public int isAbandonedTimer;
-	public int biteDamageAmount = 3;
+	public int biteDamageAmount = 2;
 
 
 	public PCTameablePetWithInventory (EntityType<? extends TameableEntity> entityType, World world) {
@@ -227,6 +227,8 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 								this.openGui(player);
 							} else {
 								this.bite(player);
+								this.biteAnimationTimer = 6;
+								this.setMimicState(IS_BITING);
 							}
 						} else {
 							this.openGui(player);
@@ -294,7 +296,7 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 		if (player.world != null && ! this.world.isClient()) {
 			if (this.viewerCount == 0) {
 				openAnimationTimer = 12;
-				this.setMimicState(IS_OPENING);
+				this.setIsOpenState(true);
 				this.playSound(this.getOpenSound(), this.getSoundVolume(), 0.8F + getPitchOffset(0.1F));
 				this.playSound(PCSounds.CLOSE_2, this.getSoundVolume(), 1.5F + getPitchOffset(0.1F));
 			}
@@ -315,7 +317,7 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 			viewerCount -= 1;
 			if (viewerCount == 0) {
 				closeAnimationTimer = 12;
-				this.setMimicState(IS_CLOSED);
+				this.setIsOpenState(false);
 				this.playSound(this.getCloseSound(), this.getSoundVolume(), 0.8F + getPitchOffset(0.1F));
 				this.playSound(PCSounds.CLOSE_2, this.getSoundVolume(), 1.0F + getPitchOffset(0.1F));
 			}
@@ -447,6 +449,14 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 		return this.dataTracker.get(MIMIC_STATE);
 	}
 
+	public void setIsOpenState (boolean state) {
+		this.dataTracker.set(IS_OPEN_STATE, state);
+	}
+
+	public boolean getIsOpenState () {
+		return this.dataTracker.get(IS_OPEN_STATE);
+	}
+
 	public void setIsAbandoned (boolean state) {
 		this.dataTracker.set(IS_ABANDONED, state);
 	}
@@ -484,6 +494,7 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 		this.dataTracker.startTracking(IS_ABANDONED, false);
 		this.dataTracker.startTracking(MIMIC_HAS_LOCK, false);
 		this.dataTracker.startTracking(IS_MIMIC_LOCKED, false);
+		this.dataTracker.startTracking(IS_OPEN_STATE, false);
 	}
 
 	@Override

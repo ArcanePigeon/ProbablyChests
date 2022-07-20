@@ -8,25 +8,18 @@ import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.*;
 import org.cloudwarp.probablychests.ProbablyChests;
+import org.cloudwarp.probablychests.entity.ai.PCMimicEscapeDangerGoal;
 import org.cloudwarp.probablychests.registry.PCSounds;
 import org.cloudwarp.probablychests.utils.MimicDifficulty;
 import org.cloudwarp.probablychests.utils.PCConfig;
-import software.bernie.geckolib3.core.AnimationState;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
@@ -45,7 +38,12 @@ public class PCChestMimic extends PCTameablePetWithInventory implements IAnimata
 	public static final AnimationBuilder CLOSE = new AnimationBuilder().addAnimation("land", false).addAnimation("idle", true);
 	public static final AnimationBuilder SLEEPING = new AnimationBuilder().addAnimation("sleeping", true);
 	public static final AnimationBuilder FLYING = new AnimationBuilder().addAnimation("flying", true);
-	private static final String CONTROLLER_NAME = "mimicController";
+	public static final AnimationBuilder LOW_WAG = new AnimationBuilder().addAnimation("lowWag", true);
+	public static final AnimationBuilder FLYING_WAG = new AnimationBuilder().addAnimation("flyingWag", true);
+	public static final AnimationBuilder IDLE_WAG = new AnimationBuilder().addAnimation("idleWag", true);
+	public static final AnimationBuilder NO_WAG = new AnimationBuilder().addAnimation("noWag", true);
+	private static final String MIMIC_CONTROLLER = "mimicController";
+	private static final String TONGUE_CONTROLLER = "tongueController";
 
 	private static double moveSpeed = 1.5D;
 	private static int maxHealth = 50;
@@ -80,6 +78,7 @@ public class PCChestMimic extends PCTameablePetWithInventory implements IAnimata
 	protected void initGoals () {
 		this.goalSelector.add(2, new PCChestMimic.FaceTowardTargetGoal(this));
 		this.goalSelector.add(7, new PCChestMimic.IdleGoal(this));
+		//this.goalSelector.add(1, new PCMimicEscapeDangerGoal(this,1.5));
 		this.goalSelector.add(6, new PCChestMimic.SleepGoal(this));
 		this.goalSelector.add(1, new PCChestMimic.SwimmingGoal(this));
 		this.goalSelector.add(5, new PCChestMimic.MoveGoal(this));
@@ -87,7 +86,7 @@ public class PCChestMimic extends PCTameablePetWithInventory implements IAnimata
 		this.targetSelector.add(1, new ActiveTargetGoal<>(this, PlayerEntity.class, 10, true, false, livingEntity -> Math.abs(livingEntity.getY() - this.getY()) <= 4.0D));
 	}
 
-	private <E extends IAnimatable> PlayState devMovement (AnimationEvent<E> animationEvent) {
+	private <E extends IAnimatable> PlayState chestMovement (AnimationEvent<E> animationEvent) {
 		int state = this.getMimicState();
 		animationEvent.getController().setAnimationSpeed(1D);
 		switch (state) {
@@ -97,7 +96,7 @@ public class PCChestMimic extends PCTameablePetWithInventory implements IAnimata
 			case IS_IN_AIR:
 				animationEvent.getController().setAnimation(FLYING);
 				break;
-			case IS_CLOSED:
+			case IS_LANDING:
 				animationEvent.getController().setAnimation(CLOSE);
 				break;
 			case IS_IDLE:
@@ -113,10 +112,29 @@ public class PCChestMimic extends PCTameablePetWithInventory implements IAnimata
 		}
 		return PlayState.CONTINUE;
 	}
+	private <E extends IAnimatable> PlayState tongueMovement (AnimationEvent<E> animationEvent) {
+		int state = this.getMimicState();
+		animationEvent.getController().setAnimationSpeed(1D);
+		//animationEvent.getController().transitionLengthTicks = 1;
+		if (state == IS_IN_AIR) {
+			animationEvent.getController().setAnimation(FLYING_WAG);
+		} else if (state == IS_IDLE) {
+			animationEvent.getController().setAnimationSpeed(1.5D);
+			animationEvent.getController().setAnimation(IDLE_WAG);
+		} else if (state == IS_JUMPING) {
+			animationEvent.getController().setAnimationSpeed(2D);
+			animationEvent.getController().setAnimation(FLYING_WAG);
+		} else if (state == IS_SLEEPING) {
+			animationEvent.getController().setAnimation(NO_WAG);
+		} else {
+		}
+		return PlayState.CONTINUE;
+	}
 
 	@Override
 	public void registerControllers (AnimationData animationData) {
-		animationData.addAnimationController(new AnimationController(this, CONTROLLER_NAME, 6, this::devMovement));
+		animationData.addAnimationController(new AnimationController(this, MIMIC_CONTROLLER, 6, this::chestMovement));
+		animationData.addAnimationController(new AnimationController(this, TONGUE_CONTROLLER, 6, this::tongueMovement));
 	}
 
 	@Override
@@ -182,6 +200,9 @@ public class PCChestMimic extends PCTameablePetWithInventory implements IAnimata
 
 	public void tick () {
 		super.tick();
+		if(this.world.isClient()) {
+			return;
+		}
 		if (jumpEndTimer >= 0) {
 			jumpEndTimer -= 1;
 		}if (spawnWaitTimer > 0) {
@@ -192,9 +213,7 @@ public class PCChestMimic extends PCTameablePetWithInventory implements IAnimata
 					if (this.getMimicState() != IS_SLEEPING && ! isAttemptingToSleep) {
 						timeUntilSleep = 150;
 						isAttemptingToSleep = true;
-						if (this.getMimicState() != IS_CLOSED) {
-							this.setMimicState(IS_IDLE);
-						}
+						this.setMimicState(IS_IDLE);
 					}
 					if (isAttemptingToSleep) {
 						timeUntilSleep -= 1;
@@ -205,7 +224,7 @@ public class PCChestMimic extends PCTameablePetWithInventory implements IAnimata
 					}
 				} else {
 					isAttemptingToSleep = false;
-					this.setMimicState(IS_CLOSED);
+					this.setMimicState(IS_LANDING);
 					this.playSound(this.getLandingSound(), this.getSoundVolume(),
 							((this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F) / 0.8F);
 				}

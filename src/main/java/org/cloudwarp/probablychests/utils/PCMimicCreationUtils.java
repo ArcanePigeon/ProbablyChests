@@ -78,6 +78,7 @@ public class PCMimicCreationUtils {
 		}
 		world.spawnEntity(mimic);
 		if (isPetMimic) {
+			mimic.setSitting(true);
 			mimic.world.sendEntityStatus(mimic, (byte) 7);
 		}
 		boolean waterlogged = state.get(WATERLOGGED);
