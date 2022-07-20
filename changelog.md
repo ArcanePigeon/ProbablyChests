@@ -88,14 +88,14 @@ All notable changes to this project will be documented in this file.
 - Cloth Config compat
 - Mod Menu compat
 - Option to limit the number of pet mimics a player can have
-- New animations for pet mimics
+- Overhauled animations for all mimics
 - New sounds
 - Custom screens for chests and mimics that can be modified with a texture pack
 - Mimic hand bell
 - Mimic abandoning and reclaiming
 - Pet mimics now fight for the player like tamed wolves
 - Tooltips for most items
-- Crafting recipes for all chests except void chests
+- Crafting recipes for all chests
 - Keys and locks for locking pet mimics and chests
 - Gold and Void chests spawn locked and require their respective keys
 - Ability to lock pet mimics
