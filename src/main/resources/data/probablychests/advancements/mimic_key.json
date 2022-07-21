@@ -1,0 +1,28 @@
+{
+  "display": {
+    "icon": {
+      "item": "probablychests:mimic_key"
+    },
+    "title": "Hostile Key",
+    "description": "Acquire a suspicious key",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "probablychests:encounter_a_mimic",
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "probablychests:mimic_key"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

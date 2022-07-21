@@ -7,6 +7,6 @@ import net.minecraft.world.gen.feature.FeatureConfig;
 
 public record PCPotFeatureConfig(FloatProvider mimicChance) implements FeatureConfig {
 	public static final Codec<PCPotFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			FloatProvider.VALUE_CODEC.fieldOf("mimicChance").forGetter(PCPotFeatureConfig::mimicChance)
+			FloatProvider.VALUE_CODEC.fieldOf("rarity").forGetter(PCPotFeatureConfig::mimicChance)
 	).apply(instance, instance.stable(PCPotFeatureConfig::new)));
 }

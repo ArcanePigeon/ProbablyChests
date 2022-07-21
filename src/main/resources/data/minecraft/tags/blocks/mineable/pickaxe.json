@@ -3,6 +3,10 @@
   "values": [
     "probablychests:stone_chest",
     "probablychests:rocky_chest",
-    "probablychests:gold_chest"
+    "probablychests:gold_chest",
+    "probablychests:nether_chest",
+    "probablychests:ice_chest",
+    "probablychests:shadow_chest"
+
   ]
 }

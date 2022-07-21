@@ -6,15 +6,15 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.gen.GenerationStep;
 import org.cloudwarp.probablychests.ProbablyChests;
-import org.cloudwarp.probablychests.utils.Config;
+import org.cloudwarp.probablychests.utils.PCConfig;
 import org.cloudwarp.probablychests.world.feature.PCFeatures;
 
 import java.util.List;
 
 public class PCPotGeneration {
 	public static void generatePot () {
-		Config config = ProbablyChests.config;
-		float potRarity = config.getPotSpawnChance();
+		PCConfig config = ProbablyChests.loadedConfig;
+		float potRarity = config.worldGen.potSpawnChance;
 		if (potRarity > 0) {
 			BiomeModifications.addFeature(BiomeSelectors.all().and(BiomeSelectors.foundInOverworld()).and(context -> {
 						Biome biome = context.getBiome();

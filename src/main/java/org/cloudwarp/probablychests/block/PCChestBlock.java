@@ -1,11 +1,10 @@
 package org.cloudwarp.probablychests.block;
 
 import net.minecraft.block.*;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.entity.ChestBlockEntity;
-import net.minecraft.block.entity.LootableContainerBlockEntity;
+import net.minecraft.block.entity.*;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
@@ -15,6 +14,7 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.Stats;
@@ -27,41 +27,53 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.ItemScatterer;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import org.cloudwarp.probablychests.ProbablyChests;
 import org.cloudwarp.probablychests.block.entity.PCChestBlockEntity;
-import org.cloudwarp.probablychests.entity.PCChestMimic;
-import org.cloudwarp.probablychests.entity.PCChestMimicPet;
 import org.cloudwarp.probablychests.registry.PCItems;
 import org.cloudwarp.probablychests.registry.PCProperties;
-import org.cloudwarp.probablychests.utils.Config;
+import org.cloudwarp.probablychests.registry.PCSounds;
+import org.cloudwarp.probablychests.utils.PCConfig;
 import org.cloudwarp.probablychests.utils.PCChestState;
+import org.cloudwarp.probablychests.utils.PCLockedState;
+import org.cloudwarp.probablychests.utils.VoxelShaper;
 
+import java.util.Map;
+import java.util.Random;
+
+import static org.cloudwarp.probablychests.utils.PCMimicCreationUtils.*;
 
 public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> implements Waterloggable {
 
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	public static final EnumProperty<PCChestState> CHEST_STATE = PCProperties.PC_CHEST_STATE;
-	protected static final VoxelShape SHAPE = Block.createCuboidShape(1.0D, 0.0D, 1.0D, 15.0D, 14.0D, 15.0D);
+	public static final EnumProperty<PCLockedState> LOCKED_STATE = PCProperties.PC_LOCKED_STATE;
+	protected static final VoxelShape SHAPE = Block.createCuboidShape(1.0D, 0.0D, 1.5D, 15.0D, 14.0D, 14.5D);
+	protected static final Map<Direction, VoxelShape> SHAPES = VoxelShaper.generateRotations(SHAPE);
 	private final PCChestTypes type;
 
 
 	public PCChestBlock (Settings settings, PCChestTypes type) {
 		super(settings, type::getBlockEntityType);
-		this.setDefaultState(((this.stateManager.getDefaultState()).with(FACING, Direction.NORTH)).with(WATERLOGGED, false).with(CHEST_STATE, PCChestState.CLOSED));
+		this.setDefaultState(((this.stateManager.getDefaultState()).with(FACING, Direction.NORTH)).with(WATERLOGGED, false).with(CHEST_STATE, PCChestState.CLOSED).with(LOCKED_STATE,PCLockedState.UNLOCKED));
 		this.type = type;
 	}
 
 	public static boolean isChestBlocked (WorldAccess world, BlockPos pos) {
 		return PCChestBlock.hasBlockOnTop(world, pos);
+	}
+
+	public static boolean isDry (BlockState state) {
+		return ! state.get(WATERLOGGED);
 	}
 
 	private static boolean hasBlockOnTop (BlockView world, BlockPos pos) {
@@ -70,85 +82,149 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 	}
 
 	public void onBlockBreakStart (BlockState state, World world, BlockPos pos, PlayerEntity player) {
-		createMimic(world, pos, state);
+		if(!getChestBlockFromWorld(world, pos).isLocked) {
+			tryMakeHostileMimic(world, pos, state, player, this.type);
+		}
 	}
 
 	public void onEntityCollision (BlockState state, World world, BlockPos pos, Entity entity) {
-		if (entity instanceof PlayerEntity) {
-			createMimic(world, pos, state);
+		if (entity instanceof PlayerEntity player && !getChestBlockFromWorld(world, pos).isLocked) {
+			tryMakeHostileMimic(world, pos, state, player, this.type);
 		}
 	}
 
-	private boolean createMimic (World world, BlockPos pos, BlockState state) {
-		PCChestBlockEntity chest = null;
-		if (world.getBlockEntity(pos) instanceof PCChestBlockEntity) {
-			chest = (PCChestBlockEntity) world.getBlockEntity(pos);
+	@Override
+	public float getHardness () {
+		if(this.stateManager.getProperty(PCProperties.PC_LOCKED_STATE.getName()).equals(PCLockedState.LOCKED)){
+			return -1F;
 		}
-		if (chest != null) {
-			Config config = Config.getInstance();
-			if (! chest.hasBeenOpened && chest.isNatural && !chest.hasMadeMimic) {
-				chest.hasBeenOpened = true;
-				chest.isMimic = world.getRandom().nextFloat() < config.getMimicChance();
-				if (! chest.isMimic) {
-					LootableContainerBlockEntity.setLootTable(world, world.getRandom(), pos, this.type.getLootTable());
-					return false;
+		return 2.0F;
+	}
+
+	@Override
+	public float calcBlockBreakingDelta (BlockState state, PlayerEntity player, BlockView world, BlockPos pos) {
+		float f = state.get(PCProperties.PC_LOCKED_STATE).equals(PCLockedState.LOCKED) ? -1F : 2.0F;
+		if (f == -1.0f) {
+			return 0.0f;
+		}
+		int i = player.canHarvest(state) ? 30 : 100;
+		return player.getBlockBreakingSpeed(state) / f / (float)i;
+	}
+
+	public boolean unlockBlock(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit){
+		PCChestBlockEntity chest = getChestBlockFromWorld(world, pos);
+		if(ProbablyChests.loadedConfig.chestSettings.enableLockedChestOwners && chest.owner != null && player.getUuid() != chest.owner){
+			PCChestBlockEntity.playSound(world,pos,state,PCSounds.APPLY_LOCK2, 1.0f);
+			return false;
+		}
+		DefaultedList<ItemStack> locks = DefaultedList.of();
+		ItemStack itemStack = player.getStackInHand(hand);
+		if (chest.hasGoldLock && itemStack.isOf(PCItems.GOLD_KEY)) {
+			chest.isLocked = false;
+			PCChestBlockEntity.playSound(world,pos,state,PCSounds.LOCK_UNLOCK, 1.3f);
+			if(chest.isNatural && !chest.hasBeenInteractedWith){
+				if (! player.getAbilities().creativeMode) {
+					itemStack.decrement(1);
+					locks.add(new ItemStack(PCItems.GOLD_LOCK));
+					ItemScatterer.spawn(world,pos,locks);
 				}
+				chest.hasGoldLock = false;
 			}
-			if (world.getDifficulty() != Difficulty.PEACEFUL && chest.isMimic && ! chest.hasMadeMimic) {
-				chest.hasMadeMimic = true;
-				PCChestMimic mimic = new PCChestMimic(this.type.getMimicType(), world);
-				mimic.setPos(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D);
-				mimic.setYaw(state.get(FACING).asRotation());
-				//mimic.refreshPositionAndAngles((double) pos.getX() + 0.5D, (double) pos.getY(), (double) pos.getZ() + 0.5D, MathHelper.wrapDegrees(state.get(FACING).asRotation()), 0.0F);
-				mimic.headYaw = mimic.getYaw();
-				mimic.bodyYaw = mimic.getYaw();
-				for(int i = 0; i < type.size; i++){
-					mimic.inventory.setStack(i,chest.getStack(i));
-					chest.setStack(i,ItemStack.EMPTY);
+			return true;
+		} else if (chest.hasVoidLock && itemStack.isOf(PCItems.VOID_KEY)) {
+			chest.isLocked = false;
+			PCChestBlockEntity.playSound(world,pos,state,PCSounds.LOCK_UNLOCK, 1.3f);
+			if(chest.isNatural && !chest.hasBeenInteractedWith){
+				if (! player.getAbilities().creativeMode) {
+					itemStack.decrement(1);
+					locks.add(new ItemStack(PCItems.VOID_LOCK));
+					ItemScatterer.spawn(world,pos,locks);
 				}
-				world.spawnEntity(mimic);
-				boolean waterlogged = state.get(WATERLOGGED);
-				world.setBlockState(pos, waterlogged ? Blocks.WATER.getDefaultState() : Blocks.AIR.getDefaultState());
+				chest.hasVoidLock = false;
+			}
+			return true;
+		} else if (chest.hasIronLock && itemStack.isOf(PCItems.IRON_KEY)) {
+			chest.isLocked = false;
+			PCChestBlockEntity.playSound(world,pos,state,PCSounds.LOCK_UNLOCK, 1.3f);
+			if(chest.isNatural && !chest.hasBeenInteractedWith){
+				if (! player.getAbilities().creativeMode) {
+					itemStack.decrement(1);
+					locks.add(new ItemStack(PCItems.IRON_LOCK));
+					ItemScatterer.spawn(world,pos,locks);
+				}
+				chest.hasIronLock = false;
+			}
+			return true;
+		} else {
+			PCChestBlockEntity.playSound(world,pos,state,PCSounds.APPLY_LOCK2, 1.0f);
+			return false;
+		}
+	}
+	public boolean lockBlock(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit){
+		PCChestBlockEntity chest = getChestBlockFromWorld(world, pos);
+		if(ProbablyChests.loadedConfig.chestSettings.enableLockedChestOwners && chest.owner != null && player.getUuid() != chest.owner){
+			return false;
+		}
+		ItemStack itemStack = player.getStackInHand(hand);
+		if (chest.hasGoldLock && itemStack.isOf(PCItems.GOLD_KEY)) {
+			chest.isLocked = true;
+			PCChestBlockEntity.playSound(world,pos,state,PCSounds.LOCK_UNLOCK, 0.6f);
+			return true;
+		} else if (chest.hasVoidLock && itemStack.isOf(PCItems.VOID_KEY)) {
+			chest.isLocked = true;
+			PCChestBlockEntity.playSound(world,pos,state,PCSounds.LOCK_UNLOCK, 0.6f);
+			return true;
+		} else if (chest.hasIronLock && itemStack.isOf(PCItems.IRON_KEY)) {
+			chest.isLocked = true;
+			PCChestBlockEntity.playSound(world,pos,state,PCSounds.LOCK_UNLOCK, 0.6f);
+			return true;
+		} else {
+			return false;
+		}
+	}
+	public boolean addLockToBlock (BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit){
+		if(!ProbablyChests.loadedConfig.chestSettings.allowChestLocking){
+			return false;
+		}
+		PCChestBlockEntity chest = getChestBlockFromWorld(world, pos);
+		ItemStack itemStack = player.getStackInHand(hand);
+		if (!chest.hasGoldLock && !chest.hasVoidLock && !chest.hasIronLock) {
+			if(itemStack.isOf(PCItems.GOLD_LOCK) && chest.type().equals(PCChestTypes.GOLD)){
+				chest.isLocked = true;
+				chest.hasGoldLock = true;
+				chest.owner = player.getUuid();
+				if (! player.getAbilities().creativeMode) {
+					itemStack.decrement(1);
+				}
+				PCChestBlockEntity.playSound(world,pos,state,PCSounds.APPLY_LOCK1, 0.6f);
+				return true;
+			}else if(itemStack.isOf(PCItems.VOID_LOCK) && chest.type().equals(PCChestTypes.SHADOW)){
+				chest.isLocked = true;
+				chest.hasVoidLock = true;
+				chest.owner = player.getUuid();
+				if (! player.getAbilities().creativeMode) {
+					itemStack.decrement(1);
+				}
+				PCChestBlockEntity.playSound(world,pos,state,PCSounds.APPLY_LOCK1, 0.6f);
+				return true;
+			}else if(itemStack.isOf(PCItems.IRON_LOCK)){
+				chest.isLocked = true;
+				chest.hasIronLock = true;
+				chest.owner = player.getUuid();
+				if (! player.getAbilities().creativeMode) {
+					itemStack.decrement(1);
+				}
+				PCChestBlockEntity.playSound(world,pos,state,PCSounds.APPLY_LOCK1, 0.6f);
 				return true;
 			}
 		}
 		return false;
 	}
-
-	private boolean createPetMimic (World world, BlockPos pos, BlockState state, PlayerEntity player) {
-		PCChestBlockEntity chest = null;
-		if (world.getBlockEntity(pos) instanceof PCChestBlockEntity) {
-			chest = (PCChestBlockEntity) world.getBlockEntity(pos);
-		}
-		if (chest != null) {
-			Config config = Config.getInstance();
-			if (! chest.hasBeenOpened && chest.isNatural) {
-				chest.hasBeenOpened = true;
-				chest.isMimic = world.getRandom().nextFloat() < config.getMimicChance();
-				if (! chest.isMimic) {
-					LootableContainerBlockEntity.setLootTable(world, world.getRandom(), pos, this.type.getLootTable());
-				}
-			}
-			PCChestMimicPet mimic = new PCChestMimicPet(this.type.getPetMimicType(), world);
-			mimic.setPos(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D);
-			mimic.setYaw(state.get(FACING).asRotation());
-			mimic.headYaw = mimic.getYaw();
-			mimic.bodyYaw = mimic.getYaw();
-			mimic.setOwner(player);
-			mimic.setTarget((LivingEntity) null);
-			mimic.setSitting(true);
-			mimic.setIsSleeping(mimic.isSitting());
-			mimic.world.sendEntityStatus(mimic, (byte) 7);
-			for(int i = 0; i < type.size; i++){
-				mimic.inventory.setStack(i,chest.getStack(i));
-				chest.setStack(i,ItemStack.EMPTY);
-			}
-			world.spawnEntity(mimic);
-			boolean waterlogged = state.get(WATERLOGGED);
-			world.setBlockState(pos, waterlogged ? Blocks.WATER.getDefaultState() : Blocks.AIR.getDefaultState());
-			return true;
-		}
-		return false;
+	public void lockBlockState(BlockState state, World world, BlockPos pos){
+		world.setBlockState(pos, state.with(PCProperties.PC_LOCKED_STATE,PCLockedState.LOCKED));
+	}
+	public void unlockBlockState(BlockState state, World world, BlockPos pos){
+		world.setBlockState(pos, state.with(PCProperties.PC_LOCKED_STATE,PCLockedState.UNLOCKED));
 	}
 
 	@Override
@@ -156,35 +232,49 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		}
-		PCChestBlockEntity chest = null;
-		if (world.getBlockEntity(pos) instanceof PCChestBlockEntity) {
-			chest = (PCChestBlockEntity) world.getBlockEntity(pos);
+		PCChestBlockEntity chest = getChestBlockFromWorld(world, pos);
+		PCConfig config = ProbablyChests.loadedConfig;
+		ItemStack itemStack = player.getStackInHand(hand);
+		if (chest.isLocked) {
+			if(unlockBlock(state, world, pos, player, hand, hit)){
+				unlockBlockState(state,world,pos);
+				return ActionResult.CONSUME;
+			}else{
+				return ActionResult.FAIL;
+			}
+		}else{
+			if(addLockToBlock(state, world, pos, player, hand, hit)){
+				lockBlockState(state,world,pos);
+				return ActionResult.CONSUME;
+			}
+			if(lockBlock(state, world, pos, player, hand, hit)){
+				lockBlockState(state,world,pos);
+				return ActionResult.CONSUME;
+			}
 		}
-		Config config = Config.getInstance();
 		//------------------------
 		if (chest != null) {
-			ItemStack itemStack = player.getStackInHand(hand);
-			if (itemStack.isOf(PCItems.PET_MIMIC_KEY) && config.getAllowPetMimics() && !player.isSneaking()) {
-				chest.hasMadeMimic = true;
-				createPetMimic(world,pos,state,player);
+			if (itemStack.isOf(PCItems.PET_MIMIC_KEY) && config.mimicSettings.allowPetMimics && ! player.isSneaking() && tryMakePetMimic(world, pos, state, player, this.type)) {
 				if (! player.isCreative()) {
 					itemStack.decrement(1);
 				}
-				return ActionResult.SUCCESS;
-			}else
-			if (itemStack.isOf(PCItems.MIMIC_KEY) && ! chest.isMimic && !player.isSneaking()) {
+				return ActionResult.CONSUME;
+			} else if (itemStack.isOf(PCItems.MIMIC_KEY) && ! player.isSneaking() && ! isSecretMimic(chest, world, pos, this.type) && world.getDifficulty() != Difficulty.PEACEFUL) {
 				chest.isMimic = true;
+				chest.isNatural = false;
 				if (! player.isCreative()) {
 					itemStack.decrement(1);
 				}
-				return ActionResult.SUCCESS;
-			}else
-			if (createMimic(world, pos, state)) {
-				return ActionResult.SUCCESS;
+				return ActionResult.CONSUME;
+			} else {
+				if (isSecretMimic(chest, world, pos, type)) {
+					tryMakeHostileMimic(world, pos, state, player, this.type);
+					return ActionResult.SUCCESS;
+				}
 			}
 		}
 		NamedScreenHandlerFactory namedScreenHandlerFactory = this.createScreenHandlerFactory(state, world, pos);
-		if (namedScreenHandlerFactory != null) {
+		if (namedScreenHandlerFactory != null && player instanceof ServerPlayerEntity && chest.checkUnlocked(player)) {
 			player.openHandledScreen(namedScreenHandlerFactory);
 			player.incrementStat(this.getOpenStat());
 		}
@@ -205,7 +295,6 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 		return ScreenHandler.calculateComparatorOutput(world.getBlockEntity(pos));
 	}
 
-
 	@Override
 	public void onStateReplaced (BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
 		if (state.isOf(newState.getBlock())) {
@@ -213,40 +302,59 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 		}
 
 		BlockEntity blockEntity = world.getBlockEntity(pos);
-		PCChestBlockEntity chest = null;
-		if (blockEntity instanceof PCChestBlockEntity) {
-			chest = (PCChestBlockEntity) blockEntity;
+		PCChestBlockEntity chest = getChestBlockFromWorld(world, pos);
+		if(chest == null){
+			super.onStateReplaced(state, world, pos, newState, moved);
+			return;
 		}
-		if (! createMimic(world, pos, state) || chest.hasMadeMimic) {
-			if (blockEntity instanceof Inventory) {
-				ItemScatterer.spawn(world, pos, (Inventory) ((Object) blockEntity));
+		if (! isSecretMimic(chest, world, pos, this.type)) {
+			if (blockEntity instanceof Inventory inventory) {
+				ItemScatterer.spawn(world, pos, inventory);
 				world.updateComparators(pos, this);
 			}
+		} else {
+			tryMakeHostileMimic(world, pos, state, null, this.type);
 		}
+		DefaultedList<ItemStack> locks = DefaultedList.of();
+		if(chest.hasVoidLock){
+			locks.add(new ItemStack(PCItems.VOID_LOCK));
+		}else if(chest.hasGoldLock){
+			locks.add(new ItemStack(PCItems.GOLD_LOCK));
+		}else if(chest.hasIronLock){
+			locks.add(new ItemStack(PCItems.IRON_LOCK));
+		}
+		if(!locks.isEmpty()){
+			ItemScatterer.spawn(world,pos,locks);
+		}
+
 		super.onStateReplaced(state, world, pos, newState, moved);
 	}
 
 	@Override
 	public void onPlaced (World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
-		BlockEntity blockEntity;
-		if (itemStack.hasCustomName() && (blockEntity = world.getBlockEntity(pos)) instanceof ChestBlockEntity) {
-			((ChestBlockEntity) blockEntity).setCustomName(itemStack.getName());
+		PCChestBlockEntity chest = getChestBlockFromWorld(world, pos);
+		if (chest != null && itemStack.hasCustomName()) {
+			chest.setCustomName(itemStack.getName());
 		}
 	}
 
+
 	@Override
 	public VoxelShape getOutlineShape (BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-		return SHAPE;
+		return SHAPES.get(state.get(FACING));
 	}
+
 
 	public BlockEntity createBlockEntity (BlockPos pos, BlockState state) {
 		return this.type.makeEntity(pos, state);
 	}
 
+
 	@Override
 	public BlockRenderType getRenderType (BlockState state) {
 		return BlockRenderType.ENTITYBLOCK_ANIMATED;
 	}
+
 
 	public BlockState getPlacementState (ItemPlacementContext ctx) {
 		FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
@@ -254,7 +362,7 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 	}
 
 	protected void appendProperties (StateManager.Builder<Block, BlockState> builder) {
-		builder.add(FACING, WATERLOGGED, CHEST_STATE);
+		builder.add(FACING, WATERLOGGED, CHEST_STATE, LOCKED_STATE);
 		super.appendProperties(builder);
 	}
 
@@ -286,8 +394,14 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 		return this.entityTypeRetriever.get();
 	}
 
+	public static Direction getFacing (BlockState state) {
+		return state.get(FACING);
+	}
+
+
 	@Override
 	public DoubleBlockProperties.PropertySource<? extends ChestBlockEntity> getBlockEntitySource (BlockState state, World world, BlockPos pos, boolean ignoreBlocked) {
 		return DoubleBlockProperties.PropertyRetriever::getFallback;
 	}
+
 }

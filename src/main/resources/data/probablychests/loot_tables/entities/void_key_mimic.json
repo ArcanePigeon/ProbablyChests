@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:entity",
+  "pools": [
+    {
+      "rolls": 1.0,
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "weight": 30,
+          "name": "probablychests:mimic_core"
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 30,
+          "name": "probablychests:mimic_key_fragment"
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 10,
+          "name": "probablychests:void_key"
+        },
+        {
+          "type": "minecraft:empty",
+          "weight": 50
+        }
+      ]
+    }
+  ]
+}

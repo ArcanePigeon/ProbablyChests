@@ -16,8 +16,13 @@
           "name": "probablychests:mimic_key_fragment"
         },
         {
+          "type": "minecraft:item",
+          "weight": 10,
+          "name": "probablychests:gold_key"
+        },
+        {
           "type": "minecraft:empty",
-          "weight": 40
+          "weight": 50
         }
       ]
     }

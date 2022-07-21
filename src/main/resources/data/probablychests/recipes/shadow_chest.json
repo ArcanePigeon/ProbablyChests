@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "FLF",
+    "VCV",
+    "FLF"
+  ],
+  "key": {
+    "L": {
+      "tag": "minecraft:logs"
+    },
+    "C": {
+      "item": "minecraft:chest"
+    },
+    "F": {
+      "item": "minecraft:chorus_fruit"
+    },
+    "V": {
+      "item": "minecraft:purpur_block"
+    }
+  },
+  "result": {
+    "item": "probablychests:shadow_chest",
+    "count": 1
+  }
+}

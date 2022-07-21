@@ -15,22 +15,18 @@ version = project.mod_version
 group = project.maven_group
 
 repositories {
-    // Add repositories to retrieve artifacts from in here.
-    // You should only use this when depending on other mods because
-    // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
-    // See https://docs.gradle.org/current/userguide/declaring_repositories.html
-    // for more information about repositories.
     maven {
-        name = "CottonMC"
-        url = "https://server.bbkr.space/artifactory/libs-release"
-    }
-    maven {
-        name "geckolib"
         url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
     }
+
+    // cloth config
+    maven { url "https://maven.shedaniel.me/" }
+    // mod menu
+    maven { url "https://maven.terraformersmc.com" }
 }
 
 dependencies {
+
     // To change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
@@ -39,11 +35,12 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
-    // You may need to force-disable transitiveness on them.
-    modImplementation include("io.github.cottonmc:LibGui:6.0.0-beta.5+1.19-pre1")
 
-    modImplementation 'software.bernie.geckolib:geckolib-fabric-1.19:3.1.2'
+    modImplementation "software.bernie.geckolib:geckolib-fabric-1.18:${project.geckolib_version}"
+    modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
+    modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}") {
+        exclude(group: "net.fabricmc.fabric-api")
+    }
 }
 
 processResources {
@@ -106,7 +103,7 @@ curseforge {
     project {
         id = "601735"
         releaseType = "release"
-        addGameVersion "1.19"
+        addGameVersion "1.18.2"
         addGameVersion "Java 17"
         addGameVersion "Fabric"
         changelogType = "markdown"
@@ -114,7 +111,6 @@ curseforge {
         relations {
             requiredDependency "fabric-api"
             requiredDependency "geckolib"
-            requiredDependency "CottonMC"
         }
         mainArtifact(jar) {
             displayName = "Probably Chests - ${project.mod_version} - Fabric"

@@ -2,9 +2,7 @@ package org.cloudwarp.probablychests.block.entity;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.LootableContainerBlockEntity;
-import net.minecraft.block.entity.ViewerCountManager;
+import net.minecraft.block.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
@@ -12,37 +10,50 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.cloudwarp.probablychests.block.PCChestTypes;
 import org.cloudwarp.probablychests.registry.PCProperties;
-import org.cloudwarp.probablychests.screenhandlers.PCScreenHandler;
+import org.cloudwarp.probablychests.screenhandlers.PCChestScreenHandler;
 import org.cloudwarp.probablychests.utils.PCChestState;
-import software.bernie.geckolib3.core.AnimationState;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
 import software.bernie.geckolib3.core.controller.AnimationController;
+import software.bernie.geckolib3.core.easing.EasingType;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
+
+import java.util.UUID;
 
 public class PCChestBlockEntity extends LootableContainerBlockEntity implements IAnimatable {
 
 	public static final AnimationBuilder CLOSED = new AnimationBuilder().addAnimation("closed", false);
-	public static final AnimationBuilder CLOSE = new AnimationBuilder().addAnimation("close", false);
-	public static final AnimationBuilder OPEN = new AnimationBuilder().addAnimation("open", false);
+	public static final AnimationBuilder CLOSE = new AnimationBuilder().addAnimation("close", false).addAnimation("closed",true);
+	public static final AnimationBuilder OPEN = new AnimationBuilder().addAnimation("open", false).addAnimation("opened",true);
 	public static final AnimationBuilder OPENED = new AnimationBuilder().addAnimation("opened", false);
 	public static final EnumProperty<PCChestState> CHEST_STATE = PCProperties.PC_CHEST_STATE;
 	private static final String CONTROLLER_NAME = "chestController";
 	private final AnimationFactory factory = new AnimationFactory(this);
+	public boolean isMimic = false;
+	public boolean isNatural = false;
+	public boolean hasBeenInteractedWith = false;
+	public boolean hasMadeMimic = false;
+
+	public boolean hasGoldLock = false;
+	public boolean hasVoidLock = false;
+	public boolean hasIronLock = false;
+	public boolean isLocked = false;
+	public UUID owner = null;
 	private final ViewerCountManager stateManager = new ViewerCountManager() {
 
 		@Override
@@ -62,17 +73,13 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 
 		@Override
 		protected boolean isPlayerViewing (PlayerEntity player) {
-			if (player.currentScreenHandler instanceof PCScreenHandler) {
-				Inventory inventory = ((PCScreenHandler) player.currentScreenHandler).getInventory();
+			if (player.currentScreenHandler instanceof PCChestScreenHandler) {
+				Inventory inventory = ((PCChestScreenHandler) player.currentScreenHandler).getInventory();
 				return inventory == PCChestBlockEntity.this;
 			}
 			return false;
 		}
 	};
-	public boolean isMimic = false;
-	public boolean isNatural = false;
-	public boolean hasBeenOpened = false;
-	public boolean hasMadeMimic = false;
 	PCChestTypes type;
 	private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(54, ItemStack.EMPTY);
 
@@ -97,12 +104,19 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 		to.setInvStackList(defaultedList);
 	}
 
-	static void playSound (World world, BlockPos pos, BlockState state, SoundEvent soundEvent) {
+	public static void playSound (World world, BlockPos pos, BlockState state, SoundEvent soundEvent) {
 		double d = (double) pos.getX() + 0.5;
 		double e = (double) pos.getY() + 0.5;
 		double f = (double) pos.getZ() + 0.5;
 
 		world.playSound(null, d, e, f, soundEvent, SoundCategory.BLOCKS, 0.5f, world.random.nextFloat() * 0.1f + 0.9f);
+	}
+	public static void playSound (World world, BlockPos pos, BlockState state, SoundEvent soundEvent, float pitchRange) {
+		double d = (double) pos.getX() + 0.5;
+		double e = (double) pos.getY() + 0.5;
+		double f = (double) pos.getZ() + 0.5;
+
+		world.playSound(null, d, e, f, soundEvent, SoundCategory.BLOCKS, 0.5f, world.random.nextFloat() * 0.1f + pitchRange);
 	}
 
 	@Override
@@ -113,9 +127,16 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 			Inventories.readNbt(nbt, this.inventory);
 		}
 		this.isMimic = nbt.getBoolean("isMimic");
+		this.hasGoldLock = nbt.getBoolean("hasGoldLock");
+		this.hasVoidLock = nbt.getBoolean("hasVoidLock");
+		this.hasIronLock = nbt.getBoolean("hasIronLock");
+		this.isLocked = nbt.getBoolean("isLocked");
 		this.isNatural = nbt.getBoolean("isNatural");
-		this.hasBeenOpened = nbt.getBoolean("hasBeenOpened");
+		this.hasBeenInteractedWith = nbt.getBoolean("hasBeenOpened");
 		this.hasMadeMimic = nbt.getBoolean("hasMadeMimic");
+		if(nbt.contains("pc_owner")) {
+			this.owner = nbt.getUuid("pc_owner");
+		}
 	}
 
 	@Override
@@ -125,21 +146,28 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 			Inventories.writeNbt(nbt, this.inventory);
 		}
 		nbt.putBoolean("isMimic", this.isMimic);
+		nbt.putBoolean("hasGoldLock", this.hasGoldLock);
+		nbt.putBoolean("hasVoidLock", this.hasVoidLock);
+		nbt.putBoolean("hasIronLock", this.hasIronLock);
+		nbt.putBoolean("isLocked", this.isLocked);
 		nbt.putBoolean("isNatural", this.isNatural);
-		nbt.putBoolean("hasBeenOpened", this.hasBeenOpened);
+		nbt.putBoolean("hasBeenOpened", this.hasBeenInteractedWith);
 		nbt.putBoolean("hasMadeMimic", this.hasMadeMimic);
+		if(this.owner != null) {
+			nbt.putUuid("pc_owner", this.owner);
+		}
 	}
 
 	@Override
-	public void onOpen (PlayerEntity player) {
-		if (! this.removed && ! player.isSpectator()) {
+	public void onOpen(PlayerEntity player) {
+		if (!this.removed && !player.isSpectator()) {
 			this.stateManager.openContainer(player, this.getWorld(), this.getPos(), this.getCachedState());
 		}
 	}
 
 	@Override
-	public void onClose (PlayerEntity player) {
-		if (! this.removed && ! player.isSpectator()) {
+	public void onClose(PlayerEntity player) {
+		if (!this.removed && !player.isSpectator()) {
 			this.stateManager.closeContainer(player, this.getWorld(), this.getPos(), this.getCachedState());
 		}
 	}
@@ -160,16 +188,24 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 		}
 	}
 
+
+
 	protected void onInvOpenOrClose (World world, BlockPos pos, BlockState state, int oldViewerCount, int newViewerCount) {
 		Block block = state.getBlock();
 		world.addSyncedBlockEvent(pos, block, 1, newViewerCount);
-		world.setBlockState(pos, state.with(CHEST_STATE, newViewerCount > 0 ?
-				(state.get(CHEST_STATE).equals(PCChestState.OPENED) ? PCChestState.OPENED : PCChestState.OPEN) :
-				(state.get(CHEST_STATE).equals(PCChestState.CLOSED) ? PCChestState.CLOSED : PCChestState.CLOSE)));
+		if(oldViewerCount != newViewerCount){
+			if(newViewerCount > 0){
+				world.setBlockState(pos,state.with(CHEST_STATE,PCChestState.OPENED));
+			}else{
+				world.setBlockState(pos,state.with(CHEST_STATE,PCChestState.CLOSED));
+			}
+		}
 	}
 
+
+
 	@Override
-	public boolean onSyncedBlockEvent (int type, int data) {
+	public boolean onSyncedBlockEvent(int type, int data) {
 		if (type == 1) {
 			return true;
 		}
@@ -184,30 +220,32 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 		this.getWorld().setBlockState(this.getPos(), this.getCachedState().with(CHEST_STATE, state));
 	}
 
+	@Override
+	@Nullable
+	public ScreenHandler createMenu(int syncId, PlayerInventory inventory, PlayerEntity player) {
+		if(!hasBeenInteractedWith && player.isSpectator()){
+			return null;
+		}
+		if (this.checkUnlocked(player)) {
+			this.checkLootInteraction(inventory.player);
+			return PCChestScreenHandler.createScreenHandler(syncId, inventory, this);
+		}
+		return null;
+	}
+
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Override
 	public void registerControllers (AnimationData data) {
-		AnimationController controller = new AnimationController(this, CONTROLLER_NAME, 0, animationEvent -> {
+		AnimationController controller = new AnimationController(this, CONTROLLER_NAME, 7, animationEvent -> {
+
 			switch (getChestState()) {
-				case CLOSE:
-					if (animationEvent.getController().getAnimationState() == AnimationState.Stopped) {
-						setChestState(PCChestState.CLOSED);
-						animationEvent.getController().setAnimation(CLOSED);
-						break;
-					}
-					if (animationEvent.getController().getCurrentAnimation() != null && ! animationEvent.getController().getCurrentAnimation().animationName.equals(CLOSED.getRawAnimationList().get(0).animationName)) {
-						animationEvent.getController().setAnimation(CLOSE);
-					}
+				case CLOSED:
+					animationEvent.getController().easingType = EasingType.EaseOutSine;
+					animationEvent.getController().setAnimation(CLOSED);
 					break;
-				case OPEN:
-					if (animationEvent.getController().getAnimationState() == AnimationState.Stopped) {
-						setChestState(PCChestState.OPENED);
-						animationEvent.getController().setAnimation(OPENED);
-						break;
-					}
-					if (animationEvent.getController().getCurrentAnimation() != null && ! animationEvent.getController().getCurrentAnimation().animationName.equals(OPENED.getRawAnimationList().get(0).animationName)) {
-						animationEvent.getController().setAnimation(OPEN);
-					}
+				case OPENED:
+					animationEvent.getController().easingType = EasingType.Linear;
+					animationEvent.getController().setAnimation(OPENED);
 					break;
 				default:
 					break;
@@ -222,24 +260,20 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 		return factory;
 	}
 
-	@Override
-	public ScreenHandler createMenu (int syncId, PlayerInventory inventory, PlayerEntity player) {
-		return new PCScreenHandler(type.getScreenHandlerType(), type, syncId, inventory, ScreenHandlerContext.create(world, pos));
-	}
 
 	@Override
 	protected ScreenHandler createScreenHandler (int syncId, PlayerInventory inventory) {
-		return new PCScreenHandler(type.getScreenHandlerType(), type, syncId, inventory, ScreenHandlerContext.create(world, pos));
+		return PCChestScreenHandler.createScreenHandler(syncId, inventory, this);
 	}
 
 	@Override
 	protected Text getContainerName () {
-		return Text.translatable(getCachedState().getBlock().getTranslationKey());
+		return new TranslatableText(getCachedState().getBlock().getTranslationKey());
 	}
 
 	@Override
 	public int size () {
-		return type.size;
+		return 54;
 	}
 
 	public PCChestTypes type () {

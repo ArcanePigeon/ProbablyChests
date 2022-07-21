@@ -83,13 +83,51 @@ All notable changes to this project will be documented in this file.
 - Fixed issue where mimics spawn in the air
 - fixed issue where mimics spawn way too frequently
 
-## [0.4.4] - 6/16/2022
-### Updated
-- Now on 1.19!
+## [0.5.0] - 7/19/2022
 ### Added
-- Added 1.19 items to loot tables
+- Cloth Config compat
+- Mod Menu compat
+- Option to limit the number of pet mimics a player can have
+- Overhauled animations for all mimics
+- New sounds
+- Custom screens for chests and mimics that can be modified with a texture pack
+- Mimic hand bell
+- Mimic abandoning and reclaiming
+- Pet mimics now fight for the player like tamed wolves
+- Tooltips for most items
+- Crafting recipes for all chests
+- Keys and locks for locking pet mimics and chests
+- Gold and Void chests spawn locked and require their respective keys
+- Ability to lock pet mimics
+- Locked pet mimics bite other player who try to access them
+- More difficulty options for wild mimics
+- Advancements
+- Statistics
+- Molten chest
+- Void chest
+- Ice chest
+- Coral chest
+- Coral chests emit light underwater
+- Ice and Molten chests give off a low level of light
+- Locked chests are unbreakable
+- Configs for new locking and abandonment mechanics
 ### Changed
-- Added a limit to mimic jump height
-- Reduced aggro range of mimics
-- Updated item textures
-- Changed item group icon
+- Lush chest texture
+- Renamed mimic key to suspicious key
+- Renamed mimic core to suspicious eye
+- Renamed pet mimic key to friendly key
+- Renamed stone chest to deepslate chest
+- Renamed rocky chest to sandstone chest
+- Suspicious key texture
+- Key fragments texture
+- Friendly mimic key texture
+- Suspicious eye texture
+- Overhauled loot tables to be less overpowered
+- Overhauled world gen so chests are more spaced out and generate at the proper levels and biomes
+- Chests cannot be destroyed be explosions
+### Fixed
+- Chest animation bug
+- Loud mimic sounds
+- Bad lighting check for spawning
+- Collision shape for chests does not rotate
+- Mimics could attack through shields sometimes

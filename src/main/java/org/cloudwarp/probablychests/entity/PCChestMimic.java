@@ -4,32 +4,22 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.Monster;
-import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.world.*;
-import org.cloudwarp.probablychests.utils.Config;
-import software.bernie.geckolib3.core.AnimationState;
+import org.cloudwarp.probablychests.ProbablyChests;
+import org.cloudwarp.probablychests.entity.ai.PCMimicEscapeDangerGoal;
+import org.cloudwarp.probablychests.registry.PCSounds;
+import org.cloudwarp.probablychests.utils.MimicDifficulty;
+import org.cloudwarp.probablychests.utils.PCConfig;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
@@ -39,51 +29,34 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 import java.util.EnumSet;
+import java.util.Random;
 
-public class PCChestMimic extends PathAwareEntity implements IAnimatable, Monster {
+public class PCChestMimic extends PCTameablePetWithInventory implements IAnimatable, Monster {
 	// Animations
-	public static final AnimationBuilder IDLE = new AnimationBuilder().addAnimation("idle", true)
-			.addAnimation("flying", true);
-	public static final AnimationBuilder JUMP = new AnimationBuilder().addAnimation("jump", false);
-	public static final AnimationBuilder CLOSE = new AnimationBuilder().addAnimation("close", false).addAnimation("idle", true);
+	public static final AnimationBuilder IDLE = new AnimationBuilder().addAnimation("idle", true);
+	public static final AnimationBuilder JUMP = new AnimationBuilder().addAnimation("jump", false).addAnimation("flying", true);
+	public static final AnimationBuilder CLOSE = new AnimationBuilder().addAnimation("land", false).addAnimation("idle", true);
 	public static final AnimationBuilder SLEEPING = new AnimationBuilder().addAnimation("sleeping", true);
 	public static final AnimationBuilder FLYING = new AnimationBuilder().addAnimation("flying", true);
-	private static final String CONTROLLER_NAME = "mimicController";
-	// Mimic States
-	private static final TrackedData<Boolean> IS_JUMPING;
-	private static final TrackedData<Boolean> IS_IDLE;
-	private static final TrackedData<Boolean> IS_SLEEPING;
-	private static final TrackedData<Boolean> IS_GROUNDED;
-	private static final TrackedData<Boolean> IS_FLYING;
+	public static final AnimationBuilder LOW_WAG = new AnimationBuilder().addAnimation("lowWag", true);
+	public static final AnimationBuilder FLYING_WAG = new AnimationBuilder().addAnimation("flyingWag", true);
+	public static final AnimationBuilder IDLE_WAG = new AnimationBuilder().addAnimation("idleWag", true);
+	public static final AnimationBuilder NO_WAG = new AnimationBuilder().addAnimation("noWag", true);
+	private static final String MIMIC_CONTROLLER = "mimicController";
+	private static final String TONGUE_CONTROLLER = "tongueController";
+
 	private static double moveSpeed = 1.5D;
 	private static int maxHealth = 50;
 	private static int maxDamage = 5;
 
-	static {
-		IS_JUMPING = DataTracker.registerData(PCChestMimic.class, TrackedDataHandlerRegistry.BOOLEAN);
-		IS_IDLE = DataTracker.registerData(PCChestMimic.class, TrackedDataHandlerRegistry.BOOLEAN);
-		IS_SLEEPING = DataTracker.registerData(PCChestMimic.class, TrackedDataHandlerRegistry.BOOLEAN);
-		IS_GROUNDED = DataTracker.registerData(PCChestMimic.class, TrackedDataHandlerRegistry.BOOLEAN);
-		IS_FLYING = DataTracker.registerData(PCChestMimic.class, TrackedDataHandlerRegistry.BOOLEAN);
-	}
-
-	public SimpleInventory inventory = new SimpleInventory(54);
 	private AnimationFactory factory = new AnimationFactory(this);
 	private boolean onGroundLastTick;
 	private int timeUntilSleep = 0;
 	private int jumpEndTimer = 10;
-	private boolean isJumpAnimationPlaying = false;
-	private boolean isJumpAnimationFinished = false;
-	private int spawnWaitTimer = 5;
+	private int spawnWaitTimer = 10;
+	private boolean isAttemptingToSleep = false;
 
-	/*
-	TODO:
-	make fire resistant
-	fix attacking through shield
-	fix item drop for explosion and set resistance back to 2
-	add minimum position for chests to spawn at in placement modifier
-	 */
-	public PCChestMimic (EntityType<? extends PathAwareEntity> entityType, World world) {
+	public PCChestMimic (EntityType<? extends PCTameablePetWithInventory> entityType, World world) {
 		super(entityType, world);
 		this.ignoreCameraFrustum = true;
 		this.moveControl = new PCChestMimic.MimicMoveControl(this);
@@ -91,103 +64,77 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable, Monste
 	}
 
 	public static DefaultAttributeContainer.Builder createMobAttributes () {
-		Config config = Config.getInstance();
-		if (config.getEasierMimics()) {
-			maxHealth = 30;
-			maxDamage = 3;
-			moveSpeed = 1D;
-		}
+		MimicDifficulty mimicDifficulty = ProbablyChests.loadedConfig.mimicSettings.mimicDifficulty;
+		moveSpeed = mimicDifficulty.getSpeed();
 		return LivingEntity.createLivingAttributes().add(EntityAttributes.GENERIC_FOLLOW_RANGE, 12.0D)
 				.add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 2)
-				.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, maxDamage)
+				.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, mimicDifficulty.getDamage())
 				.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 1)
-				.add(EntityAttributes.GENERIC_MAX_HEALTH, maxHealth)
+				.add(EntityAttributes.GENERIC_MAX_HEALTH, mimicDifficulty.getHealth())
 				.add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.5D);
 	}
 
-	public static boolean isSpawnDark (ServerWorldAccess world, BlockPos pos, Random random) {
-		if (world.getLightLevel(LightType.SKY, pos) > random.nextInt(32)) {
-			return false;
-		} else if (world.getLightLevel(LightType.BLOCK, pos) > 0) {
-			return false;
-		} else {
-			int i = world.toServerWorld().isThundering() ? world.getLightLevel(pos, 10) : world.getLightLevel(pos);
-			return i <= random.nextInt(8);
-		}
-	}
 
 	protected void initGoals () {
 		this.goalSelector.add(2, new PCChestMimic.FaceTowardTargetGoal(this));
 		this.goalSelector.add(7, new PCChestMimic.IdleGoal(this));
+		//this.goalSelector.add(1, new PCMimicEscapeDangerGoal(this,1.5));
+		this.goalSelector.add(6, new PCChestMimic.SleepGoal(this));
 		this.goalSelector.add(1, new PCChestMimic.SwimmingGoal(this));
 		this.goalSelector.add(5, new PCChestMimic.MoveGoal(this));
+		this.targetSelector.add(3, (new RevengeGoal(this, new Class[0])).setGroupRevenge(new Class[0]));
 		this.targetSelector.add(1, new ActiveTargetGoal<>(this, PlayerEntity.class, 10, true, false, livingEntity -> Math.abs(livingEntity.getY() - this.getY()) <= 4.0D));
 	}
 
-	@Override
-	protected void dropEquipment (DamageSource source, int lootingMultiplier, boolean allowDrops) {
-		for (int i = 0; i < this.inventory.size(); ++ i) {
-			ItemStack itemstack = this.inventory.getStack(i);
-			if (! itemstack.isEmpty()) {
-				this.dropStack(itemstack);
-			}
-		}
-	}
-
-	@Override
-	public int getSafeFallDistance () {
-		return 20;
-	}
-
-	@Override
-	protected int computeFallDamage (float fallDistance, float damageMultiplier) {
-		StatusEffectInstance statusEffectInstance = this.getStatusEffect(StatusEffects.JUMP_BOOST);
-		float f = statusEffectInstance == null ? 0.0F : (float) (statusEffectInstance.getAmplifier() + 1);
-		return MathHelper.ceil((fallDistance - 20.0F - f) * damageMultiplier);
-	}
-
-	public void printStates () {
-		System.out.println(isJumping() + "  " + isFlying() + "  " + isSleeping() + "  " + isGrounded() + "  " + isIdle());
-	}
-
-	private <E extends IAnimatable> PlayState devMovement (AnimationEvent<E> animationEvent) {
-		//printStates();
-		if (isJumping() && ! this.isJumpAnimationFinished) {
-			if (! this.isJumpAnimationPlaying) {
+	private <E extends IAnimatable> PlayState chestMovement (AnimationEvent<E> animationEvent) {
+		int state = this.getMimicState();
+		animationEvent.getController().setAnimationSpeed(1D);
+		switch (state) {
+			case IS_SLEEPING:
+				animationEvent.getController().setAnimation(SLEEPING);
+				break;
+			case IS_IN_AIR:
+				animationEvent.getController().setAnimation(FLYING);
+				break;
+			case IS_LANDING:
+				animationEvent.getController().setAnimation(CLOSE);
+				break;
+			case IS_IDLE:
+				animationEvent.getController().setAnimation(IDLE);
+				break;
+			case IS_JUMPING:
 				animationEvent.getController().setAnimationSpeed(2D);
 				animationEvent.getController().setAnimation(JUMP);
-				this.isJumpAnimationPlaying = true;
-			} else {
-				if (animationEvent.getController().getAnimationState() == AnimationState.Stopped) {
-					animationEvent.getController().setAnimationSpeed(1D);
-					this.isJumpAnimationPlaying = false;
-					this.isJumpAnimationFinished = true;
-				}
-			}
-		} else if (this.isFlying()) {
-			animationEvent.getController().setAnimation(FLYING);
-		} else if (this.isSleeping()) {
-			this.isJumpAnimationFinished = false;
-			this.isJumpAnimationPlaying = false;
-			animationEvent.getController().setAnimation(SLEEPING);
-		} else if (this.isIdle()) {
-			this.isJumpAnimationFinished = false;
-			this.isJumpAnimationPlaying = false;
-			animationEvent.getController().setAnimation(IDLE);
-		} else if (this.isGrounded()) {
-			this.isJumpAnimationFinished = false;
-			this.isJumpAnimationPlaying = false;
-			animationEvent.getController().setAnimation(CLOSE);
+				break;
+			default:
+				animationEvent.getController().setAnimation(SLEEPING);
+				break;
 		}
-		if (animationEvent.getController().getCurrentAnimation() == null) {
-			animationEvent.getController().setAnimation(SLEEPING);
+		return PlayState.CONTINUE;
+	}
+	private <E extends IAnimatable> PlayState tongueMovement (AnimationEvent<E> animationEvent) {
+		int state = this.getMimicState();
+		animationEvent.getController().setAnimationSpeed(1D);
+		//animationEvent.getController().transitionLengthTicks = 1;
+		if (state == IS_IN_AIR) {
+			animationEvent.getController().setAnimation(FLYING_WAG);
+		} else if (state == IS_IDLE) {
+			animationEvent.getController().setAnimationSpeed(1.5D);
+			animationEvent.getController().setAnimation(IDLE_WAG);
+		} else if (state == IS_JUMPING) {
+			animationEvent.getController().setAnimationSpeed(2D);
+			animationEvent.getController().setAnimation(FLYING_WAG);
+		} else if (state == IS_SLEEPING) {
+			animationEvent.getController().setAnimation(NO_WAG);
+		} else {
 		}
 		return PlayState.CONTINUE;
 	}
 
 	@Override
 	public void registerControllers (AnimationData animationData) {
-		animationData.addAnimationController(new AnimationController(this, CONTROLLER_NAME, 0, this::devMovement));
+		animationData.addAnimationController(new AnimationController(this, MIMIC_CONTROLLER, 6, this::chestMovement));
+		animationData.addAnimationController(new AnimationController(this, TONGUE_CONTROLLER, 6, this::tongueMovement));
 	}
 
 	@Override
@@ -195,25 +142,6 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable, Monste
 		return this.factory;
 	}
 
-	float getJumpSoundPitch () {
-		return ((this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
-	}
-
-	protected SoundEvent getJumpSound () {
-		return SoundEvents.BLOCK_CHEST_OPEN;
-	}
-
-	protected SoundEvent getHurtSound (DamageSource source) {
-		return SoundEvents.ENTITY_ZOMBIE_ATTACK_WOODEN_DOOR;
-	}
-
-	protected SoundEvent getDeathSound () {
-		return SoundEvents.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR;
-	}
-
-	protected SoundEvent getLandingSound () {
-		return SoundEvents.BLOCK_CHEST_CLOSE;
-	}
 
 	protected void jump () {
 		Vec3d vec3d = this.getVelocity();
@@ -223,22 +151,18 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable, Monste
 			jumpStrength = 1D;
 		} else {
 			jumpStrength = livingEntity.getY() - this.getY();
-			jumpStrength = jumpStrength <= 0 ? 1D : Math.min(jumpStrength / 2.5D + 1.0D, 2.5D);
+			jumpStrength = jumpStrength <= 0 ? 1.0D : Math.min(jumpStrength / 3.5D + 1.0D, 2.5D);
 		}
 		this.setVelocity(vec3d.x, (double) this.getJumpVelocity() * jumpStrength, vec3d.z);
 		this.velocityDirty = true;
-		if (this.isGrounded() && this.jumpEndTimer <= 0) {
+		if (this.isOnGround() && this.jumpEndTimer <= 0) {
 			this.jumpEndTimer = 10;
-			this.setIsJumping(true);
+			this.setMimicState(IS_JUMPING);
 		}
 	}
 
-	protected float getActiveEyeHeight (EntityPose pose, EntityDimensions dimensions) {
-		return 0.625F * dimensions.height;
-	}
-
 	protected boolean canAttack () {
-		return true;
+		return this.canMoveVoluntarily();
 	}
 
 	protected float getDamageAmount () {
@@ -254,11 +178,20 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable, Monste
 
 	protected void damage (LivingEntity target) {
 		if (this.isAlive()) {
-			if (this.squaredDistanceTo(target) < 1.5D && this.canSee(target) && target.damage(DamageSource.mob(this), this.getDamageAmount())) {
-				this.playSound(SoundEvents.BLOCK_CHEST_CLOSE, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
+			if (this.squaredDistanceToEntity(target) < 0.6D && this.canSee(target) && target.damage(DamageSource.mob(this), this.getDamageAmount())) {
+				this.playSound(this.getHurtSound(), this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 0.7F);
+				this.playSound(PCSounds.MIMIC_BITE, this.getSoundVolume(), 1.5F + getPitchOffset(0.2F));
 				this.applyDamageEffects(this, target);
 			}
 		}
+	}
+
+	public double squaredDistanceToEntity(LivingEntity entity) {
+		Vec3d vector  = entity.getPos();
+		double d = this.getX() - vector.x;
+		double e = this.getY() - (vector.y+0.6D);
+		double f = this.getZ() - vector.z;
+		return d * d + e * e + f * f;
 	}
 
 	protected int getTicksUntilNextJump () {
@@ -267,41 +200,41 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable, Monste
 
 	public void tick () {
 		super.tick();
+		if(this.world.isClient()) {
+			return;
+		}
 		if (jumpEndTimer >= 0) {
 			jumpEndTimer -= 1;
-		}
-		if (this.onGround) {
-			this.setIsFlying(false);
-			this.setIsGrounded(true);
-			if (this.onGroundLastTick) {
-				this.setIsJumping(false);
-				if (! this.isSleeping() && ! this.isIdle()) {
-					timeUntilSleep = 150;
-					this.setIsIdle(true);
-				}
-				if (this.isIdle()) {
-					timeUntilSleep -= 1;
-					if (timeUntilSleep <= 0) {
-						this.setIsIdle(false);
-						this.setIsSleeping(true);
-					}
-				}
-			} else {
-				this.playSound(this.getLandingSound(), this.getSoundVolume(),
-						((this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F) / 0.8F);
-			}
+		}if (spawnWaitTimer > 0) {
+			spawnWaitTimer -= 1;
 		} else {
-			if (spawnWaitTimer > 0) {
-				spawnWaitTimer -= 1;
+			if (this.onGround) {
+				if (this.onGroundLastTick) {
+					if (this.getMimicState() != IS_SLEEPING && ! isAttemptingToSleep) {
+						timeUntilSleep = 150;
+						isAttemptingToSleep = true;
+						this.setMimicState(IS_IDLE);
+					}
+					if (isAttemptingToSleep) {
+						timeUntilSleep -= 1;
+						if (timeUntilSleep <= 0) {
+							timeUntilSleep = 0;
+							this.setMimicState(IS_SLEEPING);
+						}
+					}
+				} else {
+					isAttemptingToSleep = false;
+					this.setMimicState(IS_LANDING);
+					this.playSound(this.getLandingSound(), this.getSoundVolume(),
+							((this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F) / 0.8F);
+				}
 			} else {
-				this.setIsSleeping(false);
-				this.setIsIdle(false);
-				this.setIsGrounded(false);
-				this.setIsFlying(true);
+				isAttemptingToSleep = false;
+				if (this.getMimicState() != IS_JUMPING) {
+					this.setMimicState(IS_IN_AIR);
+				}
 			}
-
 		}
-
 		this.onGroundLastTick = this.onGround;
 	}
 
@@ -312,86 +245,16 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable, Monste
 	public void writeCustomDataToNbt (NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
 		nbt.putBoolean("wasOnGround", this.onGroundLastTick);
-		nbt.putBoolean("grounded", this.isOnGround());
-		nbt.putBoolean("jumping", this.isJumping());
-		nbt.putBoolean("idle", this.isIdle());
-		nbt.putBoolean("flying", this.isFlying());
-		nbt.putBoolean("sleeping", this.isSleeping());
-		NbtList listnbt = new NbtList();
-		for (int i = 0; i < this.inventory.size(); ++ i) {
-			ItemStack itemstack = this.inventory.getStack(i);
-			NbtCompound compoundnbt = new NbtCompound();
-			compoundnbt.putByte("Slot", (byte) i);
-			itemstack.writeNbt(compoundnbt);
-			listnbt.add(compoundnbt);
-
-		}
-		nbt.put("Inventory", listnbt);
 	}
 
 	public void readCustomDataFromNbt (NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
 		this.onGroundLastTick = nbt.getBoolean("wasOnGround");
-		this.setIsGrounded(nbt.getBoolean("grounded"));
-		this.setIsJumping(nbt.getBoolean("jumping"));
-		this.setIsIdle(nbt.getBoolean("idle"));
-		this.setIsFlying(nbt.getBoolean("flying"));
-		this.setIsSleeping(nbt.getBoolean("sleeping"));
-		NbtList listnbt = nbt.getList("Inventory", 10);
-		for (int i = 0; i < listnbt.size(); ++ i) {
-			NbtCompound compoundnbt = listnbt.getCompound(i);
-			int j = compoundnbt.getByte("Slot") & 255;
-			this.inventory.setStack(j, ItemStack.fromNbt(compoundnbt));
-		}
-	}
-
-	public void setIsJumping (boolean jumping) {
-		this.dataTracker.set(IS_JUMPING, jumping);
-	}
-
-	public boolean isJumping () {
-		return this.dataTracker.get(IS_JUMPING);
-	}
-
-	public void setIsFlying (boolean flying) {
-		this.dataTracker.set(IS_FLYING, flying);
-	}
-
-	public boolean isFlying () {
-		return this.dataTracker.get(IS_FLYING);
-	}
-
-	public void setIsGrounded (boolean grounded) {
-		this.dataTracker.set(IS_GROUNDED, grounded);
-	}
-
-	public boolean isGrounded () {
-		return this.dataTracker.get(IS_GROUNDED);
-	}
-
-	public void setIsIdle (boolean idle) {
-		this.dataTracker.set(IS_IDLE, idle);
-	}
-
-	public boolean isIdle () {
-		return this.dataTracker.get(IS_IDLE);
-	}
-
-	public void setIsSleeping (boolean sleeping) {
-		this.dataTracker.set(IS_SLEEPING, sleeping);
-	}
-
-	public boolean isSleeping () {
-		return this.dataTracker.get(IS_SLEEPING);
 	}
 
 	@Override
 	protected void initDataTracker () {
-		this.dataTracker.startTracking(IS_GROUNDED, true);
-		this.dataTracker.startTracking(IS_JUMPING, false);
-		this.dataTracker.startTracking(IS_FLYING, false);
-		this.dataTracker.startTracking(IS_IDLE, false);
-		this.dataTracker.startTracking(IS_SLEEPING, true);
+		this.dataTracker.startTracking(getMimicStateVariable(), IS_SLEEPING);
 		super.initDataTracker();
 	}
 
@@ -399,24 +262,24 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable, Monste
 		return this.hasVehicle() || ! this.inventory.isEmpty();
 	}
 
-	@Override
-	public boolean canBreatheInWater () {
-		return true;
-	}
-
-	@Override
-	public boolean canFreeze () {
-		return false;
+	public static boolean isSpawnDark (ServerWorldAccess world, BlockPos pos, Random random) {
+		if (world.getLightLevel(LightType.SKY, pos) > random.nextInt(32)) {
+			return false;
+		} else if (world.getLightLevel(LightType.BLOCK, pos) > 0) {
+			return false;
+		} else {
+			PCConfig config = ProbablyChests.loadedConfig;
+			int i = world.toServerWorld().isThundering() ? world.getLightLevel(pos, 10) : world.getLightLevel(pos);
+			return i <= random.nextInt(8) * config.mimicSettings.naturalMimicSpawnRate;
+		}
 	}
 
 	public static boolean canSpawn (EntityType<PCChestMimic> pcChestMimicEntityType, ServerWorldAccess serverWorldAccess, SpawnReason spawnReason, BlockPos blockPos, Random random) {
-		if(serverWorldAccess.isSkyVisible(blockPos) || serverWorldAccess.getLightLevel(LightType.BLOCK, blockPos) > 0){
+		if (serverWorldAccess.isSkyVisible(blockPos) || isSpawnDark(serverWorldAccess, blockPos, random)) {
 			return false;
 		}
-		Config config = Config.getInstance();
-		return serverWorldAccess.getRandom().nextFloat() < config.getNaturalMimicSpawnRate();
+		return true;
 	}
-
 
 	private static class MimicMoveControl extends MoveControl {
 		private final PCChestMimic mimic;
@@ -568,7 +431,7 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable, Monste
 
 		public IdleGoal (PCChestMimic mimic) {
 			this.mimic = mimic;
-
+			this.setControls(EnumSet.of(Control.LOOK));
 		}
 
 		public boolean canStart () {
@@ -577,6 +440,41 @@ public class PCChestMimic extends PathAwareEntity implements IAnimatable, Monste
 
 		public void tick () {
 
+		}
+	}
+	static class SleepGoal extends Goal {
+		private final PCChestMimic mimic;
+
+		public SleepGoal (PCChestMimic mimic) {
+			this.mimic = mimic;
+		}
+
+		public boolean canStart () {
+			return ! this.mimic.hasVehicle() && this.mimic.getMimicState() == IS_SLEEPING;
+		}
+		public boolean shouldContinue(){
+			return ! this.mimic.hasVehicle() && this.mimic.getMimicState() == IS_SLEEPING;
+		}
+
+		public void tick () {
+			lockToBlock(10F,10F);
+			((PCChestMimic.MimicMoveControl) this.mimic.getMoveControl()).look(this.mimic.getYaw(), true);
+		}
+		public void lockToBlock(float maxYawChange, float maxPitchChange) {
+			float r = Math.round(this.mimic.getHeadYaw() / 90F)*90F;
+			double x = this.mimic.getBlockX() - this.mimic.getX();
+			double z = this.mimic.getBlockZ() - this.mimic.getZ();
+			this.mimic.setYaw(this.changeAngle(this.mimic.getYaw(), r, maxYawChange));
+		}
+		private float changeAngle(float from, float to, float max) {
+			float f = MathHelper.wrapDegrees(to - from);
+			if (f > max) {
+				f = max;
+			}
+			if (f < -max) {
+				f = -max;
+			}
+			return from + f;
 		}
 	}
 

@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "FLF",
+    "VCV",
+    "FLF"
+  ],
+  "key": {
+    "L": {
+      "tag": "minecraft:logs"
+    },
+    "C": {
+      "item": "minecraft:chest"
+    },
+    "F": {
+      "item": "minecraft:iron_nugget"
+    },
+    "V": {
+      "item": "minecraft:gold_ingot"
+    }
+  },
+  "result": {
+    "item": "probablychests:gold_chest",
+    "count": 1
+  }
+}

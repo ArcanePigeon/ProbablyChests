@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "FLF",
+    "VCV",
+    "FLF"
+  ],
+  "key": {
+    "L": {
+      "tag": "minecraft:logs"
+    },
+    "C": {
+      "item": "minecraft:chest"
+    },
+    "F": {
+      "item": "minecraft:deepslate"
+    },
+    "V": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "result": {
+    "item": "probablychests:stone_chest",
+    "count": 1
+  }
+}

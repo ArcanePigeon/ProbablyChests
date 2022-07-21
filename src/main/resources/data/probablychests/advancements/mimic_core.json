@@ -1,0 +1,28 @@
+{
+  "display": {
+    "icon": {
+      "item": "probablychests:mimic_core"
+    },
+    "title": "Strange Looks",
+    "description": "Acquire a suspicious eye",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "probablychests:encounter_a_mimic",
+  "criteria": {
+    "requirement": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "probablychests:mimic_core"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

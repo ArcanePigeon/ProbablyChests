@@ -5,6 +5,10 @@
     "probablychests:normal_chest",
     "probablychests:rocky_chest",
     "probablychests:stone_chest",
-    "probablychests:gold_chest"
+    "probablychests:gold_chest",
+    "probablychests:nether_chest",
+    "probablychests:shadow_chest",
+    "probablychests:ice_chest",
+    "probablychests:coral_chest"
   ]
 }

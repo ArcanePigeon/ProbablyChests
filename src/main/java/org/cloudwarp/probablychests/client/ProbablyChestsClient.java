@@ -1,47 +1,90 @@
 package org.cloudwarp.probablychests.client;
 
-import io.github.cottonmc.cotton.gui.client.CottonInventoryScreen;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
-import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
+import net.minecraft.block.BlockRenderType;
+import net.minecraft.client.gui.screen.ingame.HandledScreens;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.render.entity.EntityRendererFactory;
+import net.minecraft.client.render.entity.model.EntityModelLayer;
+import net.minecraft.entity.Entity;
+import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.nbt.NbtCompound;
+import org.cloudwarp.probablychests.ProbablyChests;
 import org.cloudwarp.probablychests.block.PCChestTypes;
+import org.cloudwarp.probablychests.client.entity.PCChestRenderer;
+import org.cloudwarp.probablychests.entity.PCTameablePetWithInventory;
 import org.cloudwarp.probablychests.registry.PCBlockEntities;
 import org.cloudwarp.probablychests.registry.PCEntities;
 import org.cloudwarp.probablychests.registry.PCScreenHandlerType;
+import org.cloudwarp.probablychests.screen.PCChestScreen;
+import org.cloudwarp.probablychests.screen.PCMimicScreen;
 import org.cloudwarp.probablychests.screenhandlers.PCMimicScreenHandler;
-import org.cloudwarp.probablychests.screenhandlers.PCScreenHandler;
+import org.cloudwarp.probablychests.utils.PCEventHandler;
 import software.bernie.example.GeckoLibMod;
+
+import java.util.UUID;
 
 @Environment(EnvType.CLIENT)
 public class ProbablyChestsClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient () {
+		ClientPlayNetworking.registerGlobalReceiver(ProbablyChests.id("probably_chests_config_update"), (client, networkHandler, data, sender) -> {
+			NbtCompound tag = data.readNbt();
+			client.execute(() -> ProbablyChests.loadedConfig = ProbablyChests.nbtToConfig(tag));
+		});
+		ClientPlayNetworking.registerGlobalReceiver(PCEventHandler.MIMIC_INVENTORY_PACKET_ID, (client, handler, buf, responseSender) -> {
+			// Read packet data on the event loop
+			int size = buf.readInt();
+			int id = buf.readVarInt();
+			int syncId = buf.readUnsignedByte();
+			client.execute(() -> {
+				ClientPlayerEntity player = client.player;
+				Entity entity = player.world.getEntityById(id);
+				if (entity instanceof PCTameablePetWithInventory mimicEntity && player.currentScreenHandler instanceof PCMimicScreenHandler mimicScreenHandler) {
+					mimicScreenHandler.setMimicEntity(mimicEntity);
+				}
+			});
+		});
+
 		GeckoLibMod.DISABLE_IN_DEV = true;
-		// The IDE is lying to you the type casting is necessary
-		ScreenRegistry.<PCScreenHandler, CottonInventoryScreen<PCScreenHandler>>register(PCScreenHandlerType.PC_CHEST, (desc, inventory, title) -> new CottonInventoryScreen<>(desc, inventory.player, title));
-		ScreenRegistry.<PCMimicScreenHandler, CottonInventoryScreen<PCMimicScreenHandler>>register(PCScreenHandlerType.PC_CHEST_MIMIC, (desc, inventory, title) -> new CottonInventoryScreen<>(desc, inventory.player, title));
+		HandledScreens.register(PCScreenHandlerType.PC_CHEST, PCChestScreen::new);
+		HandledScreens.register(PCScreenHandlerType.PC_CHEST_MIMIC, PCMimicScreen::new);
 
 		BlockEntityRendererRegistry.register(PCBlockEntities.LUSH_CHEST_BLOCK_ENTITY, (BlockEntityRendererFactory.Context rendererDispatcherIn) -> new PCChestRenderer(PCChestTypes.LUSH.name));
 		BlockEntityRendererRegistry.register(PCBlockEntities.NORMAL_CHEST_BLOCK_ENTITY, (BlockEntityRendererFactory.Context rendererDispatcherIn) -> new PCChestRenderer(PCChestTypes.NORMAL.name));
 		BlockEntityRendererRegistry.register(PCBlockEntities.ROCKY_CHEST_BLOCK_ENTITY, (BlockEntityRendererFactory.Context rendererDispatcherIn) -> new PCChestRenderer(PCChestTypes.ROCKY.name));
 		BlockEntityRendererRegistry.register(PCBlockEntities.STONE_CHEST_BLOCK_ENTITY, (BlockEntityRendererFactory.Context rendererDispatcherIn) -> new PCChestRenderer(PCChestTypes.STONE.name));
 		BlockEntityRendererRegistry.register(PCBlockEntities.GOLD_CHEST_BLOCK_ENTITY, (BlockEntityRendererFactory.Context rendererDispatcherIn) -> new PCChestRenderer(PCChestTypes.GOLD.name));
+		BlockEntityRendererRegistry.register(PCBlockEntities.NETHER_CHEST_BLOCK_ENTITY, (BlockEntityRendererFactory.Context rendererDispatcherIn) -> new PCChestRenderer(PCChestTypes.NETHER.name));
+		BlockEntityRendererRegistry.register(PCBlockEntities.SHADOW_CHEST_BLOCK_ENTITY, (BlockEntityRendererFactory.Context rendererDispatcherIn) -> new PCChestRenderer(PCChestTypes.SHADOW.name));
+		BlockEntityRendererRegistry.register(PCBlockEntities.ICE_CHEST_BLOCK_ENTITY, (BlockEntityRendererFactory.Context rendererDispatcherIn) -> new PCChestRenderer(PCChestTypes.ICE.name));
+		BlockEntityRendererRegistry.register(PCBlockEntities.CORAL_CHEST_BLOCK_ENTITY, (BlockEntityRendererFactory.Context rendererDispatcherIn) -> new PCChestRenderer(PCChestTypes.CORAL.name));
 		//---------------------------------------------
 		EntityRendererRegistry.register(PCEntities.NORMAL_CHEST_MIMIC, (EntityRendererFactory.Context rendererDispatcherIn) -> new PCChestMimicRenderer(rendererDispatcherIn, "normal_mimic"));
 		EntityRendererRegistry.register(PCEntities.LUSH_CHEST_MIMIC, (EntityRendererFactory.Context rendererDispatcherIn) -> new PCChestMimicRenderer(rendererDispatcherIn, "lush_mimic"));
 		EntityRendererRegistry.register(PCEntities.ROCKY_CHEST_MIMIC, (EntityRendererFactory.Context rendererDispatcherIn) -> new PCChestMimicRenderer(rendererDispatcherIn, "rocky_mimic"));
 		EntityRendererRegistry.register(PCEntities.STONE_CHEST_MIMIC, (EntityRendererFactory.Context rendererDispatcherIn) -> new PCChestMimicRenderer(rendererDispatcherIn, "stone_mimic"));
 		EntityRendererRegistry.register(PCEntities.GOLD_CHEST_MIMIC, (EntityRendererFactory.Context rendererDispatcherIn) -> new PCChestMimicRenderer(rendererDispatcherIn, "gold_mimic"));
+		EntityRendererRegistry.register(PCEntities.NETHER_CHEST_MIMIC, (EntityRendererFactory.Context rendererDispatcherIn) -> new PCChestMimicRenderer(rendererDispatcherIn, "nether_mimic"));
+		EntityRendererRegistry.register(PCEntities.SHADOW_CHEST_MIMIC, (EntityRendererFactory.Context rendererDispatcherIn) -> new PCChestMimicRenderer(rendererDispatcherIn, "shadow_mimic"));
+		EntityRendererRegistry.register(PCEntities.ICE_CHEST_MIMIC, (EntityRendererFactory.Context rendererDispatcherIn) -> new PCChestMimicRenderer(rendererDispatcherIn, "ice_mimic"));
+		EntityRendererRegistry.register(PCEntities.CORAL_CHEST_MIMIC, (EntityRendererFactory.Context rendererDispatcherIn) -> new PCChestMimicRenderer(rendererDispatcherIn, "coral_mimic"));
 		//---------------------------------------------
 		EntityRendererRegistry.register(PCEntities.NORMAL_CHEST_MIMIC_PET, (EntityRendererFactory.Context rendererDispatcherIn) -> new PCChestMimicPetRenderer(rendererDispatcherIn, "normal_mimic"));
 		EntityRendererRegistry.register(PCEntities.LUSH_CHEST_MIMIC_PET, (EntityRendererFactory.Context rendererDispatcherIn) -> new PCChestMimicPetRenderer(rendererDispatcherIn, "lush_mimic"));
 		EntityRendererRegistry.register(PCEntities.ROCKY_CHEST_MIMIC_PET, (EntityRendererFactory.Context rendererDispatcherIn) -> new PCChestMimicPetRenderer(rendererDispatcherIn, "rocky_mimic"));
 		EntityRendererRegistry.register(PCEntities.STONE_CHEST_MIMIC_PET, (EntityRendererFactory.Context rendererDispatcherIn) -> new PCChestMimicPetRenderer(rendererDispatcherIn, "stone_mimic"));
 		EntityRendererRegistry.register(PCEntities.GOLD_CHEST_MIMIC_PET, (EntityRendererFactory.Context rendererDispatcherIn) -> new PCChestMimicPetRenderer(rendererDispatcherIn, "gold_mimic"));
+		EntityRendererRegistry.register(PCEntities.NETHER_CHEST_MIMIC_PET, (EntityRendererFactory.Context rendererDispatcherIn) -> new PCChestMimicPetRenderer(rendererDispatcherIn, "nether_mimic"));
+		EntityRendererRegistry.register(PCEntities.SHADOW_CHEST_MIMIC_PET, (EntityRendererFactory.Context rendererDispatcherIn) -> new PCChestMimicPetRenderer(rendererDispatcherIn, "shadow_mimic"));
+		EntityRendererRegistry.register(PCEntities.ICE_CHEST_MIMIC_PET, (EntityRendererFactory.Context rendererDispatcherIn) -> new PCChestMimicPetRenderer(rendererDispatcherIn, "ice_mimic"));
+		EntityRendererRegistry.register(PCEntities.CORAL_CHEST_MIMIC_PET, (EntityRendererFactory.Context rendererDispatcherIn) -> new PCChestMimicPetRenderer(rendererDispatcherIn, "coral_mimic"));
 	}
 }
