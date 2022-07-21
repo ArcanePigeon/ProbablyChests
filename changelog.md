@@ -131,3 +131,7 @@ All notable changes to this project will be documented in this file.
 - Bad lighting check for spawning
 - Collision shape for chests does not rotate
 - Mimics could attack through shields sometimes
+
+## [0.5.1] - 7/20/2022
+### Fixed
+- Incorrect tooltips for gold and void keys and locks
