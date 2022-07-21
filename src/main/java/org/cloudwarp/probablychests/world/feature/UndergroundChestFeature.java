@@ -33,13 +33,13 @@ public class UndergroundChestFeature extends Feature<DefaultFeatureConfig> {
 
 	@Override
 	public boolean generate (FeatureContext<DefaultFeatureConfig> context) {
-		Random random = context.getRandom();
+		net.minecraft.util.math.random.Random random = context.getRandom();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		BlockPos pos = context.getOrigin().up();
 		DefaultFeatureConfig config = context.getConfig();
 		BlockState blockToBePlaced = null;
 		boolean isWater = structureWorldAccess.getBlockState(pos).isOf(Blocks.WATER);
-		boolean isNether = structureWorldAccess.getDimension().isUltrawarm();
+		boolean isNether = structureWorldAccess.getDimension().ultrawarm();
 		boolean hasGoldLock = false;
 		PCLockedState lockedState = PCLockedState.UNLOCKED;
 		if (isWater) {

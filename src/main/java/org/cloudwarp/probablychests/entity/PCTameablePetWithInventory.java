@@ -170,7 +170,6 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 				}
 				this.heal((float) item.getFoodComponent().getHunger());
 				this.playSound(PCSounds.MIMIC_BITE, this.getSoundVolume(), 1.5F + getPitchOffset(0.2F));
-				this.emitGameEvent(GameEvent.MOB_INTERACT, this.getCameraBlockPos());
 				return ActionResult.SUCCESS;
 			} else if (itemStack.isOf(PCItems.MIMIC_HAND_BELL)) {
 				if (! this.getIsAbandoned() && this.getOwner() == player) {

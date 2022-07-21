@@ -4,7 +4,6 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,6 +16,6 @@ public class VoidKeyItem extends Item {
 
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-		tooltip.add(new TranslatableText("item.probablychests.void_key.tooltip"));
+		tooltip.add(Text.translatable("item.probablychests.void_key.tooltip"));
 	}
 }

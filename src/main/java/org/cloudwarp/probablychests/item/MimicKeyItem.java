@@ -9,7 +9,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -25,6 +24,6 @@ public class MimicKeyItem extends Item {
 
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-		tooltip.add(new TranslatableText("item.probablychests.mimic_key.tooltip"));
+		tooltip.add(Text.translatable("item.probablychests.mimic_key.tooltip"));
 	}
 }

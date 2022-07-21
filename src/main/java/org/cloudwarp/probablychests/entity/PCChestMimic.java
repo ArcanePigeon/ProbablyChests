@@ -262,7 +262,7 @@ public class PCChestMimic extends PCTameablePetWithInventory implements IAnimata
 		return this.hasVehicle() || ! this.inventory.isEmpty();
 	}
 
-	public static boolean isSpawnDark (ServerWorldAccess world, BlockPos pos, Random random) {
+	public static boolean isSpawnDark (ServerWorldAccess world, BlockPos pos, net.minecraft.util.math.random.Random random) {
 		if (world.getLightLevel(LightType.SKY, pos) > random.nextInt(32)) {
 			return false;
 		} else if (world.getLightLevel(LightType.BLOCK, pos) > 0) {
@@ -274,7 +274,7 @@ public class PCChestMimic extends PCTameablePetWithInventory implements IAnimata
 		}
 	}
 
-	public static boolean canSpawn (EntityType<PCChestMimic> pcChestMimicEntityType, ServerWorldAccess serverWorldAccess, SpawnReason spawnReason, BlockPos blockPos, Random random) {
+	public static boolean canSpawn (EntityType<PCChestMimic> pcChestMimicEntityType, ServerWorldAccess serverWorldAccess, SpawnReason spawnReason, BlockPos blockPos, net.minecraft.util.math.random.Random random) {
 		if (serverWorldAccess.isSkyVisible(blockPos) || isSpawnDark(serverWorldAccess, blockPos, random)) {
 			return false;
 		}

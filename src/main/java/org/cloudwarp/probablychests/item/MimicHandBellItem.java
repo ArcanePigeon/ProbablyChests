@@ -16,7 +16,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
@@ -56,11 +55,11 @@ public class MimicHandBellItem extends Item {
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
 		if(Screen.hasShiftDown()){
-			tooltip.add(new TranslatableText("item.probablychests.mimicHandBell.tooltip.shift"));
-			tooltip.add(new TranslatableText("item.probablychests.mimicHandBell.tooltip.shift2"));
-			tooltip.add(new TranslatableText("item.probablychests.mimicHandBell.tooltip.shift3"));
+			tooltip.add(Text.translatable("item.probablychests.mimicHandBell.tooltip.shift"));
+			tooltip.add(Text.translatable("item.probablychests.mimicHandBell.tooltip.shift2"));
+			tooltip.add(Text.translatable("item.probablychests.mimicHandBell.tooltip.shift3"));
 		}else{
-			tooltip.add(new TranslatableText("item.probablychests.shift.tooltip"));
+			tooltip.add(Text.translatable("item.probablychests.shift.tooltip"));
 		}
 	}
 	static void playSound (World world, BlockPos pos, SoundEvent soundEvent) {

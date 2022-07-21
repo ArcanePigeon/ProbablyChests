@@ -380,14 +380,12 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 		return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
 	}
 
-
 	@Override
-	public void scheduledTick (BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	public void scheduledTick (BlockState state, ServerWorld world, BlockPos pos, net.minecraft.util.math.random.Random random) {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity instanceof PCChestBlockEntity chestBlockEntity) {
 			chestBlockEntity.onScheduledTick();
 		}
-
 	}
 
 	public BlockEntityType<? extends PCChestBlockEntity> getExpectedEntityType () {

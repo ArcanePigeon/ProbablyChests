@@ -33,7 +33,7 @@ public class SurfaceChestFeature extends Feature<DefaultFeatureConfig> {
 
 	@Override
 	public boolean generate (FeatureContext<DefaultFeatureConfig> context) {
-		Random random = context.getRandom();
+		net.minecraft.util.math.random.Random random = context.getRandom();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		BlockPos pos = context.getOrigin();
 		DefaultFeatureConfig config = context.getConfig();
@@ -44,7 +44,7 @@ public class SurfaceChestFeature extends Feature<DefaultFeatureConfig> {
 		if (! structureWorldAccess.getBlockState(pos.down()).isSolidBlock(structureWorldAccess, pos)) {
 			return false;
 		}
-		boolean isEnd = structureWorldAccess.getDimension().hasEnderDragonFight();
+		boolean isEnd = structureWorldAccess.getBiome(pos).isIn(BiomeTags.IS_END);
 		Biome biome = structureWorldAccess.getBiome(pos).value();
 
 		if (isEnd) {

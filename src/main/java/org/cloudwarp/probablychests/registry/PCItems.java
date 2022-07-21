@@ -16,11 +16,11 @@ public class PCItems {
 	public static final Item IRON_KEY = new IronKeyItem(new FabricItemSettings().group(ProbablyChests.PROBABLY_CHESTS_GROUP).maxCount(16));
 	public static final Item IRON_LOCK = new IronLockItem(new FabricItemSettings().group(ProbablyChests.PROBABLY_CHESTS_GROUP).maxCount(16));
 
-	public static final Item GOLD_KEY = new IronKeyItem(new FabricItemSettings().group(ProbablyChests.PROBABLY_CHESTS_GROUP).maxCount(16));
-	public static final Item GOLD_LOCK = new IronLockItem(new FabricItemSettings().group(ProbablyChests.PROBABLY_CHESTS_GROUP).maxCount(16));
+	public static final Item GOLD_KEY = new GoldKeyItem(new FabricItemSettings().group(ProbablyChests.PROBABLY_CHESTS_GROUP).maxCount(16));
+	public static final Item GOLD_LOCK = new GoldLockItem(new FabricItemSettings().group(ProbablyChests.PROBABLY_CHESTS_GROUP).maxCount(16));
 
-	public static final Item VOID_KEY = new IronKeyItem(new FabricItemSettings().group(ProbablyChests.PROBABLY_CHESTS_GROUP).maxCount(16));
-	public static final Item VOID_LOCK = new IronLockItem(new FabricItemSettings().group(ProbablyChests.PROBABLY_CHESTS_GROUP).maxCount(16));
+	public static final Item VOID_KEY = new VoidKeyItem(new FabricItemSettings().group(ProbablyChests.PROBABLY_CHESTS_GROUP).maxCount(16));
+	public static final Item VOID_LOCK = new VoidLockItem(new FabricItemSettings().group(ProbablyChests.PROBABLY_CHESTS_GROUP).maxCount(16));
 
 	public static void init () {
 		Registry.register(Registry.ITEM, ProbablyChests.id("mimic_key"), MIMIC_KEY);

@@ -18,6 +18,6 @@ public class PCChestRenderer extends GeoBlockRenderer<PCChestBlockEntity> {
 
 	@Override
 	public RenderLayer getRenderType (PCChestBlockEntity animatable, float partialTicks, MatrixStack stack, VertexConsumerProvider renderTypeBuffer, VertexConsumer vertexBuilder, int packedLightIn, Identifier textureLocation) {
-		return RenderLayer.getEntityCutoutNoCull(getTextureLocation(animatable), false);
+		return RenderLayer.getEntityCutoutNoCull(getTextureResource(animatable), false);
 	}
 }
