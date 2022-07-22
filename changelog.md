@@ -135,3 +135,10 @@ All notable changes to this project will be documented in this file.
 ## [0.5.1] - 7/20/2022
 ### Fixed
 - Incorrect tooltips for gold and void keys and locks
+
+## [0.5.2] - 7/21/2022
+### Fixed
+- Natural mimics spawning too frequently and incorrectly
+- Wild mimics were unable to attack a mob if it attacked them
+### Changed
+- Updated secret mimic chance and natural spawn rate default config values
