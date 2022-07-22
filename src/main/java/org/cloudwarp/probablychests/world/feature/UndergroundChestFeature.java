@@ -3,7 +3,6 @@ package org.cloudwarp.probablychests.world.feature;
 import com.mojang.serialization.Codec;
 import net.fabricmc.fabric.api.tag.convention.v1.ConventionalBiomeTags;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.state.property.Properties;
@@ -11,20 +10,17 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.util.CaveSurface;
 import net.minecraft.world.gen.feature.util.FeatureContext;
-import org.cloudwarp.probablychests.block.entity.PCChestBlockEntity;
+import org.cloudwarp.probablychests.block.entity.PCBaseChestBlockEntity;
 import org.cloudwarp.probablychests.registry.PCBlocks;
 import org.cloudwarp.probablychests.registry.PCProperties;
 import org.cloudwarp.probablychests.utils.PCLockedState;
 
 import java.util.Optional;
-import java.util.Random;
 
 public class UndergroundChestFeature extends Feature<DefaultFeatureConfig> {
 	public UndergroundChestFeature (Codec<DefaultFeatureConfig> configCodec) {
@@ -110,7 +106,7 @@ public class UndergroundChestFeature extends Feature<DefaultFeatureConfig> {
 			}
 		}
 		structureWorldAccess.setBlockState(pos, blockToBePlaced.with(Properties.WATERLOGGED, isWater).with(PCProperties.PC_LOCKED_STATE,lockedState), 3);
-		PCChestBlockEntity chest = (PCChestBlockEntity) structureWorldAccess.getBlockEntity(pos);
+		PCBaseChestBlockEntity chest = (PCBaseChestBlockEntity) structureWorldAccess.getBlockEntity(pos);
 		if (chest != null) {
 			chest.isNatural = true;
 			chest.hasGoldLock = hasGoldLock;

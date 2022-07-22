@@ -289,7 +289,7 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 		return false;
 	}
 
-	public static class MimicMoveControl extends MoveControl {
+	/*public static class MimicMoveControl extends MoveControl {
 		private final PCChestMimicPet mimic;
 		private float targetYaw;
 		private int ticksUntilJump;
@@ -340,7 +340,7 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 
 			}
 		}
-	}
+	}*/
 
 	static class SitGoal extends Goal {
 		private final PCChestMimicPet mimic;

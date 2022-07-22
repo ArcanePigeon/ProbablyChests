@@ -6,25 +6,16 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.tag.BiomeTags;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.util.CaveSurface;
 import net.minecraft.world.gen.feature.util.FeatureContext;
-import org.cloudwarp.probablychests.block.entity.PCChestBlockEntity;
+import org.cloudwarp.probablychests.block.entity.PCBaseChestBlockEntity;
 import org.cloudwarp.probablychests.registry.PCBlocks;
 import org.cloudwarp.probablychests.registry.PCProperties;
 import org.cloudwarp.probablychests.utils.PCLockedState;
-
-import static org.cloudwarp.probablychests.world.gen.SurfaceChestGeneration.*;
-
-import java.util.Optional;
-import java.util.Random;
 
 public class SurfaceChestFeature extends Feature<DefaultFeatureConfig> {
 	public SurfaceChestFeature (Codec<DefaultFeatureConfig> configCodec) {
@@ -83,7 +74,7 @@ public class SurfaceChestFeature extends Feature<DefaultFeatureConfig> {
 				structureWorldAccess.setBlockState(debugPos = debugPos.up(), Blocks.END_ROD.getDefaultState(), 3);
 			}
 		}
-		PCChestBlockEntity chest = (PCChestBlockEntity) structureWorldAccess.getBlockEntity(pos);
+		PCBaseChestBlockEntity chest = (PCBaseChestBlockEntity) structureWorldAccess.getBlockEntity(pos);
 		if (chest != null) {
 			chest.isNatural = true;
 			chest.hasVoidLock = hasVoidLock;

@@ -2,9 +2,7 @@ package org.cloudwarp.probablychests.block;
 
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
-import net.minecraft.block.SeaPickleBlock;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.EntityType;
 import net.minecraft.screen.ScreenHandlerType;
@@ -12,7 +10,7 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import org.cloudwarp.probablychests.ProbablyChests;
-import org.cloudwarp.probablychests.block.entity.PCChestBlockEntity;
+import org.cloudwarp.probablychests.block.entity.PCBaseChestBlockEntity;
 import org.cloudwarp.probablychests.entity.PCChestMimic;
 import org.cloudwarp.probablychests.entity.PCTameablePetWithInventory;
 import org.cloudwarp.probablychests.registry.PCBlockEntities;
@@ -81,7 +79,7 @@ public enum PCChestTypes {
 		return this.size / this.rowLength;
 	}
 
-	public BlockEntityType<? extends PCChestBlockEntity> getBlockEntityType () {
+	public BlockEntityType<? extends PCBaseChestBlockEntity> getBlockEntityType () {
 		return switch (this) {
 			case LUSH   -> PCBlockEntities.LUSH_CHEST_BLOCK_ENTITY;
 			case NORMAL -> PCBlockEntities.NORMAL_CHEST_BLOCK_ENTITY;
@@ -96,7 +94,7 @@ public enum PCChestTypes {
 		};
 	}
 
-	public PCChestBlockEntity makeEntity (BlockPos pos, BlockState state) {
+	public PCBaseChestBlockEntity makeEntity (BlockPos pos, BlockState state) {
 		return switch (this) {
 			case LUSH   -> PCBlockEntities.LUSH_CHEST_BLOCK_ENTITY.instantiate(pos, state);
 			case NORMAL -> PCBlockEntities.NORMAL_CHEST_BLOCK_ENTITY.instantiate(pos, state);

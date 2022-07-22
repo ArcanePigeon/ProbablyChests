@@ -8,6 +8,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.Hand;
 import org.cloudwarp.probablychests.entity.PCChestMimicPet;
+import org.cloudwarp.probablychests.entity.PCTameablePetWithInventory;
 
 import java.util.EnumSet;
 
@@ -24,11 +25,11 @@ public class PCMeleeAttackGoal extends Goal {
 	private final int attackIntervalTicks = 20;
 	private long lastUpdateTime;
 	private static final long MAX_ATTACK_TIME = 20L;
-	protected final PCChestMimicPet mimic;
+	protected final PCTameablePetWithInventory mimic;
 
 	public PCMeleeAttackGoal (PathAwareEntity mob, double speed, boolean pauseWhenMobIdle) {
 		this.mob = mob;
-		this.mimic = (PCChestMimicPet) mob;
+		this.mimic = (PCTameablePetWithInventory) mob;
 		this.speed = speed;
 		this.pauseWhenMobIdle = pauseWhenMobIdle;
 		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK, Control.JUMP));
@@ -45,13 +46,13 @@ public class PCMeleeAttackGoal extends Goal {
 		if (livingEntity == null) {
 			return false;
 		}
-		if (this.mimic.getIsAbandoned()) {
+		if (this.mimic.getIsAbandoned() && this.mimic instanceof PCChestMimicPet) {
 			return false;
 		}
 		if (! livingEntity.isAlive()) {
 			return false;
 		}
-		if (this.mimic.getOwner() == livingEntity) {
+		if (this.mimic.getOwner() == livingEntity && this.mimic instanceof PCChestMimicPet) {
 			return false;
 		}
 		this.path = this.mob.getNavigation().findPathTo(livingEntity, 0);
@@ -63,6 +64,7 @@ public class PCMeleeAttackGoal extends Goal {
 
 	@Override
 	public boolean shouldContinue () {
+		System.out.println("HERE");
 		LivingEntity livingEntity = this.mob.getTarget();
 		if (livingEntity == null) {
 			return false;
@@ -70,10 +72,10 @@ public class PCMeleeAttackGoal extends Goal {
 		if (! livingEntity.isAlive()) {
 			return false;
 		}
-		if (this.mimic.getIsAbandoned()) {
+		if (this.mimic.getIsAbandoned() && this.mimic instanceof PCChestMimicPet) {
 			return false;
 		}
-		if (this.mimic.getOwner() == livingEntity) {
+		if (this.mimic.getOwner() == livingEntity && this.mimic instanceof PCChestMimicPet) {
 			return false;
 		}
 		if (! this.mob.isInWalkTargetRange(livingEntity.getBlockPos())) {

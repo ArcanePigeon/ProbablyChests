@@ -13,7 +13,7 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import org.cloudwarp.probablychests.ProbablyChests;
 import org.cloudwarp.probablychests.block.PCChestTypes;
-import org.cloudwarp.probablychests.block.entity.PCChestBlockEntity;
+import org.cloudwarp.probablychests.block.entity.PCBaseChestBlockEntity;
 import org.cloudwarp.probablychests.entity.PCChestMimic;
 import org.cloudwarp.probablychests.entity.PCChestMimicPet;
 import org.cloudwarp.probablychests.entity.PCTameablePetWithInventory;
@@ -26,7 +26,7 @@ import static org.cloudwarp.probablychests.block.PCChestBlock.WATERLOGGED;
 public class PCMimicCreationUtils {
 
 	public static boolean createHostileMimic (World world, BlockPos pos, BlockState state, PlayerEntity player, PCChestTypes type) {
-		PCChestBlockEntity chest = getChestBlockFromWorld(world, pos);
+		PCBaseChestBlockEntity chest = getChestBlockFromWorld(world, pos);
 		if (chest != null) {
 			createMimicEntity(false, pos, state, world, chest, player, type);
 			return true;
@@ -41,11 +41,11 @@ public class PCMimicCreationUtils {
 	}
 
 	public static boolean canCreateHostileMimic (World world, BlockPos pos, BlockState state, PlayerEntity player, PCChestTypes type) {
-		PCChestBlockEntity chest = getChestBlockFromWorld(world, pos);
+		PCBaseChestBlockEntity chest = getChestBlockFromWorld(world, pos);
 		return (world.getDifficulty() != Difficulty.PEACEFUL && isSecretMimic(chest, world, pos, type));
 	}
 
-	public static void createMimicEntity (boolean isPetMimic, BlockPos pos, BlockState state, World world, PCChestBlockEntity chest, PlayerEntity player, PCChestTypes type) {
+	public static void createMimicEntity (boolean isPetMimic, BlockPos pos, BlockState state, World world, PCBaseChestBlockEntity chest, PlayerEntity player, PCChestTypes type) {
 		if (chest.hasMadeMimic) {
 			return;
 		}
@@ -124,7 +124,7 @@ public class PCMimicCreationUtils {
 		mimic.world.sendEntityStatus(mimic, (byte) 7);
 	}
 
-	public static boolean isSecretMimic (PCChestBlockEntity chest, World world, BlockPos pos, PCChestTypes type) {
+	public static boolean isSecretMimic (PCBaseChestBlockEntity chest, World world, BlockPos pos, PCChestTypes type) {
 		if(world.getDifficulty() == Difficulty.PEACEFUL){
 			if (! chest.hasBeenInteractedWith && chest.isNatural) {
 				chest.hasBeenInteractedWith = true;
@@ -144,7 +144,7 @@ public class PCMimicCreationUtils {
 		return chest.isMimic;
 	}
 	public static boolean canCreatePetMimic(World world, BlockPos pos, BlockState state, PlayerEntity player, PCChestTypes type){
-		PCChestBlockEntity chest = getChestBlockFromWorld(world, pos);
+		PCBaseChestBlockEntity chest = getChestBlockFromWorld(world, pos);
 		return !(((PlayerEntityAccess) player).checkForMimicLimit()) && !isSecretMimic(chest,world,pos,type);
 	}
 
@@ -156,7 +156,7 @@ public class PCMimicCreationUtils {
 	}
 
 	public static boolean createPetMimic (World world, BlockPos pos, BlockState state, PlayerEntity player, PCChestTypes type) {
-		PCChestBlockEntity chest = getChestBlockFromWorld(world, pos);
+		PCBaseChestBlockEntity chest = getChestBlockFromWorld(world, pos);
 		if (chest != null) {
 			createMimicEntity(true, pos, state, world, chest, player, type);
 			return true;
@@ -164,10 +164,10 @@ public class PCMimicCreationUtils {
 		return false;
 	}
 
-	public static PCChestBlockEntity getChestBlockFromWorld (World world, BlockPos pos) {
-		PCChestBlockEntity chest = null;
-		if (world.getBlockEntity(pos) instanceof PCChestBlockEntity) {
-			chest = (PCChestBlockEntity) world.getBlockEntity(pos);
+	public static PCBaseChestBlockEntity getChestBlockFromWorld (World world, BlockPos pos) {
+		PCBaseChestBlockEntity chest = null;
+		if (world.getBlockEntity(pos) instanceof PCBaseChestBlockEntity) {
+			chest = (PCBaseChestBlockEntity) world.getBlockEntity(pos);
 		}
 		return chest;
 	}

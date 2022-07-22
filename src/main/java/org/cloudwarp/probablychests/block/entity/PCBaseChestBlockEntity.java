@@ -2,7 +2,9 @@ package org.cloudwarp.probablychests.block.entity;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.*;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.LootableContainerBlockEntity;
+import net.minecraft.block.entity.ViewerCountManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
@@ -34,7 +36,7 @@ import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 import java.util.UUID;
 
-public class PCChestBlockEntity extends LootableContainerBlockEntity implements IAnimatable {
+public class PCBaseChestBlockEntity extends LootableContainerBlockEntity implements IAnimatable {
 
 	public static final AnimationBuilder CLOSED = new AnimationBuilder().addAnimation("closed", false);
 	public static final AnimationBuilder CLOSE = new AnimationBuilder().addAnimation("close", false).addAnimation("closed",true);
@@ -57,24 +59,24 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 
 		@Override
 		protected void onContainerOpen (World world, BlockPos pos, BlockState state) {
-			PCChestBlockEntity.playSound(world, pos, state, SoundEvents.BLOCK_CHEST_OPEN);
+			PCBaseChestBlockEntity.playSound(world, pos, state, SoundEvents.BLOCK_CHEST_OPEN);
 		}
 
 		@Override
 		protected void onContainerClose (World world, BlockPos pos, BlockState state) {
-			PCChestBlockEntity.playSound(world, pos, state, SoundEvents.BLOCK_CHEST_CLOSE);
+			PCBaseChestBlockEntity.playSound(world, pos, state, SoundEvents.BLOCK_CHEST_CLOSE);
 		}
 
 		@Override
 		protected void onViewerCountUpdate (World world, BlockPos pos, BlockState state, int oldViewerCount, int newViewerCount) {
-			PCChestBlockEntity.this.onInvOpenOrClose(world, pos, state, oldViewerCount, newViewerCount);
+			PCBaseChestBlockEntity.this.onInvOpenOrClose(world, pos, state, oldViewerCount, newViewerCount);
 		}
 
 		@Override
 		protected boolean isPlayerViewing (PlayerEntity player) {
 			if (player.currentScreenHandler instanceof PCChestScreenHandler) {
 				Inventory inventory = ((PCChestScreenHandler) player.currentScreenHandler).getInventory();
-				return inventory == PCChestBlockEntity.this;
+				return inventory == PCBaseChestBlockEntity.this;
 			}
 			return false;
 		}
@@ -82,7 +84,7 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 	PCChestTypes type;
 	private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(54, ItemStack.EMPTY);
 
-	public PCChestBlockEntity (PCChestTypes type, BlockPos pos, BlockState state) {
+	public PCBaseChestBlockEntity (PCChestTypes type, BlockPos pos, BlockState state) {
 		super(type.getBlockEntityType(), pos, state);
 		this.type = type;
 		this.setInvStackList(DefaultedList.ofSize(this.size(), ItemStack.EMPTY));
@@ -91,13 +93,13 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 	public static int getPlayersLookingInChestCount (BlockView world, BlockPos pos) {
 		BlockEntity blockEntity;
 		BlockState blockState = world.getBlockState(pos);
-		if (blockState.hasBlockEntity() && (blockEntity = world.getBlockEntity(pos)) instanceof PCChestBlockEntity) {
-			return ((PCChestBlockEntity) blockEntity).stateManager.getViewerCount();
+		if (blockState.hasBlockEntity() && (blockEntity = world.getBlockEntity(pos)) instanceof PCBaseChestBlockEntity) {
+			return ((PCBaseChestBlockEntity) blockEntity).stateManager.getViewerCount();
 		}
 		return 0;
 	}
 
-	public static void copyInventory (PCChestBlockEntity from, PCChestBlockEntity to) {
+	public static void copyInventory (PCBaseChestBlockEntity from, PCBaseChestBlockEntity to) {
 		DefaultedList<ItemStack> defaultedList = from.getInvStackList();
 		from.setInvStackList(to.getInvStackList());
 		to.setInvStackList(defaultedList);
@@ -212,7 +214,7 @@ public class PCChestBlockEntity extends LootableContainerBlockEntity implements 
 	}
 
 	public PCChestState getChestState () {
-		return this.getCachedState().get(PCChestBlockEntity.CHEST_STATE);
+		return this.getCachedState().get(PCBaseChestBlockEntity.CHEST_STATE);
 	}
 
 	public void setChestState (PCChestState state) {
