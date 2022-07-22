@@ -6,6 +6,8 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.*;
+import net.minecraft.entity.ai.control.MoveControl;
+import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -45,6 +47,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import org.cloudwarp.probablychests.ProbablyChests;
 import org.cloudwarp.probablychests.block.PCChestTypes;
+import org.cloudwarp.probablychests.entity.ai.MimicMoveControl;
 import org.cloudwarp.probablychests.interfaces.PlayerEntityAccess;
 import org.cloudwarp.probablychests.registry.PCItems;
 import org.cloudwarp.probablychests.registry.PCSounds;
@@ -56,6 +59,7 @@ import org.jetbrains.annotations.Nullable;
 
 import static org.cloudwarp.probablychests.utils.PCMimicCreationUtils.*;
 
+import java.util.EnumSet;
 import java.util.UUID;
 
 public abstract class PCTameablePetWithInventory extends TameableEntity implements Tameable, InventoryChangedListener, Angerable {
@@ -280,7 +284,7 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 	}
 
 	@Override
-	protected float getSoundVolume () {
+	public float getSoundVolume () {
 		return 0.6F;
 	}
 
@@ -351,11 +355,11 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 	}
 
 
-	float getJumpSoundPitch () {
+	public float getJumpSoundPitch () {
 		return ((this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 0.7F);
 	}
 
-	protected SoundEvent getJumpSound () {
+	public SoundEvent getJumpSound () {
 		return SoundEvents.BLOCK_CHEST_OPEN;
 	}
 
@@ -550,5 +554,86 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 			return screenHandler;
 		}
 	}
+	public int getTicksUntilNextJump () {
+		return this.random.nextInt(40) + 5;
+	}
 
+
+	static class SwimmingGoal extends Goal {
+		private final PCTameablePetWithInventory mimic;
+
+		public SwimmingGoal (PCTameablePetWithInventory mimic) {
+			this.mimic = mimic;
+			this.setControls(EnumSet.of(Control.JUMP, Control.MOVE));
+			mimic.getNavigation().setCanSwim(true);
+		}
+
+		public boolean canStart () {
+			return (this.mimic.isTouchingWater() || this.mimic.isInLava()) && this.mimic.getMoveControl() instanceof MimicMoveControl;
+		}
+
+		public boolean shouldRunEveryTick () {
+			return true;
+		}
+
+		public void tick () {
+			if (this.mimic.getRandom().nextFloat() < 0.8F) {
+				this.mimic.getJumpControl().setActive();
+			}
+
+			((MimicMoveControl) this.mimic.getMoveControl()).move(4.2D);
+		}
+	}
+
+	static class IdleGoal extends Goal {
+		private final PCTameablePetWithInventory mimic;
+
+		public IdleGoal (PCTameablePetWithInventory mimic) {
+			this.mimic = mimic;
+			this.setControls(EnumSet.of(Control.LOOK));
+		}
+
+		public boolean canStart () {
+			return ! this.mimic.hasVehicle();
+		}
+
+		public void tick () {
+
+		}
+	}
+	static class SleepGoal extends Goal {
+		private final PCTameablePetWithInventory mimic;
+
+		public SleepGoal (PCTameablePetWithInventory mimic) {
+			this.mimic = mimic;
+		}
+
+		public boolean canStart () {
+			return ! this.mimic.hasVehicle() && this.mimic.getMimicState() == IS_SLEEPING;
+		}
+		public boolean shouldContinue(){
+			return ! this.mimic.hasVehicle() && this.mimic.getMimicState() == IS_SLEEPING;
+		}
+
+		public void tick () {
+			lockToBlock(10F,10F);
+			((MimicMoveControl) this.mimic.getMoveControl()).look(this.mimic.getYaw(), true);
+		}
+		public void lockToBlock(float maxYawChange, float maxPitchChange) {
+			float r = Math.round(this.mimic.getHeadYaw() / 90F)*90F;
+			double x = this.mimic.getBlockX() - this.mimic.getX();
+			double z = this.mimic.getBlockZ() - this.mimic.getZ();
+			this.mimic.setYaw(this.changeAngle(this.mimic.getYaw(), r, maxYawChange));
+		}
+		private float changeAngle(float from, float to, float max) {
+			float f = MathHelper.wrapDegrees(to - from);
+			if (f > max) {
+				f = max;
+			}
+			if (f < -max) {
+				f = -max;
+			}
+			return from + f;
+		}
+	}
 }

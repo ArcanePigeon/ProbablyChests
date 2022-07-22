@@ -26,6 +26,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import org.cloudwarp.probablychests.block.PCChestTypes;
+import org.cloudwarp.probablychests.entity.ai.MimicMoveControl;
 import org.cloudwarp.probablychests.entity.ai.PCMeleeAttackGoal;
 import org.cloudwarp.probablychests.entity.ai.PCMimicEscapeDangerGoal;
 import org.cloudwarp.probablychests.registry.PCSounds;
@@ -77,7 +78,7 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 		this.type = PCChestTypes.NORMAL;
 		this.ignoreCameraFrustum = true;
 		this.inventory.addListener(this);
-		this.moveControl = new PCChestMimicPet.MimicMoveControl(this);
+		this.moveControl = new MimicMoveControl(this);
 	}
 
 	public static DefaultAttributeContainer.Builder createMobAttributes () {
@@ -90,9 +91,8 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 	}
 
 	protected void initGoals () {
-		this.goalSelector.add(1, new PCChestMimicPet.SwimmingGoal(this));
+		this.goalSelector.add(1, new PCTameablePetWithInventory.SwimmingGoal(this));
 		this.goalSelector.add(2, new SitGoal(this));
-		//this.goalSelector.add(1, new PetMimicEscapeDangerGoal(1.5));
 		this.goalSelector.add(5, new PCMeleeAttackGoal(this, 1.0, true));
 		this.goalSelector.add(6, new FollowOwnerGoal(this, 1, 5, 2, false));
 		this.targetSelector.add(1, new TrackOwnerAttackerGoal(this));
@@ -102,17 +102,6 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 		this.targetSelector.add(4, new ActiveTargetGoal<>(this, PlayerEntity.class, 10, true, false, this::shouldAngerAt));
 	}
 
-	class PetMimicEscapeDangerGoal
-			extends PCMimicEscapeDangerGoal {
-		public PetMimicEscapeDangerGoal (double speed) {
-			super(PCChestMimicPet.this, speed);
-		}
-
-		@Override
-		protected boolean isInDanger () {
-			return this.mob.shouldEscapePowderSnow() || this.mob.isOnFire();
-		}
-	}
 
 
 	public boolean isBreedingItem (ItemStack stack) {
@@ -213,7 +202,7 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 	}
 
 
-	protected int getTicksUntilNextJump () {
+	public int getTicksUntilNextJump () {
 		return 10;
 	}
 
@@ -289,63 +278,11 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 		return false;
 	}
 
-	public static class MimicMoveControl extends MoveControl {
-		private final PCChestMimicPet mimic;
-		private float targetYaw;
-		private int ticksUntilJump;
-		private boolean jumpOften;
-
-		public MimicMoveControl (PCChestMimicPet mimic) {
-			super(mimic);
-			this.mimic = mimic;
-			this.targetYaw = 180.0F * mimic.getYaw() / 3.1415927F;
-		}
-
-		public void look (float targetYaw, boolean jumpOften) {
-			this.targetYaw = targetYaw;
-			this.jumpOften = jumpOften;
-		}
-
-		public void move (double speed) {
-			this.speed = speed;
-			this.state = State.MOVE_TO;
-		}
-
-		public void tick () {
-			this.entity.setYaw(this.wrapDegrees(this.entity.getYaw(), this.targetYaw, 90.0F));
-			this.entity.headYaw = this.entity.getYaw();
-			this.entity.bodyYaw = this.entity.getYaw();
-			if (this.state != State.MOVE_TO) {
-				this.entity.setForwardSpeed(0.0F);
-			} else {
-				this.state = State.WAIT;
-				if (this.entity.isOnGround()) {
-					this.entity.setMovementSpeed((float) (this.speed * this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED)));
-					if (this.ticksUntilJump-- <= 0) {
-						this.ticksUntilJump = this.mimic.getTicksUntilNextJump();
-						if (this.jumpOften) {
-							this.ticksUntilJump /= 3;
-						}
-
-						this.mimic.getJumpControl().setActive();
-						this.mimic.playSound(this.mimic.getJumpSound(), this.mimic.getSoundVolume(), this.mimic.getJumpSoundPitch());
-					} else {
-						this.mimic.sidewaysSpeed = 0.0F;
-						this.mimic.forwardSpeed = 0.0F;
-						this.entity.setMovementSpeed(0.0F);
-					}
-				} else {
-					this.entity.setMovementSpeed((float) (this.speed * this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED)));
-				}
-
-			}
-		}
-	}
 
 	static class SitGoal extends Goal {
-		private final PCChestMimicPet mimic;
+		private final PCTameablePetWithInventory mimic;
 
-		public SitGoal (PCChestMimicPet mimic) {
+		public SitGoal (PCTameablePetWithInventory mimic) {
 			this.mimic = mimic;
 			this.setControls(EnumSet.of(Control.JUMP, Control.MOVE));
 		}
@@ -382,7 +319,7 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 	}
 
 	static class FollowOwnerGoal extends Goal {
-		private final PCChestMimicPet mimic;
+		private final PCTameablePetWithInventory mimic;
 		private final WorldView world;
 		private final EntityNavigation navigation;
 		private final float maxDistance;
@@ -392,7 +329,7 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 		private int updateCountdownTicks;
 		private float oldWaterPathfindingPenalty;
 
-		public FollowOwnerGoal (PCChestMimicPet mimic, double speed, float minDistance, float maxDistance, boolean leavesAllowed) {
+		public FollowOwnerGoal (PCTameablePetWithInventory mimic, double speed, float minDistance, float maxDistance, boolean leavesAllowed) {
 			this.mimic = mimic;
 			this.world = mimic.world;
 			this.navigation = mimic.getNavigation();
@@ -452,7 +389,7 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 			if (this.owner != null) {
 				this.mimic.lookAtEntity(this.owner, 40.0F, 40.0F);
 			}
-			((PCChestMimicPet.MimicMoveControl) this.mimic.getMoveControl()).look(this.mimic.getYaw(), true);
+			((MimicMoveControl) this.mimic.getMoveControl()).look(this.mimic.getYaw(), true);
 			this.mimic.getLookControl().lookAt(this.owner, 40.0F, (float) this.mimic.getMaxLookPitchChange());
 			if (-- this.updateCountdownTicks <= 0) {
 				this.updateCountdownTicks = this.getTickCount(10);
@@ -460,7 +397,7 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 					if (this.mimic.squaredDistanceTo(this.owner) >= 184.0D) {
 						this.tryTeleport();
 					} else {
-						((PCChestMimicPet.MimicMoveControl) this.mimic.getMoveControl()).move(moveSpeed);
+						((MimicMoveControl) this.mimic.getMoveControl()).move(moveSpeed);
 					}
 				}
 			}
@@ -513,32 +450,6 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 		}
 	}
 
-	static class SwimmingGoal extends Goal {
-		private final PCChestMimicPet mimic;
-
-		public SwimmingGoal (PCChestMimicPet mimic) {
-			this.mimic = mimic;
-			this.setControls(EnumSet.of(Control.JUMP, Control.MOVE));
-			mimic.getNavigation().setCanSwim(true);
-		}
-
-		public boolean canStart () {
-			return (this.mimic.isTouchingWater() || this.mimic.isInLava()) && this.mimic.getMoveControl() instanceof PCChestMimicPet.MimicMoveControl;
-		}
-
-		public boolean shouldRunEveryTick () {
-			return true;
-		}
-
-		public void tick () {
-			if (this.mimic.getRandom().nextFloat() < 0.8F) {
-				this.mimic.getJumpControl().setActive();
-			}
-
-			((PCChestMimicPet.MimicMoveControl) this.mimic.getMoveControl()).move(4.2D);
-		}
-	}
-
 	public boolean tryAttack (Entity target) {
 		boolean bl = target.damage(DamageSource.mob(this), (float) ((int) this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE)));
 		if (bl) {
@@ -553,8 +464,8 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 
 	public boolean canAttackWithOwner (LivingEntity target, LivingEntity owner) {
 		if (! (target instanceof GhastEntity) || this.getIsAbandoned()) {
-			if (target instanceof PCChestMimicPet) {
-				PCChestMimicPet mimic = (PCChestMimicPet) target;
+			if (target instanceof PCTameablePetWithInventory) {
+				PCTameablePetWithInventory mimic = (PCTameablePetWithInventory) target;
 				return ! mimic.isTamed() || mimic.getOwner() != owner;
 			} else if (target instanceof PlayerEntity && owner instanceof PlayerEntity && ! ((PlayerEntity) owner).shouldDamagePlayer((PlayerEntity) target)) {
 				return false;

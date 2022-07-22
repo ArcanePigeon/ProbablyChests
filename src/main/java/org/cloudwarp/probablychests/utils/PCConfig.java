@@ -24,7 +24,7 @@ public class PCConfig implements ConfigData {
 		@ConfigEntry.Gui.Tooltip()
 		public boolean spawnNaturalMimics = true;
 		@ConfigEntry.Gui.Tooltip()
-		public float naturalMimicSpawnRate = 0.95F;
+		public float naturalMimicSpawnRate = 0.6F;
 		@ConfigEntry.Gui.Tooltip()
 		public boolean allowPetMimics = true;
 		@ConfigEntry.Gui.Tooltip()
@@ -45,7 +45,7 @@ public class PCConfig implements ConfigData {
 		@ConfigEntry.Gui.Tooltip()
 		public float surfaceChestSpawnChance = 0.6F;
 		@ConfigEntry.Gui.Tooltip()
-		public float secretMimicChance = 0.35F;
+		public float secretMimicChance = 0.20F;
 	}
 
 	public static class ChestSettings {
