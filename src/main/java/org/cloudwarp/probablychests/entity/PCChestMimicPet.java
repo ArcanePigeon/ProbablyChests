@@ -26,6 +26,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import org.cloudwarp.probablychests.block.PCChestTypes;
+import org.cloudwarp.probablychests.entity.ai.MimicMoveControl;
 import org.cloudwarp.probablychests.entity.ai.PCMeleeAttackGoal;
 import org.cloudwarp.probablychests.entity.ai.PCMimicEscapeDangerGoal;
 import org.cloudwarp.probablychests.registry.PCSounds;
@@ -61,7 +62,7 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 	private static final String TONGUE_CONTROLLER = "tongueController";
 
 
-	private static final double moveSpeed = 1.0D;
+
 
 
 	public SimpleInventory inventory = new SimpleInventory(54);
@@ -77,7 +78,7 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 		this.type = PCChestTypes.NORMAL;
 		this.ignoreCameraFrustum = true;
 		this.inventory.addListener(this);
-		this.moveControl = new PCChestMimicPet.MimicMoveControl(this);
+		this.moveControl = new MimicMoveControl(this);
 	}
 
 	public static DefaultAttributeContainer.Builder createMobAttributes () {
@@ -90,7 +91,7 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 	}
 
 	protected void initGoals () {
-		this.goalSelector.add(1, new PCChestMimicPet.SwimmingGoal(this));
+		this.goalSelector.add(1, new PCTameablePetWithInventory.SwimmingGoal(this));
 		this.goalSelector.add(2, new SitGoal(this));
 		//this.goalSelector.add(1, new PetMimicEscapeDangerGoal(1.5));
 		this.goalSelector.add(5, new PCMeleeAttackGoal(this, 1.0, true));
@@ -213,7 +214,7 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 	}
 
 
-	protected int getTicksUntilNextJump () {
+	public int getTicksUntilNextJump () {
 		return 10;
 	}
 
@@ -378,164 +379,6 @@ public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnim
 
 		public void stop () {
 			this.mimic.setInSittingPose(false);
-		}
-	}
-
-	static class FollowOwnerGoal extends Goal {
-		private final PCChestMimicPet mimic;
-		private final WorldView world;
-		private final EntityNavigation navigation;
-		private final float maxDistance;
-		private final float minDistance;
-		private final boolean leavesAllowed;
-		private LivingEntity owner;
-		private int updateCountdownTicks;
-		private float oldWaterPathfindingPenalty;
-
-		public FollowOwnerGoal (PCChestMimicPet mimic, double speed, float minDistance, float maxDistance, boolean leavesAllowed) {
-			this.mimic = mimic;
-			this.world = mimic.world;
-			this.navigation = mimic.getNavigation();
-			this.minDistance = minDistance;
-			this.maxDistance = maxDistance;
-			this.leavesAllowed = leavesAllowed;
-			this.setControls(EnumSet.of(Control.JUMP, Control.MOVE, Control.LOOK));
-			if (! (mimic.getNavigation() instanceof MobNavigation) && ! (mimic.getNavigation() instanceof BirdNavigation)) {
-				throw new IllegalArgumentException("Unsupported mob type for FollowOwnerGoal");
-			}
-		}
-
-		public boolean canStart () {
-			LivingEntity livingEntity = this.mimic.getOwner();
-			if (livingEntity == null) {
-				return false;
-			} else if (livingEntity.isSpectator()) {
-				return false;
-			} else if (this.mimic.isSitting()) {
-				return false;
-			} else if (this.mimic.squaredDistanceTo(livingEntity) < (double) (this.minDistance * this.minDistance)) {
-				return false;
-			} else if (this.mimic.getIsAbandoned()) {
-				return false;
-			} else {
-				this.owner = livingEntity;
-				return true;
-			}
-		}
-
-		public boolean shouldContinue () {
-			if (this.navigation.isIdle()) {
-				return false;
-			} else if (this.mimic.isSitting()) {
-				return false;
-			} else if (this.mimic.getIsAbandoned()) {
-				return false;
-			} else {
-				return ! (this.mimic.squaredDistanceTo(this.owner) <= (double) (this.maxDistance * this.maxDistance));
-			}
-		}
-
-		public void start () {
-			this.updateCountdownTicks = 0;
-			this.oldWaterPathfindingPenalty = this.mimic.getPathfindingPenalty(PathNodeType.WATER);
-			this.mimic.setPathfindingPenalty(PathNodeType.WATER, 0.0F);
-			this.mimic.setTarget(this.owner);
-		}
-
-		public void stop () {
-			this.owner = null;
-			this.navigation.stop();
-			this.mimic.setPathfindingPenalty(PathNodeType.WATER, this.oldWaterPathfindingPenalty);
-		}
-
-		public void tick () {
-			if (this.owner != null) {
-				this.mimic.lookAtEntity(this.owner, 40.0F, 40.0F);
-			}
-			((PCChestMimicPet.MimicMoveControl) this.mimic.getMoveControl()).look(this.mimic.getYaw(), true);
-			this.mimic.getLookControl().lookAt(this.owner, 40.0F, (float) this.mimic.getMaxLookPitchChange());
-			if (-- this.updateCountdownTicks <= 0) {
-				this.updateCountdownTicks = this.getTickCount(10);
-				if (! this.mimic.hasVehicle()) {
-					if (this.mimic.squaredDistanceTo(this.owner) >= 184.0D) {
-						this.tryTeleport();
-					} else {
-						((PCChestMimicPet.MimicMoveControl) this.mimic.getMoveControl()).move(moveSpeed);
-					}
-				}
-			}
-		}
-
-		private void tryTeleport () {
-			BlockPos blockPos = this.owner.getBlockPos();
-
-			for (int i = 0; i < 10; ++ i) {
-				int j = this.getRandomInt(- 3, 3);
-				int k = this.getRandomInt(- 1, 1);
-				int l = this.getRandomInt(- 3, 3);
-				boolean bl = this.tryTeleportTo(blockPos.getX() + j, blockPos.getY() + k, blockPos.getZ() + l);
-				if (bl) {
-					return;
-				}
-			}
-
-		}
-
-		private boolean tryTeleportTo (int x, int y, int z) {
-			if (Math.abs((double) x - this.owner.getX()) < 2.0D && Math.abs((double) z - this.owner.getZ()) < 2.0D) {
-				return false;
-			} else if (! this.canTeleportTo(new BlockPos(x, y, z))) {
-				return false;
-			} else {
-				this.mimic.refreshPositionAndAngles((double) x + 0.5D, (double) y, (double) z + 0.5D, this.mimic.getYaw(), this.mimic.getPitch());
-				this.navigation.stop();
-				return true;
-			}
-		}
-
-		private boolean canTeleportTo (BlockPos pos) {
-			PathNodeType pathNodeType = LandPathNodeMaker.getLandNodeType(this.world, pos.mutableCopy());
-			if (pathNodeType != PathNodeType.WALKABLE) {
-				return false;
-			} else {
-				BlockState blockState = this.world.getBlockState(pos.down());
-				if (! this.leavesAllowed && blockState.getBlock() instanceof LeavesBlock) {
-					return false;
-				} else {
-					BlockPos blockPos = pos.subtract(this.mimic.getBlockPos());
-					return this.world.isSpaceEmpty(this.mimic, this.mimic.getBoundingBox().offset(blockPos));
-				}
-			}
-		}
-
-		private int getRandomInt (int min, int max) {
-			return this.mimic.getRandom().nextInt(max - min + 1) + min;
-		}
-	}
-
-	static class SwimmingGoal extends Goal {
-		private final PCChestMimicPet mimic;
-
-		public SwimmingGoal (PCChestMimicPet mimic) {
-			this.mimic = mimic;
-			this.setControls(EnumSet.of(Control.JUMP, Control.MOVE));
-			mimic.getNavigation().setCanSwim(true);
-		}
-
-		public boolean canStart () {
-			return (this.mimic.isTouchingWater() || this.mimic.isInLava()) && this.mimic.getMoveControl() instanceof PCChestMimicPet.MimicMoveControl;
-		}
-
-		public boolean shouldRunEveryTick () {
-			return true;
-		}
-
-		public void tick () {
-			if (this.mimic.getRandom().nextFloat() < 0.8F) {
-				this.mimic.getJumpControl().setActive();
-			}
-
-			((PCChestMimicPet.MimicMoveControl) this.mimic.getMoveControl()).move(4.2D);
 		}
 	}
 

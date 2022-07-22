@@ -4,9 +4,12 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.LeavesBlock;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.control.MoveControl;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.ai.pathing.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -43,9 +46,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
 import org.cloudwarp.probablychests.ProbablyChests;
 import org.cloudwarp.probablychests.block.PCChestTypes;
+import org.cloudwarp.probablychests.entity.ai.MimicMoveControl;
 import org.cloudwarp.probablychests.interfaces.PlayerEntityAccess;
 import org.cloudwarp.probablychests.registry.PCItems;
 import org.cloudwarp.probablychests.registry.PCSounds;
@@ -57,6 +62,7 @@ import org.jetbrains.annotations.Nullable;
 
 import static org.cloudwarp.probablychests.utils.PCMimicCreationUtils.*;
 
+import java.util.EnumSet;
 import java.util.UUID;
 
 public abstract class PCTameablePetWithInventory extends TameableEntity implements Tameable, InventoryChangedListener, Angerable {
@@ -103,6 +109,8 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 	public int biteAnimationTimer;
 	public int isAbandonedTimer;
 	public int biteDamageAmount = 2;
+
+	private static final double moveSpeed = 1.0D;
 
 
 	public PCTameablePetWithInventory (EntityType<? extends TameableEntity> entityType, World world) {
@@ -280,7 +288,7 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 	}
 
 	@Override
-	protected float getSoundVolume () {
+	public float getSoundVolume () {
 		return 0.6F;
 	}
 
@@ -351,11 +359,11 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 	}
 
 
-	float getJumpSoundPitch () {
+	public float getJumpSoundPitch () {
 		return ((this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 0.7F);
 	}
 
-	protected SoundEvent getJumpSound () {
+	public SoundEvent getJumpSound () {
 		return SoundEvents.BLOCK_CHEST_OPEN;
 	}
 
@@ -550,60 +558,219 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 			return screenHandler;
 		}
 	}
-	protected int getTicksUntilNextJump () {
+	public int getTicksUntilNextJump () {
 		return this.random.nextInt(40) + 5;
 	}
 
-	public static class MimicMoveControl extends MoveControl {
+
+
+	static class SwimmingGoal extends Goal {
 		private final PCTameablePetWithInventory mimic;
-		private float targetYaw;
-		private int ticksUntilJump;
-		private boolean jumpOften;
 
-		public MimicMoveControl (PCTameablePetWithInventory mimic) {
-			super(mimic);
+		public SwimmingGoal (PCTameablePetWithInventory mimic) {
 			this.mimic = mimic;
-			this.targetYaw = 180.0F * mimic.getYaw() / 3.1415927F;
+			this.setControls(EnumSet.of(Control.JUMP, Control.MOVE));
+			mimic.getNavigation().setCanSwim(true);
 		}
 
-		public void look (float targetYaw, boolean jumpOften) {
-			this.targetYaw = targetYaw;
-			this.jumpOften = jumpOften;
+		public boolean canStart () {
+			return (this.mimic.isTouchingWater() || this.mimic.isInLava()) && this.mimic.getMoveControl() instanceof MimicMoveControl;
 		}
 
-		public void move (double speed) {
-			this.speed = speed;
-			this.state = State.MOVE_TO;
+		public boolean shouldRunEveryTick () {
+			return true;
 		}
 
 		public void tick () {
-			this.entity.setYaw(this.wrapDegrees(this.entity.getYaw(), this.targetYaw, 90.0F));
-			this.entity.headYaw = this.entity.getYaw();
-			this.entity.bodyYaw = this.entity.getYaw();
-			if (this.state != State.MOVE_TO) {
-				this.entity.setForwardSpeed(0.0F);
-			} else {
-				this.state = State.WAIT;
-				if (this.entity.isOnGround()) {
-					this.entity.setMovementSpeed((float) (this.speed * this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED)));
-					if (this.ticksUntilJump-- <= 0) {
-						this.ticksUntilJump = this.mimic.getTicksUntilNextJump();
-						if (this.jumpOften) {
-							this.ticksUntilJump /= 3;
-						}
-
-						this.mimic.getJumpControl().setActive();
-						this.mimic.playSound(this.mimic.getJumpSound(), this.mimic.getSoundVolume(), this.mimic.getJumpSoundPitch());
-					} else {
-						this.mimic.sidewaysSpeed = 0.0F;
-						this.mimic.forwardSpeed = 0.0F;
-						this.entity.setMovementSpeed(0.0F);
-					}
-				} else {
-					this.entity.setMovementSpeed((float) (this.speed * this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED)));
-				}
-
+			if (this.mimic.getRandom().nextFloat() < 0.8F) {
+				this.mimic.getJumpControl().setActive();
 			}
+
+			((MimicMoveControl) this.mimic.getMoveControl()).move(4.2D);
+		}
+	}
+
+	static class IdleGoal extends Goal {
+		private final PCTameablePetWithInventory mimic;
+
+		public IdleGoal (PCTameablePetWithInventory mimic) {
+			this.mimic = mimic;
+			this.setControls(EnumSet.of(Control.LOOK, Control.MOVE, Control.JUMP));
+		}
+
+		public boolean canStart () {
+			return ! this.mimic.hasVehicle();
+		}
+
+		public void tick () {
+
+		}
+	}
+	static class SleepGoal extends Goal {
+		private final PCTameablePetWithInventory mimic;
+
+		public SleepGoal (PCTameablePetWithInventory mimic) {
+			this.mimic = mimic;
+		}
+
+		public boolean canStart () {
+			return ! this.mimic.hasVehicle() && this.mimic.getMimicState() == IS_SLEEPING;
+		}
+		public boolean shouldContinue(){
+			return ! this.mimic.hasVehicle() && this.mimic.getMimicState() == IS_SLEEPING;
+		}
+
+		public void tick () {
+			lockToBlock(10F,10F);
+			((MimicMoveControl) this.mimic.getMoveControl()).look(this.mimic.getYaw(), true);
+		}
+		public void lockToBlock(float maxYawChange, float maxPitchChange) {
+			float r = Math.round(this.mimic.getHeadYaw() / 90F)*90F;
+			double x = this.mimic.getBlockX() - this.mimic.getX();
+			double z = this.mimic.getBlockZ() - this.mimic.getZ();
+			this.mimic.setYaw(this.changeAngle(this.mimic.getYaw(), r, maxYawChange));
+		}
+		private float changeAngle(float from, float to, float max) {
+			float f = MathHelper.wrapDegrees(to - from);
+			if (f > max) {
+				f = max;
+			}
+			if (f < -max) {
+				f = -max;
+			}
+			return from + f;
+		}
+	}
+
+	static class FollowOwnerGoal extends Goal {
+		private final PCTameablePetWithInventory mimic;
+		private final WorldView world;
+		private final EntityNavigation navigation;
+		private final float maxDistance;
+		private final float minDistance;
+		private final boolean leavesAllowed;
+		private LivingEntity owner;
+		private int updateCountdownTicks;
+		private float oldWaterPathfindingPenalty;
+
+		public FollowOwnerGoal (PCTameablePetWithInventory mimic, double speed, float minDistance, float maxDistance, boolean leavesAllowed) {
+			this.mimic = mimic;
+			this.world = mimic.world;
+			this.navigation = mimic.getNavigation();
+			this.minDistance = minDistance;
+			this.maxDistance = maxDistance;
+			this.leavesAllowed = leavesAllowed;
+			this.setControls(EnumSet.of(Control.JUMP, Control.MOVE, Control.LOOK));
+			if (! (mimic.getNavigation() instanceof MobNavigation) && ! (mimic.getNavigation() instanceof BirdNavigation)) {
+				throw new IllegalArgumentException("Unsupported mob type for FollowOwnerGoal");
+			}
+		}
+
+		public boolean canStart () {
+			LivingEntity livingEntity = this.mimic.getOwner();
+			if (livingEntity == null) {
+				return false;
+			} else if (livingEntity.isSpectator()) {
+				return false;
+			} else if (this.mimic.isSitting()) {
+				return false;
+			} else if (this.mimic.squaredDistanceTo(livingEntity) < (double) (this.minDistance * this.minDistance)) {
+				return false;
+			} else if (this.mimic.getIsAbandoned()) {
+				return false;
+			} else {
+				this.owner = livingEntity;
+				return true;
+			}
+		}
+
+		public boolean shouldContinue () {
+			if (this.navigation.isIdle()) {
+				return false;
+			} else if (this.mimic.isSitting()) {
+				return false;
+			} else if (this.mimic.getIsAbandoned()) {
+				return false;
+			} else {
+				return ! (this.mimic.squaredDistanceTo(this.owner) <= (double) (this.maxDistance * this.maxDistance));
+			}
+		}
+
+		public void start () {
+			this.updateCountdownTicks = 0;
+			this.oldWaterPathfindingPenalty = this.mimic.getPathfindingPenalty(PathNodeType.WATER);
+			this.mimic.setPathfindingPenalty(PathNodeType.WATER, 0.0F);
+			this.mimic.setTarget(this.owner);
+		}
+
+		public void stop () {
+			this.owner = null;
+			this.navigation.stop();
+			this.mimic.setPathfindingPenalty(PathNodeType.WATER, this.oldWaterPathfindingPenalty);
+		}
+
+		public void tick () {
+			if (this.owner != null) {
+				this.mimic.lookAtEntity(this.owner, 40.0F, 40.0F);
+			}
+			((MimicMoveControl) this.mimic.getMoveControl()).look(this.mimic.getYaw(), true);
+			this.mimic.getLookControl().lookAt(this.owner, 40.0F, (float) this.mimic.getMaxLookPitchChange());
+			if (-- this.updateCountdownTicks <= 0) {
+				this.updateCountdownTicks = this.getTickCount(10);
+				if (! this.mimic.hasVehicle()) {
+					if (this.mimic.squaredDistanceTo(this.owner) >= 184.0D) {
+						this.tryTeleport();
+					} else {
+						((MimicMoveControl) this.mimic.getMoveControl()).move(moveSpeed);
+					}
+				}
+			}
+		}
+
+		private void tryTeleport () {
+			BlockPos blockPos = this.owner.getBlockPos();
+
+			for (int i = 0; i < 10; ++ i) {
+				int j = this.getRandomInt(- 3, 3);
+				int k = this.getRandomInt(- 1, 1);
+				int l = this.getRandomInt(- 3, 3);
+				boolean bl = this.tryTeleportTo(blockPos.getX() + j, blockPos.getY() + k, blockPos.getZ() + l);
+				if (bl) {
+					return;
+				}
+			}
+
+		}
+
+		private boolean tryTeleportTo (int x, int y, int z) {
+			if (Math.abs((double) x - this.owner.getX()) < 2.0D && Math.abs((double) z - this.owner.getZ()) < 2.0D) {
+				return false;
+			} else if (! this.canTeleportTo(new BlockPos(x, y, z))) {
+				return false;
+			} else {
+				this.mimic.refreshPositionAndAngles((double) x + 0.5D, (double) y, (double) z + 0.5D, this.mimic.getYaw(), this.mimic.getPitch());
+				this.navigation.stop();
+				return true;
+			}
+		}
+
+		private boolean canTeleportTo (BlockPos pos) {
+			PathNodeType pathNodeType = LandPathNodeMaker.getLandNodeType(this.world, pos.mutableCopy());
+			if (pathNodeType != PathNodeType.WALKABLE) {
+				return false;
+			} else {
+				BlockState blockState = this.world.getBlockState(pos.down());
+				if (! this.leavesAllowed && blockState.getBlock() instanceof LeavesBlock) {
+					return false;
+				} else {
+					BlockPos blockPos = pos.subtract(this.mimic.getBlockPos());
+					return this.world.isSpaceEmpty(this.mimic, this.mimic.getBoundingBox().offset(blockPos));
+				}
+			}
+		}
+
+		private int getRandomInt (int min, int max) {
+			return this.mimic.getRandom().nextInt(max - min + 1) + min;
 		}
 	}
 

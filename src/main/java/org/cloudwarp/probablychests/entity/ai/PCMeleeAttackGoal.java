@@ -113,7 +113,7 @@ public class PCMeleeAttackGoal extends Goal {
 			return;
 		}
 		this.mimic.lookAtEntity(livingEntity, 10.0F, 10.0F);
-		((PCChestMimicPet.MimicMoveControl) this.mimic.getMoveControl()).look(this.mimic.getYaw(), true);
+		((MimicMoveControl) this.mimic.getMoveControl()).look(this.mimic.getYaw(), true);
 		double d = this.mob.squaredDistanceTo(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ());
 		this.updateCountdownTicks = Math.max(this.updateCountdownTicks - 1, 0);
 		if ((this.pauseWhenMobIdle || this.mob.getVisibilityCache().canSee(livingEntity)) && this.updateCountdownTicks <= 0 && (this.targetX == 0.0 && this.targetY == 0.0 && this.targetZ == 0.0 || livingEntity.squaredDistanceTo(this.targetX, this.targetY, this.targetZ) >= 1.0 || this.mob.getRandom().nextFloat() < 0.05f)) {

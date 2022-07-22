@@ -18,6 +18,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.*;
 import net.minecraft.world.dimension.DimensionType;
 import org.cloudwarp.probablychests.ProbablyChests;
+import org.cloudwarp.probablychests.entity.ai.MimicMoveControl;
 import org.cloudwarp.probablychests.entity.ai.PCMeleeAttackGoal;
 import org.cloudwarp.probablychests.entity.ai.PCMimicEscapeDangerGoal;
 import org.cloudwarp.probablychests.registry.PCSounds;
@@ -62,7 +63,7 @@ public class PCChestMimic extends PCTameablePetWithInventory implements IAnimata
 	public PCChestMimic (EntityType<? extends PCTameablePetWithInventory> entityType, World world) {
 		super(entityType, world);
 		this.ignoreCameraFrustum = true;
-		this.moveControl = new PCTameablePetWithInventory.MimicMoveControl(this);
+		this.moveControl = new MimicMoveControl(this);
 		this.experiencePoints = 10;
 	}
 
@@ -79,13 +80,10 @@ public class PCChestMimic extends PCTameablePetWithInventory implements IAnimata
 
 
 	protected void initGoals () {
-		//this.goalSelector.add(2, new PCChestMimic.FaceTowardTargetGoal(this));
 		this.goalSelector.add(7, new PCChestMimic.IdleGoal(this));
-		//this.goalSelector.add(1, new PCMimicEscapeDangerGoal(this,1.5));
 		this.goalSelector.add(5, new PCMeleeAttackGoal(this, 1.0, true));
 		this.goalSelector.add(6, new PCChestMimic.SleepGoal(this));
 		this.goalSelector.add(1, new PCChestMimic.SwimmingGoal(this));
-		//this.goalSelector.add(4, new PCChestMimic.MoveGoal(this));
 		this.targetSelector.add(3, (new RevengeGoal(this, new Class[0])).setGroupRevenge(new Class[0]));
 		this.targetSelector.add(1, new ActiveTargetGoal<>(this, PlayerEntity.class, 10, true, false, livingEntity -> Math.abs(livingEntity.getY() - this.getY()) <= 4.0D));
 	}
@@ -278,148 +276,7 @@ public class PCChestMimic extends PCTameablePetWithInventory implements IAnimata
 		return isSpawnDark(serverWorldAccess, blockPos, random);
 	}
 
-	static class FaceTowardTargetGoal extends Goal {
-		private final PCChestMimic mimic;
-		private int ticksLeft;
 
-		public FaceTowardTargetGoal (PCChestMimic mimic) {
-			this.mimic = mimic;
-			this.setControls(EnumSet.of(Control.LOOK));
-		}
 
-		public boolean canStart () {
-			LivingEntity livingEntity = this.mimic.getTarget();
-			if (livingEntity == null) {
-				return false;
-			} else {
-				return ! this.mimic.canTarget(livingEntity) ? false : this.mimic.getMoveControl() instanceof PCChestMimic.MimicMoveControl;
-			}
-		}
-
-		public void start () {
-			this.ticksLeft = toGoalTicks(300);
-			super.start();
-		}
-
-		public boolean shouldContinue () {
-			LivingEntity livingEntity = this.mimic.getTarget();
-			if (livingEntity == null) {
-				return false;
-			} else if (! this.mimic.canTarget(livingEntity)) {
-				return false;
-			} else {
-				return -- this.ticksLeft > 0;
-			}
-		}
-
-		public boolean shouldRunEveryTick () {
-			return true;
-		}
-
-		public void tick () {
-			LivingEntity livingEntity = this.mimic.getTarget();
-			if (livingEntity != null) {
-				this.mimic.lookAtEntity(livingEntity, 10.0F, 10.0F);
-			}
-
-			((PCChestMimic.MimicMoveControl) this.mimic.getMoveControl()).look(this.mimic.getYaw(), this.mimic.canAttack());
-		}
-	}
-
-	static class MoveGoal extends Goal {
-		private final PCChestMimic mimic;
-
-		public MoveGoal (PCChestMimic mimic) {
-			this.mimic = mimic;
-			this.setControls(EnumSet.of(Control.JUMP, Control.MOVE));
-		}
-
-		public boolean canStart () {
-			//return !this.mimc.hasVehicle();
-			return this.mimic.getTarget() != null;
-		}
-
-		public void tick () {
-			((PCChestMimic.MimicMoveControl) this.mimic.getMoveControl()).move(moveSpeed);
-		}
-	}
-
-	static class SwimmingGoal extends Goal {
-		private final PCChestMimic mimic;
-
-		public SwimmingGoal (PCChestMimic mimic) {
-			this.mimic = mimic;
-			this.setControls(EnumSet.of(Control.JUMP, Control.MOVE));
-			mimic.getNavigation().setCanSwim(true);
-		}
-
-		public boolean canStart () {
-			return (this.mimic.isTouchingWater() || this.mimic.isInLava()) && this.mimic.getMoveControl() instanceof PCChestMimic.MimicMoveControl;
-		}
-
-		public boolean shouldRunEveryTick () {
-			return true;
-		}
-
-		public void tick () {
-			if (this.mimic.getRandom().nextFloat() < 0.8F) {
-				this.mimic.getJumpControl().setActive();
-			}
-
-			((PCChestMimic.MimicMoveControl) this.mimic.getMoveControl()).move(4.2D);
-		}
-	}
-
-	static class IdleGoal extends Goal {
-		private final PCChestMimic mimic;
-
-		public IdleGoal (PCChestMimic mimic) {
-			this.mimic = mimic;
-			this.setControls(EnumSet.of(Control.LOOK, Control.MOVE, Control.JUMP));
-		}
-
-		public boolean canStart () {
-			return ! this.mimic.hasVehicle();
-		}
-
-		public void tick () {
-
-		}
-	}
-	static class SleepGoal extends Goal {
-		private final PCChestMimic mimic;
-
-		public SleepGoal (PCChestMimic mimic) {
-			this.mimic = mimic;
-		}
-
-		public boolean canStart () {
-			return ! this.mimic.hasVehicle() && this.mimic.getMimicState() == IS_SLEEPING;
-		}
-		public boolean shouldContinue(){
-			return ! this.mimic.hasVehicle() && this.mimic.getMimicState() == IS_SLEEPING;
-		}
-
-		public void tick () {
-			lockToBlock(10F,10F);
-			((PCChestMimic.MimicMoveControl) this.mimic.getMoveControl()).look(this.mimic.getYaw(), true);
-		}
-		public void lockToBlock(float maxYawChange, float maxPitchChange) {
-			float r = Math.round(this.mimic.getHeadYaw() / 90F)*90F;
-			double x = this.mimic.getBlockX() - this.mimic.getX();
-			double z = this.mimic.getBlockZ() - this.mimic.getZ();
-			this.mimic.setYaw(this.changeAngle(this.mimic.getYaw(), r, maxYawChange));
-		}
-		private float changeAngle(float from, float to, float max) {
-			float f = MathHelper.wrapDegrees(to - from);
-			if (f > max) {
-				f = max;
-			}
-			if (f < -max) {
-				f = -max;
-			}
-			return from + f;
-		}
-	}
 
 }
