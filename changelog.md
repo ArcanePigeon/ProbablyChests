@@ -142,3 +142,7 @@ All notable changes to this project will be documented in this file.
 - Wild mimics were unable to attack a mob if it attacked them
 ### Changed
 - Updated secret mimic chance and natural spawn rate default config values
+
+## [0.5.3] - 7/23/2022
+### Fixed
+- Locked chest owner check fails after re-log making it impossible to lock/unlock the chest
