@@ -144,5 +144,7 @@ All notable changes to this project will be documented in this file.
 - Updated secret mimic chance and natural spawn rate default config values
 
 ## [0.5.3] - 7/23/2022
+### Added
+- Korean Translation
 ### Fixed
 - Locked chest owner check fails after re-log making it impossible to lock/unlock the chest
