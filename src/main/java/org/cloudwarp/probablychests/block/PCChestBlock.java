@@ -113,7 +113,7 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 
 	public boolean unlockBlock(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit){
 		PCChestBlockEntity chest = getChestBlockFromWorld(world, pos);
-		if(ProbablyChests.loadedConfig.chestSettings.enableLockedChestOwners && chest.owner != null && player.getUuid() != chest.owner){
+		if(ProbablyChests.loadedConfig.chestSettings.enableLockedChestOwners && chest.owner != null && !player.getUuid().equals(chest.owner)){
 			PCChestBlockEntity.playSound(world,pos,state,PCSounds.APPLY_LOCK2, 1.0f);
 			return false;
 		}
@@ -162,7 +162,7 @@ public class PCChestBlock extends AbstractChestBlock<PCChestBlockEntity> impleme
 	}
 	public boolean lockBlock(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit){
 		PCChestBlockEntity chest = getChestBlockFromWorld(world, pos);
-		if(ProbablyChests.loadedConfig.chestSettings.enableLockedChestOwners && chest.owner != null && player.getUuid() != chest.owner){
+		if(ProbablyChests.loadedConfig.chestSettings.enableLockedChestOwners && chest.owner != null && !player.getUuid().equals(chest.owner)){
 			return false;
 		}
 		ItemStack itemStack = player.getStackInHand(hand);
