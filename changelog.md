@@ -148,3 +148,7 @@ All notable changes to this project will be documented in this file.
 - Korean Translation
 ### Fixed
 - Locked chest owner check fails after re-log making it impossible to lock/unlock the chest
+
+## [0.5.3 - 1.19.1] - 8/2/2022
+### Updated
+- Updated to 1.19.1
