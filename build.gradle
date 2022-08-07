@@ -1,11 +1,7 @@
 plugins {
     id 'fabric-loom' version '0.12-SNAPSHOT'
     id 'maven-publish'
-    id "com.matthewprenger.cursegradle" version "1.4.0"
 }
-
-def localProperties = new Properties()
-localProperties.load(new FileInputStream(rootProject.file("local.properties")))
 
 sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
@@ -95,32 +91,5 @@ publishing {
         // Notice: This block does NOT have the same function as the block in the top level.
         // The repositories here will be used for publishing your artifact, not for
         // retrieving dependencies.
-    }
-}
-
-curseforge {
-    apiKey = localProperties['ArcanePigeon']
-    project {
-        id = "601735"
-        releaseType = "release"
-        addGameVersion "1.18.2"
-        addGameVersion "Java 17"
-        addGameVersion "Fabric"
-        changelogType = "markdown"
-        changelog = file("changelog.md")
-        relations {
-            requiredDependency "fabric-api"
-            requiredDependency "geckolib"
-        }
-        mainArtifact(jar) {
-            displayName = "Probably Chests - ${project.mod_version} - Fabric"
-        }
-        afterEvaluate {
-            uploadTask.dependsOn("build")
-        }
-    }
-    options {
-        forgeGradleIntegration = false
-        javaVersionAutoDetect = true
     }
 }
