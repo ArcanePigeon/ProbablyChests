@@ -64,7 +64,6 @@ public class PCMeleeAttackGoal extends Goal {
 
 	@Override
 	public boolean shouldContinue () {
-		System.out.println("HERE");
 		LivingEntity livingEntity = this.mob.getTarget();
 		if (livingEntity == null) {
 			return false;
