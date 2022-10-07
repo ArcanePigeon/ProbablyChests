@@ -255,6 +255,9 @@ public class PCChestMimic extends PCTameablePetWithInventory implements IAnimata
 	public boolean cannotDespawn () {
 		return this.hasVehicle();
 	}
+	public boolean canImmediatelyDespawn(double distanceSquared) {
+		return true;
+	}
 
 	public static boolean isSpawnDark (ServerWorldAccess world, BlockPos pos, net.minecraft.util.math.random.Random random) {
 		if (world.getLightLevel(LightType.SKY, pos) > random.nextInt(32)) {

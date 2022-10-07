@@ -152,3 +152,9 @@ All notable changes to this project will be documented in this file.
 ## [0.5.3 - 1.19.1] - 8/2/2022
 ### Updated
 - Updated to 1.19.1
+
+## [0.5.5 - 1.19.2] - 10/6/2022
+### Updated
+- Updated to 1.19.2
+### Fixed
+- Mimics didn't despawn
