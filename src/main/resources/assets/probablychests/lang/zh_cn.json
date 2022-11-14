@@ -52,8 +52,8 @@
   "subtitles.probablychests.apply_lock2": "模仿者：已上锁",
   "subtitles.probablychests.lock_unlock": "模仿者：上锁",
 
-  "stat.probablychests.mimic_encounters": "Mimic Encounters",
-  "stat.probablychests.abandoned_mimics": "Abandoned Mimics",
+  "stat.probablychests.mimic_encounters": "隐藏的模仿者",
+  "stat.probablychests.abandoned_mimics": "被遗弃的模仿者",
 
   "text.autoconfig.probablychests.title": "应该是箱子[修改后需要重启世界才能生效]",
 
