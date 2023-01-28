@@ -91,9 +91,9 @@
   "text.autoconfig.probablychests.option.chestSettings.enableLockedChestOwners": "启用宝箱拥有者上锁",
   "text.autoconfig.probablychests.option.chestSettings.enableLockedChestOwners.@Tooltip": "只允许宝箱的拥有者解锁宝箱",
 
-  "item.probablychests.mimicHandBell.tooltip.shift": "点击标记宝箱怪，潜行点击取消标记 [退出时会重置]",
-  "item.probablychests.mimicHandBell.tooltip.shift2": "点击紫水晶簇来遗弃所有未被标记的宝箱怪",
-  "item.probablychests.mimicHandBell.tooltip.shift3": "点击一个被遗弃的宝箱怪来回收所有权",
+  "item.probablychests.mimicHandBell.tooltip.shift": "右击标记宝箱怪，潜行右击取消标记 [退出时会重置]",
+  "item.probablychests.mimicHandBell.tooltip.shift2": "右击紫水晶簇来遗弃所有未被标记的宝箱怪",
+  "item.probablychests.mimicHandBell.tooltip.shift3": "右击一个被遗弃的宝箱怪来回收所有权",
   "item.probablychests.shift.tooltip": "按 §eSHIFT§r 获取更多信息",
   "item.probablychests.mimic_key.tooltip": "右击宝箱使其进行秘密伪装",
   "item.probablychests.pet_mimic_key.tooltip": "右击宝箱来创造一个宠物宝箱怪",
