@@ -34,7 +34,6 @@
 			}
 		},
 		"closed": {
-			"loop": false,
 			"bones": {
 				"Lid": {
 					"rotation": {
@@ -44,7 +43,6 @@
 			}
 		},
 		"opened": {
-			"loop": false,
 			"bones": {
 				"Lid": {
 					"rotation": {
