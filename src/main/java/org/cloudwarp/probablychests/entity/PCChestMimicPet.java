@@ -44,20 +44,20 @@ import java.util.EnumSet;
 
 public class PCChestMimicPet extends PCTameablePetWithInventory implements IAnimatable, Tameable {
 	// Animations
-	public static final AnimationBuilder IDLE = new AnimationBuilder().addAnimation("idle", true);
-	public static final AnimationBuilder JUMP = new AnimationBuilder().addAnimation("jump", false).addAnimation("flying", true);
-	public static final AnimationBuilder CLOSE_SITTING = new AnimationBuilder().addAnimation("close", false).addAnimation("sleeping", true);
-	public static final AnimationBuilder CLOSE_STANDING = new AnimationBuilder().addAnimation("close", false).addAnimation("standing", true);
-	public static final AnimationBuilder OPENING = new AnimationBuilder().addAnimation("open", false);
-	public static final AnimationBuilder OPENED = new AnimationBuilder().addAnimation("opened", true);
-	public static final AnimationBuilder SITTING = new AnimationBuilder().addAnimation("sleeping", true);
-	public static final AnimationBuilder STANDING = new AnimationBuilder().addAnimation("standing", true);
-	public static final AnimationBuilder FLYING = new AnimationBuilder().addAnimation("flying", true);
-	public static final AnimationBuilder BITING = new AnimationBuilder().addAnimation("bite", false);
-	public static final AnimationBuilder LOW_WAG = new AnimationBuilder().addAnimation("lowWag", true);
-	public static final AnimationBuilder FLYING_WAG = new AnimationBuilder().addAnimation("flyingWag", true);
-	public static final AnimationBuilder IDLE_WAG = new AnimationBuilder().addAnimation("idleWag", true);
-	public static final AnimationBuilder NO_WAG = new AnimationBuilder().addAnimation("noWag", true);
+	public static final AnimationBuilder IDLE = new AnimationBuilder().loop("idle");
+	public static final AnimationBuilder JUMP = new AnimationBuilder().playOnce("jump").loop("flying");
+	public static final AnimationBuilder CLOSE_SITTING = new AnimationBuilder().playOnce("close").loop("sleeping");
+	public static final AnimationBuilder CLOSE_STANDING = new AnimationBuilder().playOnce("close").loop("standing");
+	public static final AnimationBuilder OPENING = new AnimationBuilder().playOnce("open");
+	public static final AnimationBuilder OPENED = new AnimationBuilder().loop("opened");
+	public static final AnimationBuilder SITTING = new AnimationBuilder().loop("sleeping");
+	public static final AnimationBuilder STANDING = new AnimationBuilder().loop("standing");
+	public static final AnimationBuilder FLYING = new AnimationBuilder().loop("flying");
+	public static final AnimationBuilder BITING = new AnimationBuilder().playOnce("bite");
+	public static final AnimationBuilder LOW_WAG = new AnimationBuilder().loop("lowWag");
+	public static final AnimationBuilder FLYING_WAG = new AnimationBuilder().loop("flyingWag");
+	public static final AnimationBuilder IDLE_WAG = new AnimationBuilder().loop("idleWag");
+	public static final AnimationBuilder NO_WAG = new AnimationBuilder().loop("noWag");
 	private static final String MIMIC_CONTROLLER = "mimicController";
 	private static final String TONGUE_CONTROLLER = "tongueController";
 

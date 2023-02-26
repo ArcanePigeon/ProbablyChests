@@ -35,15 +35,15 @@ import java.util.Random;
 
 public class PCChestMimic extends PCTameablePetWithInventory implements IAnimatable, Monster {
 	// Animations
-	public static final AnimationBuilder IDLE = new AnimationBuilder().addAnimation("idle", true);
-	public static final AnimationBuilder JUMP = new AnimationBuilder().addAnimation("jump", false).addAnimation("flying", true);
-	public static final AnimationBuilder CLOSE = new AnimationBuilder().addAnimation("land", false).addAnimation("idle", true);
-	public static final AnimationBuilder SLEEPING = new AnimationBuilder().addAnimation("sleeping", true);
-	public static final AnimationBuilder FLYING = new AnimationBuilder().addAnimation("flying", true);
-	public static final AnimationBuilder LOW_WAG = new AnimationBuilder().addAnimation("lowWag", true);
-	public static final AnimationBuilder FLYING_WAG = new AnimationBuilder().addAnimation("flyingWag", true);
-	public static final AnimationBuilder IDLE_WAG = new AnimationBuilder().addAnimation("idleWag", true);
-	public static final AnimationBuilder NO_WAG = new AnimationBuilder().addAnimation("noWag", true);
+	public static final AnimationBuilder IDLE = new AnimationBuilder().loop("idle");
+	public static final AnimationBuilder JUMP = new AnimationBuilder().playOnce("jump").loop("flying");
+	public static final AnimationBuilder CLOSE = new AnimationBuilder().playOnce("land").loop("idle");
+	public static final AnimationBuilder SLEEPING = new AnimationBuilder().loop("sleeping");
+	public static final AnimationBuilder FLYING = new AnimationBuilder().loop("flying");
+	public static final AnimationBuilder LOW_WAG = new AnimationBuilder().loop("lowWag");
+	public static final AnimationBuilder FLYING_WAG = new AnimationBuilder().loop("flyingWag");
+	public static final AnimationBuilder IDLE_WAG = new AnimationBuilder().loop("idleWag");
+	public static final AnimationBuilder NO_WAG = new AnimationBuilder().loop("noWag");
 	private static final String MIMIC_CONTROLLER = "mimicController";
 	private static final String TONGUE_CONTROLLER = "tongueController";
 
@@ -254,6 +254,9 @@ public class PCChestMimic extends PCTameablePetWithInventory implements IAnimata
 
 	public boolean cannotDespawn () {
 		return this.hasVehicle() || ! this.inventory.isEmpty();
+	}
+	public boolean canImmediatelyDespawn(double distanceSquared) {
+		return true;
 	}
 
 	public static boolean isSpawnDark (ServerWorldAccess world, BlockPos pos, Random random) {
