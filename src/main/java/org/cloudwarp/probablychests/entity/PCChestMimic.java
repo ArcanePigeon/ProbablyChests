@@ -35,7 +35,7 @@ import java.util.Random;
 
 public class PCChestMimic extends PCTameablePetWithInventory implements IAnimatable, Monster {
 	// Animations
-	public static final AnimationBuilder IDLE = new AnimationBuilder().loop("jump");
+	public static final AnimationBuilder IDLE = new AnimationBuilder().loop("idle");
 	public static final AnimationBuilder JUMP = new AnimationBuilder().playOnce("jump").loop("flying");
 	public static final AnimationBuilder CLOSE = new AnimationBuilder().playOnce("land").loop("idle");
 	public static final AnimationBuilder SLEEPING = new AnimationBuilder().loop("sleeping");

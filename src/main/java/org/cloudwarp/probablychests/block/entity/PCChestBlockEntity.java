@@ -37,10 +37,10 @@ import java.util.UUID;
 
 public class PCChestBlockEntity extends LootableContainerBlockEntity implements IAnimatable {
 
-	public static final AnimationBuilder CLOSED = new AnimationBuilder().addAnimation("closed", false);
-	public static final AnimationBuilder CLOSE = new AnimationBuilder().addAnimation("close", false).addAnimation("closed",true);
-	public static final AnimationBuilder OPEN = new AnimationBuilder().addAnimation("open", false).addAnimation("opened",true);
-	public static final AnimationBuilder OPENED = new AnimationBuilder().addAnimation("opened", false);
+	public static final AnimationBuilder CLOSED = new AnimationBuilder().playOnce("closed");
+	public static final AnimationBuilder CLOSE = new AnimationBuilder().playOnce("close").loop("closed");
+	public static final AnimationBuilder OPEN = new AnimationBuilder().playOnce("open").loop("opened");
+	public static final AnimationBuilder OPENED = new AnimationBuilder().playOnce("opened");
 	public static final EnumProperty<PCChestState> CHEST_STATE = PCProperties.PC_CHEST_STATE;
 	private static final String CONTROLLER_NAME = "chestController";
 	private final AnimationFactory factory = new AnimationFactory(this);
