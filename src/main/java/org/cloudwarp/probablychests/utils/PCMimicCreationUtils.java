@@ -68,8 +68,7 @@ public class PCMimicCreationUtils {
 			}
 		}
 		mimic.setType(type);
-		mimic.setPos(pos.getX() + 0.5D, pos.getY() + 0.1D, pos.getZ() + 0.5D);
-		mimic.setYaw(state.get(FACING).asRotation());
+		mimic.refreshPositionAndAngles(pos, state.get(FACING).asRotation(), mimic.getPitch());
 		mimic.headYaw = mimic.getYaw();
 		mimic.bodyYaw = mimic.getYaw();
 		for (int i = 0; i < type.size; i++) {
