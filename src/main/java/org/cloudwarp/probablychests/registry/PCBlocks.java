@@ -1,12 +1,14 @@
 package org.cloudwarp.probablychests.registry;
 
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.*;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import org.cloudwarp.probablychests.ProbablyChests;
 import org.cloudwarp.probablychests.block.*;
 
@@ -41,14 +43,18 @@ public class PCBlocks {
 	private static <T extends Block> T create (String name, T block, boolean createItem) {
 		BLOCKS.put(block, new Identifier(ProbablyChests.MOD_ID, name));
 		if (createItem) {
-			ITEMS.put(new BlockItem(block, new Item.Settings().group(ProbablyChests.PROBABLY_CHESTS_GROUP)), BLOCKS.get(block));
+			ItemGroupEvents.modifyEntriesEvent(ProbablyChests.PROBABLY_CHESTS_GROUP).register(content -> {
+				BlockItem blockItem = new BlockItem(block, new Item.Settings());
+				ITEMS.put(blockItem, BLOCKS.get(block));
+				content.add(blockItem);
+			});
 		}
 		return block;
 	}
 
 	public static void init () {
-		BLOCKS.keySet().forEach(block -> Registry.register(Registry.BLOCK, BLOCKS.get(block), block));
-		ITEMS.keySet().forEach(item -> Registry.register(Registry.ITEM, ITEMS.get(item), item));
+		BLOCKS.keySet().forEach(block -> Registry.register(Registries.BLOCK, BLOCKS.get(block), block));
+		ITEMS.keySet().forEach(item -> Registry.register(Registries.ITEM, ITEMS.get(item), item));
 	}
 
 }

@@ -24,28 +24,29 @@ import org.cloudwarp.probablychests.entity.ai.PCMimicEscapeDangerGoal;
 import org.cloudwarp.probablychests.registry.PCSounds;
 import org.cloudwarp.probablychests.utils.MimicDifficulty;
 import org.cloudwarp.probablychests.utils.PCConfig;
-import software.bernie.geckolib3.core.IAnimatable;
-import software.bernie.geckolib3.core.PlayState;
-import software.bernie.geckolib3.core.builder.AnimationBuilder;
-import software.bernie.geckolib3.core.controller.AnimationController;
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
-import software.bernie.geckolib3.core.manager.AnimationData;
-import software.bernie.geckolib3.core.manager.AnimationFactory;
+import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.core.animatable.GeoAnimatable;
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.core.animation.*;
+import software.bernie.geckolib.core.animation.AnimationState;
+import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.util.GeckoLibUtil;
+
 
 import java.util.EnumSet;
 import java.util.Random;
 
-public class PCChestMimic extends PCTameablePetWithInventory implements IAnimatable, Monster {
+public class PCChestMimic extends PCTameablePetWithInventory implements GeoAnimatable, Monster {
 	// Animations
-	public static final AnimationBuilder IDLE = new AnimationBuilder().addAnimation("idle", true);
-	public static final AnimationBuilder JUMP = new AnimationBuilder().addAnimation("jump", false).addAnimation("flying", true);
-	public static final AnimationBuilder CLOSE = new AnimationBuilder().addAnimation("land", false).addAnimation("idle", true);
-	public static final AnimationBuilder SLEEPING = new AnimationBuilder().addAnimation("sleeping", true);
-	public static final AnimationBuilder FLYING = new AnimationBuilder().addAnimation("flying", true);
-	public static final AnimationBuilder LOW_WAG = new AnimationBuilder().addAnimation("lowWag", true);
-	public static final AnimationBuilder FLYING_WAG = new AnimationBuilder().addAnimation("flyingWag", true);
-	public static final AnimationBuilder IDLE_WAG = new AnimationBuilder().addAnimation("idleWag", true);
-	public static final AnimationBuilder NO_WAG = new AnimationBuilder().addAnimation("noWag", true);
+	public static final RawAnimation IDLE = RawAnimation.begin().then("idle", Animation.LoopType.LOOP);
+	public static final RawAnimation JUMP = RawAnimation.begin().then("jump", Animation.LoopType.PLAY_ONCE).then("flying", Animation.LoopType.LOOP);
+	public static final RawAnimation CLOSE = RawAnimation.begin().then("land", Animation.LoopType.PLAY_ONCE).then("idle", Animation.LoopType.LOOP);
+	public static final RawAnimation SLEEPING = RawAnimation.begin().then("sleeping", Animation.LoopType.LOOP);
+	public static final RawAnimation FLYING = RawAnimation.begin().then("flying", Animation.LoopType.LOOP);
+	public static final RawAnimation LOW_WAG = RawAnimation.begin().then("lowWag", Animation.LoopType.LOOP);
+	public static final RawAnimation FLYING_WAG = RawAnimation.begin().then("flyingWag", Animation.LoopType.LOOP);
+	public static final RawAnimation IDLE_WAG = RawAnimation.begin().then("idleWag", Animation.LoopType.LOOP);
+	public static final RawAnimation NO_WAG = RawAnimation.begin().then("noWag", Animation.LoopType.LOOP);
 	private static final String MIMIC_CONTROLLER = "mimicController";
 	private static final String TONGUE_CONTROLLER = "tongueController";
 
@@ -53,7 +54,7 @@ public class PCChestMimic extends PCTameablePetWithInventory implements IAnimata
 	private static int maxHealth = 50;
 	private static int maxDamage = 5;
 
-	private AnimationFactory factory = new AnimationFactory(this);
+	private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 	private boolean onGroundLastTick;
 	private int timeUntilSleep = 0;
 	private int jumpEndTimer = 10;
@@ -88,62 +89,66 @@ public class PCChestMimic extends PCTameablePetWithInventory implements IAnimata
 		this.targetSelector.add(1, new ActiveTargetGoal<>(this, PlayerEntity.class, 10, true, false, livingEntity -> Math.abs(livingEntity.getY() - this.getY()) <= 4.0D));
 	}
 
-	private <E extends IAnimatable> PlayState chestMovement (AnimationEvent<E> animationEvent) {
+	private <E extends GeoAnimatable> PlayState chestMovement (AnimationState<E> eAnimationState) {
 		int state = this.getMimicState();
-		animationEvent.getController().setAnimationSpeed(1D);
+		eAnimationState.getController().setAnimationSpeed(1D);
 		switch (state) {
 			case IS_SLEEPING:
-				animationEvent.getController().setAnimation(SLEEPING);
+				eAnimationState.getController().setAnimation(SLEEPING);
 				break;
 			case IS_IN_AIR:
-				animationEvent.getController().setAnimation(FLYING);
+				eAnimationState.getController().setAnimation(FLYING);
 				break;
 			case IS_LANDING:
-				animationEvent.getController().setAnimation(CLOSE);
+				eAnimationState.getController().setAnimation(CLOSE);
 				break;
 			case IS_IDLE:
-				animationEvent.getController().setAnimation(IDLE);
+				eAnimationState.getController().setAnimation(IDLE);
 				break;
 			case IS_JUMPING:
-				animationEvent.getController().setAnimationSpeed(2D);
-				animationEvent.getController().setAnimation(JUMP);
+				eAnimationState.getController().setAnimationSpeed(2D);
+				eAnimationState.getController().setAnimation(JUMP);
 				break;
 			default:
-				animationEvent.getController().setAnimation(SLEEPING);
+				eAnimationState.getController().setAnimation(SLEEPING);
 				break;
 		}
 		return PlayState.CONTINUE;
 	}
-	private <E extends IAnimatable> PlayState tongueMovement (AnimationEvent<E> animationEvent) {
+	private <E extends GeoAnimatable> PlayState tongueMovement (AnimationState<E> eAnimationState) {
 		int state = this.getMimicState();
-		animationEvent.getController().setAnimationSpeed(1D);
-		//animationEvent.getController().transitionLengthTicks = 1;
+		eAnimationState.getController().setAnimationSpeed(1D);
+		//eAnimationState.getController().transitionLengthTicks = 1;
 		if (state == IS_IN_AIR) {
-			animationEvent.getController().setAnimation(FLYING_WAG);
+			eAnimationState.getController().setAnimation(FLYING_WAG);
 		} else if (state == IS_IDLE) {
-			animationEvent.getController().setAnimationSpeed(1.5D);
-			animationEvent.getController().setAnimation(IDLE_WAG);
+			eAnimationState.getController().setAnimationSpeed(1.5D);
+			eAnimationState.getController().setAnimation(IDLE_WAG);
 		} else if (state == IS_JUMPING) {
-			animationEvent.getController().setAnimationSpeed(2D);
-			animationEvent.getController().setAnimation(FLYING_WAG);
+			eAnimationState.getController().setAnimationSpeed(2D);
+			eAnimationState.getController().setAnimation(FLYING_WAG);
 		} else if (state == IS_SLEEPING) {
-			animationEvent.getController().setAnimation(NO_WAG);
+			eAnimationState.getController().setAnimation(NO_WAG);
 		} else {
 		}
 		return PlayState.CONTINUE;
 	}
 
 	@Override
-	public void registerControllers (AnimationData animationData) {
-		animationData.addAnimationController(new AnimationController(this, MIMIC_CONTROLLER, 6, this::chestMovement));
-		animationData.addAnimationController(new AnimationController(this, TONGUE_CONTROLLER, 6, this::tongueMovement));
+	public void registerControllers (AnimatableManager.ControllerRegistrar controllerRegistrar) {
+		controllerRegistrar.add(new AnimationController<>(this, MIMIC_CONTROLLER, 6, this::chestMovement));
+		controllerRegistrar.add(new AnimationController<>(this, TONGUE_CONTROLLER, 6, this::tongueMovement));
 	}
 
 	@Override
-	public AnimationFactory getFactory () {
-		return this.factory;
+	public AnimatableInstanceCache getAnimatableInstanceCache () {
+		return cache;
 	}
 
+	@Override
+	public double getTick (Object o) {
+		return 0;
+	}
 
 	protected void jump () {
 		Vec3d vec3d = this.getVelocity();
@@ -173,7 +178,7 @@ public class PCChestMimic extends PCTameablePetWithInventory implements IAnimata
 
 
 	public boolean tryAttack (Entity target) {
-		boolean bl = target.damage(DamageSource.mob(this), (float) ((int) this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE)));
+		boolean bl = target.damage(this.getDamageSources().mobAttack(this), (float) ((int) this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE)));
 		if (bl) {
 			this.playSound(this.getHurtSound(), this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 0.7F);
 			this.playSound(PCSounds.MIMIC_BITE, this.getSoundVolume(), 1.5F + getPitchOffset(0.2F));
@@ -280,6 +285,8 @@ public class PCChestMimic extends PCTameablePetWithInventory implements IAnimata
 	}
 
 
-
-
+	@Override
+	public EntityView method_48926 () {
+		return null;
+	}
 }

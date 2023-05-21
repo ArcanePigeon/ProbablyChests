@@ -18,7 +18,7 @@ public class SurfaceChestGeneration {
 		PCConfig config = ProbablyChests.loadedConfig;
 		float surfaceChestRarity = config.worldGen.surfaceChestSpawnChance;
 		if (surfaceChestRarity > 0) {
-			BiomeModifications.addFeature(BiomeSelectors.foundInOverworld().or(BiomeSelectors.foundInTheEnd()), GenerationStep.Feature.VEGETAL_DECORATION, PCFeatures.SURFACE_CHEST_PLACED.getKey().get());
+			BiomeModifications.addFeature(BiomeSelectors.foundInOverworld().or(BiomeSelectors.foundInTheEnd()), GenerationStep.Feature.VEGETAL_DECORATION, PCFeatures.SURFACE_CHEST_PLACED_KEY);
 		}
 	}
 }

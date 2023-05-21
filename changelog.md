@@ -133,8 +133,8 @@ All notable changes to this project will be documented in this file.
 - Mimics could attack through shields sometimes
 
 ## [0.5.1] - 7/20/2022
-### Changed
-- Updated to 1.19
+### Fixed
+- Incorrect tooltips for gold and void keys and locks
 
 ## [0.5.2] - 7/21/2022
 ### Fixed
@@ -142,6 +142,7 @@ All notable changes to this project will be documented in this file.
 - Wild mimics were unable to attack a mob if it attacked them
 ### Changed
 - Updated secret mimic chance and natural spawn rate default config values
+
 
 ## [0.5.3] - 7/23/2022
 ### Added

@@ -8,7 +8,7 @@ import org.cloudwarp.probablychests.utils.PCConfig;
 import org.cloudwarp.probablychests.world.feature.PCFeatures;
 
 public class UndergroundChestGeneration {
-	public static void generateChest () {
+	/*public static void generateChest () {
 		PCConfig config = ProbablyChests.loadedConfig;
 		float chestRarity = config.worldGen.chestSpawnChance;
 		if (chestRarity > 0) {
@@ -17,5 +17,5 @@ public class UndergroundChestGeneration {
 			BiomeModifications.addFeature(BiomeSelectors.all().and(BiomeSelectors.foundInTheNether()),
 					GenerationStep.Feature.UNDERGROUND_DECORATION, PCFeatures.NETHER_CHEST_PLACED.getKey().get());
 		}
-	}
+	}*/
 }

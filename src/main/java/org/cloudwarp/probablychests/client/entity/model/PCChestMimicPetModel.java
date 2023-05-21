@@ -4,9 +4,9 @@ import net.minecraft.util.Identifier;
 import org.cloudwarp.probablychests.ProbablyChests;
 import org.cloudwarp.probablychests.entity.PCChestMimic;
 import org.cloudwarp.probablychests.entity.PCChestMimicPet;
-import software.bernie.geckolib3.model.AnimatedGeoModel;
+import software.bernie.geckolib.model.GeoModel;
 
-public class PCChestMimicPetModel extends AnimatedGeoModel<PCChestMimicPet> {
+public class PCChestMimicPetModel extends GeoModel<PCChestMimicPet> {
 
 	private static final Identifier MODEL_IDENTIFIER = new Identifier(ProbablyChests.MOD_ID, "geo/pc_chest_mimic.json");
 	private static final Identifier ANIMATION_IDENTIFIER = new Identifier(ProbablyChests.MOD_ID, "animations/pc_chest_mimic.animation.json");

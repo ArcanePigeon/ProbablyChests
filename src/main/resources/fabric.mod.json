@@ -26,6 +26,9 @@
     ],
     "modmenu": [
       "org.cloudwarp.probablychests.utils.PCModMenu"
+    ],
+    "fabric-datagen": [
+      "org.cloudwarp.probablychests.registry.PCDataGenerator"
     ]
   },
   "mixins": [
@@ -35,9 +38,9 @@
   "depends": {
     "fabricloader": ">=0.14.9",
     "fabric": "*",
-    "minecraft": ">=1.19",
-    "cloth-config": ">=8.2.88",
-    "geckolib3": ">=3.1.22",
+    "minecraft": "~1.19.4",
+    "cloth-config": ">=10.0.96",
+    "geckolib": ">=4.1.3",
     "java": ">=17"
   },
   "suggests": {

@@ -3,9 +3,9 @@ package org.cloudwarp.probablychests.client.entity.model;
 import net.minecraft.util.Identifier;
 import org.cloudwarp.probablychests.ProbablyChests;
 import org.cloudwarp.probablychests.block.entity.PCBaseChestBlockEntity;
-import software.bernie.geckolib3.model.AnimatedGeoModel;
+import software.bernie.geckolib.model.GeoModel;
 
-public class PCChestBlockModel extends AnimatedGeoModel<PCBaseChestBlockEntity> {
+public class PCChestBlockModel extends GeoModel<PCBaseChestBlockEntity> {
 
 	private static final Identifier MODEL_IDENTIFIER = new Identifier(ProbablyChests.MOD_ID, "geo/pc_chest_block.json");
 	private static final Identifier ANIMATION_IDENTIFIER = new Identifier(ProbablyChests.MOD_ID, "animations/pc_chest_block.animation.json");

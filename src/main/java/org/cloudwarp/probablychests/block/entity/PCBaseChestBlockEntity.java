@@ -26,25 +26,27 @@ import org.cloudwarp.probablychests.registry.PCProperties;
 import org.cloudwarp.probablychests.screenhandlers.PCChestScreenHandler;
 import org.cloudwarp.probablychests.utils.PCChestState;
 import org.jetbrains.annotations.Nullable;
-import software.bernie.geckolib3.core.IAnimatable;
-import software.bernie.geckolib3.core.PlayState;
-import software.bernie.geckolib3.core.builder.AnimationBuilder;
-import software.bernie.geckolib3.core.controller.AnimationController;
-import software.bernie.geckolib3.core.easing.EasingType;
-import software.bernie.geckolib3.core.manager.AnimationData;
-import software.bernie.geckolib3.core.manager.AnimationFactory;
+import software.bernie.geckolib.animatable.GeoBlockEntity;
+import software.bernie.geckolib.core.animatable.GeoAnimatable;
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.core.animatable.instance.SingletonAnimatableInstanceCache;
+import software.bernie.geckolib.core.animation.*;
+import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.UUID;
 
-public class PCBaseChestBlockEntity extends LootableContainerBlockEntity implements IAnimatable {
+public class PCBaseChestBlockEntity extends LootableContainerBlockEntity implements GeoAnimatable {
 
-	public static final AnimationBuilder CLOSED = new AnimationBuilder().addAnimation("closed", false);
-	public static final AnimationBuilder CLOSE = new AnimationBuilder().addAnimation("close", false).addAnimation("closed",true);
-	public static final AnimationBuilder OPEN = new AnimationBuilder().addAnimation("open", false).addAnimation("opened",true);
-	public static final AnimationBuilder OPENED = new AnimationBuilder().addAnimation("opened", false);
+	public static final RawAnimation CLOSED = RawAnimation.begin().then("closed", Animation.LoopType.LOOP);
+	//public static final RawAnimation CLOSE = RawAnimation.begin().then("close").then("closed",Animation.LoopType.LOOP);
+	public static final RawAnimation CLOSE = RawAnimation.begin().then("close",Animation.LoopType.HOLD_ON_LAST_FRAME);
+	//public static final RawAnimation OPEN = RawAnimation.begin().then("open", false).then("opened",true);
+	public static final RawAnimation OPEN = RawAnimation.begin().then("open", Animation.LoopType.HOLD_ON_LAST_FRAME);
+	public static final RawAnimation OPENED = RawAnimation.begin().then("opened", Animation.LoopType.LOOP);
 	public static final EnumProperty<PCChestState> CHEST_STATE = PCProperties.PC_CHEST_STATE;
 	private static final String CONTROLLER_NAME = "chestController";
-	private final AnimationFactory factory = new AnimationFactory(this);
+	private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 	public boolean isMimic = false;
 	public boolean isNatural = false;
 	public boolean hasBeenInteractedWith = false;
@@ -236,16 +238,16 @@ public class PCBaseChestBlockEntity extends LootableContainerBlockEntity impleme
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Override
-	public void registerControllers (AnimationData data) {
+	public void registerControllers (AnimatableManager.ControllerRegistrar controllerRegistrar) {
 		AnimationController controller = new AnimationController(this, CONTROLLER_NAME, 7, animationEvent -> {
 
 			switch (getChestState()) {
 				case CLOSED:
-					animationEvent.getController().easingType = EasingType.EaseOutSine;
+					animationEvent.getController().setOverrideEasingType(EasingType.EASE_OUT_SINE);
 					animationEvent.getController().setAnimation(CLOSED);
 					break;
 				case OPENED:
-					animationEvent.getController().easingType = EasingType.Linear;
+					animationEvent.getController().setOverrideEasingType(EasingType.LINEAR);
 					animationEvent.getController().setAnimation(OPENED);
 					break;
 				default:
@@ -253,14 +255,18 @@ public class PCBaseChestBlockEntity extends LootableContainerBlockEntity impleme
 			}
 			return PlayState.CONTINUE;
 		});
-		data.addAnimationController(controller);
+		controllerRegistrar.add(controller);
 	}
 
 	@Override
-	public AnimationFactory getFactory () {
-		return factory;
+	public AnimatableInstanceCache getAnimatableInstanceCache () {
+		return cache;
 	}
 
+	@Override
+	public double getTick (Object o) {
+		return 0;
+	}
 
 	@Override
 	protected ScreenHandler createScreenHandler (int syncId, PlayerInventory inventory) {
@@ -280,4 +286,7 @@ public class PCBaseChestBlockEntity extends LootableContainerBlockEntity impleme
 	public PCChestTypes type () {
 		return type;
 	}
+
+
+
 }

@@ -271,7 +271,7 @@ public abstract class PCTameablePetWithInventory extends TameableEntity implemen
 
 	public void bite (LivingEntity target) {
 		if (this.isAlive()) {
-			if (target.damage(DamageSource.mob(this), this.biteDamageAmount)) {
+			if (target.damage(this.getDamageSources().mobAttack(this), this.biteDamageAmount)) {
 				this.playSound(this.getHurtSound(), this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 0.7F);
 				this.playSound(PCSounds.MIMIC_BITE, this.getSoundVolume(), 1.5F + getPitchOffset(0.2F));
 				this.applyDamageEffects(this, target);

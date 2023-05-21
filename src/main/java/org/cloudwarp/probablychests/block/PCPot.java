@@ -45,7 +45,7 @@ public class PCPot extends HorizontalFacingBlock {
 
 	@Override
 	public BlockState getPlacementState (ItemPlacementContext ctx) {
-		return this.getDefaultState().with(Properties.HORIZONTAL_FACING, ctx.getPlayerFacing().getOpposite());
+		return this.getDefaultState().with(Properties.HORIZONTAL_FACING, ctx.getPlayerLookDirection().getOpposite());
 	}
 
 	protected void appendProperties (StateManager.Builder<Block, BlockState> builder) {

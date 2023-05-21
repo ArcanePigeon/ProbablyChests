@@ -4,7 +4,7 @@ import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.ConfigHolder;
 import me.shedaniel.autoconfig.serializer.Toml4jConfigSerializer;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
+import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -19,12 +19,12 @@ import org.cloudwarp.probablychests.world.feature.PCFeatures;
 import org.cloudwarp.probablychests.world.feature.PCPlacementModifierType;
 import org.cloudwarp.probablychests.world.gen.PCWorldGen;
 import software.bernie.example.GeckoLibMod;
-import software.bernie.geckolib3.GeckoLib;
+import software.bernie.geckolib.GeckoLib;
 
 public class ProbablyChests implements ModInitializer {
 	public static final Logger LOGGER = LogManager.getLogger();
 	public static final String MOD_ID = "probablychests";
-	public static final ItemGroup PROBABLY_CHESTS_GROUP = FabricItemGroupBuilder.build(new Identifier(MOD_ID, MOD_ID), () -> new ItemStack(PCBlocks.NORMAL_CHEST));
+	public static final ItemGroup PROBABLY_CHESTS_GROUP = FabricItemGroup.builder(new Identifier(MOD_ID, MOD_ID)).icon(() -> new ItemStack(PCBlocks.NORMAL_CHEST)).build();
 	public static ConfigHolder<PCConfig> configHolder;
 	public static PCConfig loadedConfig;
 
@@ -39,7 +39,6 @@ public class ProbablyChests implements ModInitializer {
 		configHolder = AutoConfig.getConfigHolder(PCConfig.class);
 		loadedConfig = getConfig();
 		PCEventHandler.registerEvents();
-		GeckoLibMod.DISABLE_IN_DEV = true;
 		GeckoLib.initialize();
 		PCSounds.init();
 		PCStatistics.init();
@@ -49,7 +48,7 @@ public class ProbablyChests implements ModInitializer {
 		PCEntities.init();
 		PCItems.init();
 		PCPlacementModifierType.init();
-		PCFeatures.init();
+		//PCFeatures.init();
 		PCEntitySpawns.init();
 		PCScreenHandlerType.registerScreenHandlers();
 		PCWorldGen.generatePCWorldGen();

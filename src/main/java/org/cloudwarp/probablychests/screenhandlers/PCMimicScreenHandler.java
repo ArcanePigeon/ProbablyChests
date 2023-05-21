@@ -68,15 +68,7 @@ public class PCMimicScreenHandler extends ScreenHandler {
 	}
 
 	@Override
-	public boolean canUse(PlayerEntity player) {
-		if(this.entity.getIsMimicLocked() && player != this.entity.getOwner()){
-			this.entity.bite(player);
-			return false;
-		}
-		return !this.entity.areInventoriesDifferent(this.inventory) && this.inventory.canPlayerUse(player) && this.entity.isAlive() && this.entity.distanceTo(player) < 8.0f;
-	}
-
-	public ItemStack transferSlot(PlayerEntity player, int index) {
+	public ItemStack quickMove (PlayerEntity player, int index) {
 		ItemStack itemStack = ItemStack.EMPTY;
 		Slot slot = (Slot)this.slots.get(index);
 		if (slot != null && slot.hasStack()) {
@@ -100,7 +92,18 @@ public class PCMimicScreenHandler extends ScreenHandler {
 		return itemStack;
 	}
 
-	public void close(PlayerEntity player) {
+	@Override
+	public boolean canUse(PlayerEntity player) {
+		if(this.entity.getIsMimicLocked() && player != this.entity.getOwner()){
+			this.entity.bite(player);
+			return false;
+		}
+		return !this.entity.areInventoriesDifferent(this.inventory) && this.inventory.canPlayerUse(player) && this.entity.isAlive() && this.entity.distanceTo(player) < 8.0f;
+	}
+
+
+	@Override
+	public void onClosed(PlayerEntity player) {
 		if(player instanceof ServerPlayerEntity) {
 			if (this.entity != null) {
 				entity.closeGui(player);
@@ -108,7 +111,7 @@ public class PCMimicScreenHandler extends ScreenHandler {
 				System.out.println("entity is null");
 			}
 		}
-		super.close(player);
+		super.onClosed(player);
 		this.inventory.onClose(player);
 	}
 

@@ -1,0 +1,16 @@
+{
+  "feature": "probablychests:surface_chest",
+  "placement": [
+    {
+      "type": "probablychests:pc_rarity",
+      "chance": 0.012
+    },
+    {
+      "type": "minecraft:in_square"
+    },
+    {
+      "type": "minecraft:heightmap",
+      "heightmap": "MOTION_BLOCKING"
+    }
+  ]
+}

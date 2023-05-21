@@ -6,7 +6,7 @@ import org.cloudwarp.probablychests.client.entity.model.PCChestMimicModel;
 import org.cloudwarp.probablychests.client.entity.model.PCChestMimicPetModel;
 import org.cloudwarp.probablychests.entity.PCChestMimic;
 import org.cloudwarp.probablychests.entity.PCChestMimicPet;
-import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer;
+import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 public class PCChestMimicPetRenderer extends GeoEntityRenderer<PCChestMimicPet> {
 

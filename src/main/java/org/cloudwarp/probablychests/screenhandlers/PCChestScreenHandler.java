@@ -48,11 +48,8 @@ public class PCChestScreenHandler extends ScreenHandler {
 
 	}
 
-	public boolean canUse(PlayerEntity player) {
-		return this.inventory.canPlayerUse(player);
-	}
-
-	public ItemStack transferSlot(PlayerEntity player, int index) {
+	@Override
+	public ItemStack quickMove (PlayerEntity player, int index) {
 		ItemStack itemStack = ItemStack.EMPTY;
 		Slot slot = (Slot)this.slots.get(index);
 		if (slot != null && slot.hasStack()) {
@@ -76,10 +73,20 @@ public class PCChestScreenHandler extends ScreenHandler {
 		return itemStack;
 	}
 
-	public void close(PlayerEntity player) {
-		super.close(player);
+	public boolean canUse(PlayerEntity player) {
+		return this.inventory.canPlayerUse(player);
+	}
+
+	@Override
+	public void onClosed (PlayerEntity player) {
+		super.onClosed(player);
 		this.inventory.onClose(player);
 	}
+
+	/*public void close(PlayerEntity player) {
+		super.close(player);
+		this.inventory.onClose(player);
+	}*/
 
 	public Inventory getInventory() {
 		return this.inventory;

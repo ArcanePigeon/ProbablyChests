@@ -33,11 +33,13 @@ import java.util.UUID;
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerEntityMixin extends PlayerEntity implements PlayerEntityAccess {
 
-	public ServerPlayerEntityMixin (World world, BlockPos pos, float yaw, GameProfile gameProfile, @Nullable PlayerPublicKey publicKey) {
-		super(world, pos, yaw, gameProfile, publicKey);
-	}
+
 
 	HashSet<UUID> petMimicList = new HashSet<>();
+
+	public ServerPlayerEntityMixin (World world, BlockPos pos, float yaw, GameProfile gameProfile) {
+		super(world, pos, yaw, gameProfile);
+	}
 
 
 	@Override

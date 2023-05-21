@@ -1,8 +1,9 @@
 package org.cloudwarp.probablychests.world.feature;
 
 import com.mojang.serialization.Codec;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.placementmodifier.PlacementModifier;
 import net.minecraft.world.gen.placementmodifier.PlacementModifierType;
 import org.cloudwarp.probablychests.ProbablyChests;
@@ -13,7 +14,7 @@ public class PCPlacementModifierType<P extends PlacementModifier> {
 	public static PlacementModifierType<PCSolidGroundPlacementModifier> SOLID_CHECK;
 
 	private static <P extends PlacementModifier> PlacementModifierType<P> register (Identifier id, Codec<P> codec) {
-		return Registry.register(Registry.PLACEMENT_MODIFIER_TYPE, id, () -> codec);
+		return Registry.register(Registries.PLACEMENT_MODIFIER_TYPE, id, () -> codec);
 	}
 
 	public static void init () {
